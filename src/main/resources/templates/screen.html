@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Font Awesome CSS -->
+    <link th:href="@{/assets/font-awesome/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css"/>
+    <!-- BEGIN CSS for this page -->
+    <link th:href="@{/bootstrap/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css" />
+    <!-- END CSS for this page -->
+</head>
+<body class="adminbody">
+<div id="main">
+    <!-- top bar navigation -->
+    <div class="headerbar">
+
+
+        <!-- LOGO -->
+        <div class="headerbar-left">
+            <a th:href="@{/index}" class="logo"><img alt="Logo" th:src="@{/assets/images/logo.png}"/>
+                <span>Admin</span></a>
+        </div>
+
+        <nav class="navbar-custom">
+            <ul class="list-inline float-right mb-0">
+                <li class="list-inline-item dropdown notif">
+                    <a class="nav-link dropdown-toggle arrow-none" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="false" aria-expanded="false">
+                        <i class="fa fa-fw fa-question-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-arrow-success dropdown-lg">
+                        <!-- item-->
+                        <div class="dropdown-item noti-title">
+                            <h5>
+                                <small>Help and Support</small>
+                            </h5>
+                        </div>
+
+                    </div>
+                </li>
+
+                <li class="list-inline-item dropdown notif">
+                    <a class="nav-link dropdown-toggle nav-user" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="false" aria-expanded="false">
+                        <img th:src="@{/assets/images/avatars/admin.png}" alt="Profile image" class="avatar-rounded">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
+                        <!-- item-->
+                        <div class="dropdown-item noti-title">
+                            <h5 class="text-overflow">
+                                <small>Hello, admin</small>
+                            </h5>
+                        </div>
+
+                        <!--&lt;!&ndash; item&ndash;&gt;
+                        <a href="pro-profile.html" class="dropdown-item notify-item">
+                            <i class="fa fa-user"></i> <span>Profile</span>
+                        </a>
+-->
+                        <!-- item-->
+                        <a href="#" class="dropdown-item notify-item">
+                            <i class="fa fa-power-off"></i> <span>Logout</span>
+                        </a>
+
+                        <!-- item-->
+                        <!--<a target="_blank" href="#" class="dropdown-item notify-item">
+                            <i class="fa fa-external-link"></i> <span>Pike Admin</span>
+                        </a>-->
+                    </div>
+                </li>
+
+            </ul>
+
+            <ul class="list-inline menu-left mb-0">
+                <li class="float-left">
+                    <button class="button-menu-mobile open-left">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </li>
+            </ul>
+
+        </nav>
+
+    </div>
+    <!-- End Navigation -->
+
+
+    <!-- Left Sidebar -->
+    <div class="left main-sidebar">
+
+        <div class="sidebar-inner leftscroll">
+
+            <div id="sidebar-menu">
+                <ul>
+                    <li class="submenu">
+                        <a class="active" th:href="@{/index}"><i class="fa fa-fw fa-bars"></i>
+                            <span> 大屏管理 </span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <!-- End Sidebar -->
+
+    <div class="content-page">
+
+        <!-- Start content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                    </div>
+                </div>
+                <!-- end row -->
+
+
+                <div class="row" style="margin-top: 3px;">
+                    <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card-box noradius noborder bg-default">
+                            <i class="fa fa-file-text-o float-right text-white"></i>
+                            <h6 class="text-white text-uppercase m-b-20">大屏总计</h6>
+                            <h1 class="m-b-20 text-white counter" th:text="${total}"></span></h1>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card-box noradius noborder bg-info">
+                            <i class="fa fa-user-o float-right text-white"></i>
+                            <h6 class="text-white text-uppercase m-b-20">在播大屏</h6>
+                            <h1 class="m-b-20 text-white counter" th:text="${enable}"></h1>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card-box noradius noborder bg-warning">
+                            <i class="fa fa-bell-o float-right text-white"></i>
+                            <h6 class="text-white text-uppercase m-b-20">停播大屏</h6>
+                            <h1 class="m-b-20 text-white counter" th:text="${unable}"></h1>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                            </div>
+                            <div class="card-body">
+                                <table id="tb_1" class="table table-responsive-sm table-hover display">
+                                    <thead>
+                                    <tr>
+                                        <td colspan="9" class="text-left">
+                                            <a href="#" onclick="loadAdd()" data-toggle="modal"
+                                               class="submitBtn btn btn-info btn-sm inline">
+                                                <i class="fa fa-check-circle-o"></i> 新增
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>大屏名称</th>
+                                        <th>大屏URI</th>
+                                        <th>描述</th>
+                                        <th>播放间隔</th>
+                                        <th>轮播数量</th>
+                                        <th>匹配格式</th>
+                                        <th>是否可用</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+                            </div>
+                        </div><!-- end card-->
+                    </div>
+                </div>
+
+                <!-- Modal add -->
+                <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+                     aria-labelledby="customModal" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel2">大屏信息</h5>
+                            </div>
+                            <div class="modal-body">
+                                <form id="customForm">
+                                    <input type="hidden" class="form-control" id="no" value="" required>
+                                    <div class="form-group row">
+                                        <label for="name" class="star col-sm-2 col-form-label">大屏名称</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control is-valid" id="name" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="enable" class="star col-sm-2 col-form-label">是否可用</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control" id="enable" required>
+                                                <option value="1">正常</option>
+                                                <option value="0">禁用</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="uri" class="star col-sm-2 col-form-label">大屏URI</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="uri" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="descInfo" class="col-sm-2 col-form-label">描述</label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" id="descInfo"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="cron" class="star col-sm-2 col-form-label">播放间隔</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="cron" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="playPicNum" class="star col-sm-2 col-form-label">轮播数量</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="playPicNum" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="regexChar" class="star col-sm-2 col-form-label">匹配格式</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="regexChar" required>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                <button type="button" onclick="onEdit()" class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END container-fluid -->
+
+        </div>
+        <!-- END content -->
+
+    </div>
+    <!-- END content-page -->
+
+    <footer class="footer">
+        <span class="float-right">
+            Copyright@<a href="#">山东东锟信息技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>
+    </footer>
+
+</div>
+<!-- END main -->
+
+<script th:src="@{/assets/js/modernizr.min.js}"></script>
+<script th:src="@{/assets/js/jquery.min.js}"></script>
+<script th:src="@{/assets/js/moment.min.js}"></script>
+
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+
+<script th:src="@{/assets/js/detect.js}"></script>
+<script th:src="@{/assets/js/fastclick.js}"></script>
+<script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+<script th:src="@{/assets/js/jquery.nicescroll.js}"></script>
+
+<!-- App js -->
+<script th:src="@{/assets/js/pikeadmin.js}"></script>
+
+<!-- BEGIN Java Script for this page -->
+<script th:src="@{/bootstrap/Chart.min.js}"></script>
+<script th:src="@{/bootstrap/jquery.dataTables.min.js}"></script>
+<script th:src="@{/bootstrap/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/bootstrap/base.js}"></script>
+<script th:src="@{/bootstrap/bootbox.js}"></script>
+
+<!-- Counter-Up-->
+<script th:src="@{/assets/plugins/waypoints/lib/jquery.waypoints.min.js}"></script>
+<script th:src="@{/assets/plugins/counterup/jquery.counterup.min.js}"></script>
+
+<script th:inline="javascript">
+
+    bootbox.setDefaults("locale", "zh_CN");
+
+    /*<![CDATA[*/
+    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+
+    var dataTable;
+    $(document).ready(function () {
+        dataTable = $('#tb_1').DataTable({
+            language: _language,
+            ajax: {
+                url: basePath + "/screen/page",
+                type: "POST",
+                async: false,
+                function (d) {
+                }
+            },
+            serverSide: true,
+            pagination: true,
+            ordering: false,
+            bLengthChange: false,
+            bFilter: false,
+            columns: [
+                {"data": "no"},
+                {"data": "name"},
+                {"data": "uri"},
+                {"data": "descInfo"},
+                {"data": "cron"},
+                {"data": "playPicNum"},
+                {"data": "regexChar"},
+                {
+                    "data": "enable",
+                    render: function (data) {
+                        return data == '0' ? "<font color='red'>停播</font>" : "<font color='green'>正常</font>";
+                    }
+                },
+                {
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var rtnStr =
+                            "<button type='button' onclick='onDelete(" + row.no + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
+                            + "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>编辑</button>&nbsp;&nbsp;"
+                            + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>轮播详细</button>";
+                        return rtnStr;
+                    }
+
+                }
+            ],
+            "paging": true, //打开分页设置
+            "iDisplayLength": 5,
+        });
+
+        // counter-up
+        $('.counter').counterUp({
+            delay: 10,
+            time: 600
+        });
+
+    });
+
+    //加载大屏资源
+    function loadResource(no) {
+        window.location.href = basePath + "/resource/index?no=" + no;
+    }
+
+    function loadAdd() {
+        $("#customForm")[0].reset();
+        $("#customModal").modal('show');
+        $("#customForm")[0].classList.remove('was-validated');//初始不校验
+    }
+
+    function loadEdit(no) {
+        $.post(
+            basePath + "/screen/queryById",
+            {"no": no},
+            function (response) {
+                $("#no").val(response.no);
+                $("#name").val(response.name);
+                $("#enable").val(response.enable);
+                $("#descInfo").val(response.descInfo);
+                $("#uri").val(response.uri);
+                $("#regexChar").val(response.regexChar);
+                $("#playPicNum").val(response.playPicNum);
+                $("#cron").val(response.cron);
+                $("#customModal").modal('show');
+            }
+        );
+    }
+
+    function onEdit() {
+        var form = $("#customForm")[0];
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+
+        $.post(
+            basePath + "/screen/resave",
+            {
+                "no": $("#no").val(),
+                "name": $("#name").val(),
+                "enable": $("#enable").val(),
+                "descInfo": $("#descInfo").val(),
+                "uri": $("#uri").val(),
+                "regexChar": $("#regexChar").val(),
+                "playPicNum": $("#playPicNum").val(),
+                "cron": $("#cron").val()
+            },
+            function (response) {
+                if (response == 'success') {
+                    window.location.reload();
+                }
+
+            }
+        );
+    }
+
+    function onDelete(no) {
+        bootbox.confirm("确认删除?", function (result) {
+            if (result) {
+                $.post(
+                    basePath + "/screen/delete",
+                    {"no": no},
+                    function (response) {
+                        if (response == 'success') {
+                            window.location.reload();
+                        } else {
+                            bootbox.alert("删除异常");
+                        }
+
+                    }
+                );
+            }
+        });
+
+    }
+</script>
+
+</body>
+</html>

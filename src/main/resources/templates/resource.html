@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Font Awesome CSS -->
+    <link th:href="@{/assets/font-awesome/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css"/>
+    <!-- BEGIN CSS for this page -->
+    <link th:href="@{/bootstrap/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/bootstrap/jquery.fancybox.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer-dragdropbox-theme.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css" />
+    <!-- END CSS for this page -->
+</head>
+<body class="adminbody">
+<div id="main">
+    <!-- top bar navigation -->
+    <div class="headerbar">
+
+        <!-- LOGO -->
+        <div class="headerbar-left">
+            <a th:href="@{/index}" class="logo"><img alt="Logo" th:src="@{/assets/images/logo.png}"/>
+                <span>Admin</span></a>
+        </div>
+
+        <nav class="navbar-custom">
+            <ul class="list-inline float-right mb-0">
+                <li class="list-inline-item dropdown notif">
+                    <a class="nav-link dropdown-toggle arrow-none" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="false" aria-expanded="false">
+                        <i class="fa fa-fw fa-question-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-arrow-success dropdown-lg">
+                        <!-- item-->
+                        <div class="dropdown-item noti-title">
+                            <h5>
+                                <small>Help and Support</small>
+                            </h5>
+                        </div>
+
+                    </div>
+                </li>
+
+                <li class="list-inline-item dropdown notif">
+                    <a class="nav-link dropdown-toggle nav-user" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="false" aria-expanded="false">
+                        <img th:src="@{/assets/images/avatars/admin.png}" alt="Profile image" class="avatar-rounded">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
+                        <!-- item-->
+                        <div class="dropdown-item noti-title">
+                            <h5 class="text-overflow">
+                                <small>Hello, admin</small>
+                            </h5>
+                        </div>
+
+                        <!--&lt;!&ndash; item&ndash;&gt;
+                        <a href="pro-profile.html" class="dropdown-item notify-item">
+                            <i class="fa fa-user"></i> <span>Profile</span>
+                        </a>
+-->
+                        <!-- item-->
+                        <a href="#" class="dropdown-item notify-item">
+                            <i class="fa fa-power-off"></i> <span>Logout</span>
+                        </a>
+
+                        <!-- item-->
+                        <!--<a target="_blank" href="#" class="dropdown-item notify-item">
+                            <i class="fa fa-external-link"></i> <span>Pike Admin</span>
+                        </a>-->
+                    </div>
+                </li>
+
+            </ul>
+
+            <ul class="list-inline menu-left mb-0">
+                <li class="float-left">
+                    <button class="button-menu-mobile open-left">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </li>
+            </ul>
+
+        </nav>
+
+    </div>
+    <!-- End Navigation -->
+
+
+    <!-- Left Sidebar -->
+    <div class="left main-sidebar">
+
+        <div class="sidebar-inner leftscroll">
+
+            <div id="sidebar-menu">
+                <ul>
+                    <li class="submenu">
+                        <a class="active" th:href="@{/index}"><i class="fa fa-fw fa-bars"></i>
+                            <span> 大屏管理 </span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <!-- End Sidebar -->
+
+    <div class="content-page">
+
+        <!-- Start content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                    </div>
+                </div>
+                <!-- end row -->
+
+
+                <div class="row" style="margin-top: 3px;">
+                </div>
+                <!-- end row -->
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <table id="tb_1" class="table table-responsive-xl table-hover display">
+                                    <thead>
+                                    <tr>
+                                        <td colspan="9" class="text-left">
+                                            <a href="#" onclick="loadAdd()" data-toggle="modal"
+                                               class="submitBtn btn btn-info btn-sm inline">
+                                                <i class="fa fa-check-circle-o"></i> 自定义(口号类)
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>原始文件</th>
+                                        <th>FTP日期</th>
+                                        <th>同步日期</th>
+                                        <th>大屏FILE</th>
+                                        <th>类型</th>
+                                        <th width="60">状态</th>
+                                        <th width="160">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+                            </div>
+                        </div><!-- end card-->
+                    </div>
+                </div>
+            </div>
+            <!-- END container-fluid -->
+
+            <!-- Modal add -->
+            <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+                 aria-labelledby="customModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form id="customForm" th:action="@{/resource/compPic}" method="post"
+                                  enctype="multipart/form-data">
+                                <input id="no" name="no" type="hidden" th:value="${no}">
+                                <div class="form-group row">
+                                    <label for="backPic" class="star col-sm-2 col-form-label">背景图</label>
+                                    <div class="col-sm-10">
+                                        <input type="file" name="backGround" id="backPic" multiple="multiple" required />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="descInfo" class=" star col-sm-2 col-form-label">字体大小</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" name="size" id="size" placeholder="90" required/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="descInfo" class=" star col-sm-2 col-form-label">描述</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" name="content" id="descInfo" required></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            <button type="button" onclick="onAdd()" class="btn btn-primary">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- END content -->
+
+    </div>
+    <!-- END content-page -->
+
+    <footer class="footer">
+        <span class="float-right">
+            Copyright@<a href="#">山东东锟信息技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>
+    </footer>
+
+</div>
+<!-- END main -->
+
+<script th:src="@{/assets/js/modernizr.min.js}"></script>
+<script th:src="@{/assets/js/jquery.min.js}"></script>
+<script th:src="@{/assets/js/moment.min.js}"></script>
+
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+
+<script th:src="@{/assets/js/detect.js}"></script>
+<script th:src="@{/assets/js/fastclick.js}"></script>
+<script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+<script th:src="@{/assets/js/jquery.nicescroll.js}"></script>
+
+<!-- App js -->
+<script th:src="@{/assets/js/pikeadmin.js}"></script>
+
+<!-- BEGIN Java Script for this page -->
+<script th:src="@{/bootstrap/Chart.min.js}"></script>
+<script th:src="@{/bootstrap/jquery.dataTables.min.js}"></script>
+<script th:src="@{/bootstrap/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/bootstrap/base.js}"></script>
+<script th:src="@{/bootstrap/bootbox.js}"></script>
+<script th:src="@{/bootstrap/ekko-lightbox.min.js}"></script>
+<script th:src="@{/bootstrap/jquery.fancybox.min.js}"></script>
+
+<script th:src="@{/assets/plugins/jquery.filer/js/jquery.filer.min.js}"></script>
+
+<!-- Counter-Up-->
+<script th:src="@{/assets/plugins/waypoints/lib/jquery.waypoints.min.js}"></script>
+<script th:src="@{/assets/plugins/counterup/jquery.counterup.min.js}"></script>
+
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    // language=ThymeleafExpressions
+    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+
+    bootbox.setDefaults("locale", "zh_CN");
+
+    var no = $("#no").val();
+    $(document).ready(function () {
+        var table = $('#tb_1').DataTable({
+                language: _language,
+                ajax: {
+                    url: basePath + "/resource/page",
+                    data: {"no": no},
+                    type: "POST",
+                    async: false,
+                    function (d) {
+                    }
+                },
+                serverSide: true,
+                pagination: true,
+                ordering: false,
+                bLengthChange: false,
+                bFilter: false,
+                columns: [
+                    {"data": "id"},
+                    {"data": "originName"},
+                    {
+                        "data": "resourceDateTime",
+                        render: function (data) {
+                            return formatTime(data);
+                        }
+                    },
+                    {
+                        "data": "createDate",
+                        render: function (data) {
+                            return formatTime(data);
+                        }
+                    },
+                    {"data": "fileName"},
+                    {
+                        "data": "type",
+                        render: function (data) {
+                            return data == 'font' ? "<font " + " color='#daa520'>合成</font>" : "<font " + " color='green'>FTP图</font>";
+                        }
+                    },
+                    {
+                        "data":
+                            "enable",
+                        render:
+
+                            function (data) {
+                                return data == '0' ? "<font " + " color='red'>禁播</font>" : "<font " + " color='green'>正常</font>";
+                            }
+                    }
+                    ,
+                    {
+                        "data":
+                            null,
+                        "render":
+
+                            function (data, type, row) {
+                                var tip = '';
+                                var showpicUrl = basePath + "/resource/showPic?id=";
+                                if (row.enable == '0') {
+                                    tip = '播放';
+                                } else {
+                                    tip = '禁止';
+                                }
+                                var rtn =
+                                    "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
+                                    + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
+                                    + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                                    + " href='" + showpicUrl + row.id + "' >图片</a>";
+
+                                return rtn
+                            }
+
+                    }
+                ],
+                "paging":
+                    true, //打开分页设置
+                "iDisplayLength":
+                    5,
+            })
+        ;
+
+        // counter-up
+        $('.counter').counterUp({
+            delay: 10,
+            time: 600
+        });
+
+        $('#backPic').filer({
+            limit: 1,
+            maxSize: 10,
+            extensions: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP'],
+            changeInput: true,
+            showThumbs: true,
+            addMore: false
+        });
+
+    });
+
+    //新增合成图
+    function onAdd() {
+        var form = $("#customForm")[0];
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+        $("#customForm").submit();
+    }
+
+    //更改状态
+    function onEdit(id, enable) {
+        var tip = enable == '0' ? "确认播放图片?" : "确认禁止播放?";
+        bootbox.confirm(tip, function (result) {
+            if (result) {
+                $.post(
+                    basePath + "/resource/change",
+                    {"resourceId": id, "enable": enable == '0' ? '1' : '0'},
+                    function (response) {
+                        if (response != 'success' && response != 'fail') {
+                            bootbox.alert('大屏最多播放' + response + "张图片！");
+                        } else if (response == 'success') {
+                            window.location.reload();
+                        } else {
+                            bootbox.alert("变更异常");
+                        }
+
+                    }
+                );
+            }
+        });
+    }
+
+    //自定义口号
+    function loadAdd() {
+        $("#customForm")[0].reset();
+        $("#customModal").modal('show');
+        $("#customForm")[0].classList.remove('was-validated');//初始不校验
+
+        $('#backPic').trigger("filer.reset")
+
+    }
+
+    //删除资源
+    function onDel(id) {
+        bootbox.confirm('确认删除?', function (result) {
+            if (result) {
+                $.post(
+                    basePath + "/resource/delete",
+                    {"id": id},
+                    function (response) {
+                        if (response == 'success') {
+                            window.location.reload();
+                        } else {
+                            bootbox.alert("删除异常");
+                        }
+
+                    }
+                );
+            }
+        });
+    }
+
+</script>
+
+<script>
+
+</script>
+<!-- END Java Script for this page -->
+
+</body>
+</html>

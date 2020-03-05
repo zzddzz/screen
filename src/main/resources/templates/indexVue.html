@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- import CSS JS -->
+    <link th:href="@{/index.css}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" th:src="@{/vue.js}"></script>
+    <script type="text/javascript" th:src="@{/index.js}"></script>
+    <script type="text/javascript" th:src="@{/axios.min.js}"></script>
+</head>
+<body>
+<div id="app">
+    <template>
+        <el-table
+                :data="tableData"
+                style="width: 100%">
+            <el-table-column
+                    prop="no"
+                    label="序号"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="大屏名称"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="descInfo"
+                    label="描述信息">
+            </el-table-column>
+            <el-table-column
+                    prop="intervalTime"
+                    label="播放间隔">
+            </el-table-column>
+            <el-table-column
+                    prop="showUrl"
+                    label="大屏调用地址">
+            </el-table-column>
+            <el-table-column
+                    prop="remoteFtpPath"
+                    label="远程FTP源">
+            </el-table-column>
+        </el-table>
+    </template>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    /*<![CDATA[*/
+    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+
+    const screen = new Vue({
+        el: '#app',
+        data: {
+            tableData: ['sdf']
+        },
+        beforeMount: function () {
+            axios.post(basePath + '/screen/list', {}).then((response) => {
+                this.tableData = response.data;
+            });
+        }
+
+
+    })
+</script>
+</html>
