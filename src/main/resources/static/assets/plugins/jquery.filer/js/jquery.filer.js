@@ -975,7 +975,7 @@
 		onEmpty: null,
 		options: null,
 		captions: {
-			button: "Choose Files",
+			button: "选择文件",
 			feedback: "Choose files To Upload",
 			feedback2: "files were chosen",
 			drop: "Drop file here to Upload",

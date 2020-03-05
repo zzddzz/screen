@@ -18,9 +18,10 @@
     <link th:href="@{/bootstrap/jquery.fancybox.min.css}" rel="stylesheet" type="text/css"/>
 
     <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer.css}" rel="stylesheet" type="text/css"/>
-    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer-dragdropbox-theme.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer-dragdropbox-theme.css}" rel="stylesheet"
+          type="text/css"/>
 
-    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css"/>
     <!-- END CSS for this page -->
 </head>
 <body class="adminbody">
@@ -130,9 +131,12 @@
                 <!-- end row -->
 
 
-                <div class="row" style="margin-top: 3px;">
-                </div>
-                <!-- end row -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/index}">首页</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">大屏资源管理</li>
+                    </ol>
+                </nav>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -184,7 +188,7 @@
                                 <div class="form-group row">
                                     <label for="backPic" class="star col-sm-2 col-form-label">背景图</label>
                                     <div class="col-sm-10">
-                                        <input type="file" name="backGround" id="backPic" multiple="multiple" required />
+                                        <input type="file" name="backGround" id="backPic" multiple="multiple" required/>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -265,82 +269,65 @@
 
     var no = $("#no").val();
     $(document).ready(function () {
-        var table = $('#tb_1').DataTable({
-                language: _language,
-                ajax: {
-                    url: basePath + "/resource/page",
-                    data: {"no": no},
-                    type: "POST",
-                    async: false,
-                    function (d) {
+        $('#tb_1').DataTable({
+            language: _language,
+            ajax: {
+                url: basePath + "/resource/page",
+                data: {"no": no},
+                type: "POST",
+                async: false
+            },
+            serverSide: true,
+            pagination: true,
+            ordering: false,
+            bLengthChange: false,
+            bFilter: false,
+            columns: [
+                {"data": "id"},
+                {"data": "originName"},
+                {"data": "resourceDateTime"},
+                {"data": "createDate"},
+                {"data": "fileName"},
+                {
+                    "data": "type",
+                    render: function (data) {
+                        return data == 'font' ? "<font " + " color='#daa520'>合成</font>" : "<font " + " color='green'>FTP图</font>";
                     }
                 },
-                serverSide: true,
-                pagination: true,
-                ordering: false,
-                bLengthChange: false,
-                bFilter: false,
-                columns: [
-                    {"data": "id"},
-                    {"data": "originName"},
-                    {
-                        "data": "resourceDateTime",
-                        render: function (data) {
-                            return formatTime(data);
-                        }
-                    },
-                    {
-                        "data": "createDate",
-                        render: function (data) {
-                            return formatTime(data);
-                        }
-                    },
-                    {"data": "fileName"},
-                    {
-                        "data": "type",
-                        render: function (data) {
-                            return data == 'font' ? "<font " + " color='#daa520'>合成</font>" : "<font " + " color='green'>FTP图</font>";
-                        }
-                    },
-                    {
-                        "data":
-                            "enable",
-                        render:
+                {
+                    "data": "enable",
+                    render:
 
-                            function (data) {
-                                return data == '0' ? "<font " + " color='red'>禁播</font>" : "<font " + " color='green'>正常</font>";
+                        function (data) {
+                            return data == '0' ? "<font " + " color='red'>禁播</font>" : "<font " + " color='green'>正常</font>";
+                        }
+                }
+                ,
+                {
+                    "data": null,
+                    "render":
+                        function (data, type, row) {
+                            var tip = '';
+                            var showpicUrl = basePath + "/resource/showPic?id=";
+                            if (row.enable == '0') {
+                                tip = '播放';
+                            } else {
+                                tip = '禁止';
                             }
-                    }
-                    ,
-                    {
-                        "data":
-                            null,
-                        "render":
+                            var rtn =
+                                "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
+                                + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                                + " href='" + showpicUrl + row.id + "' >图片</a>";
 
-                            function (data, type, row) {
-                                var tip = '';
-                                var showpicUrl = basePath + "/resource/showPic?id=";
-                                if (row.enable == '0') {
-                                    tip = '播放';
-                                } else {
-                                    tip = '禁止';
-                                }
-                                var rtn =
-                                    "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
-                                    + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
-                                    + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                                    + " href='" + showpicUrl + row.id + "' >图片</a>";
+                            return rtn
+                        }
 
-                                return rtn
-                            }
-
-                    }
-                ],
-                "paging":
-                    true, //打开分页设置
-                "iDisplayLength":
-                    5,
-            })
+                }
+            ],
+            "paging":true, //打开分页设置
+            "iDisplayLength":5,
+        })
         ;
 
         // counter-up
