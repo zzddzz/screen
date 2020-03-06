@@ -15,7 +15,13 @@
     <!-- BEGIN CSS for this page -->
     <link th:href="@{/bootstrap/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css"/>
 
-    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/bootstrap/jquery.fancybox.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer-dragdropbox-theme.css}" rel="stylesheet"
+          type="text/css"/>
+
+    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css"/>
     <!-- END CSS for this page -->
 </head>
 <body class="adminbody">
@@ -256,7 +262,7 @@
                 </div>
             </div>
             <!-- END container-fluid -->
-
+            <div id="fb">
         </div>
         <!-- END content -->
 
@@ -272,31 +278,35 @@
 </div>
 <!-- END main -->
 
-<script th:src="@{/assets/js/modernizr.min.js}"></script>
-<script th:src="@{/assets/js/jquery.min.js}"></script>
-<script th:src="@{/assets/js/moment.min.js}"></script>
+    <script th:src="@{/assets/js/modernizr.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.min.js}"></script>
+    <script th:src="@{/assets/js/moment.min.js}"></script>
 
-<script th:src="@{/assets/js/popper.min.js}"></script>
-<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/js/popper.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.min.js}"></script>
 
-<script th:src="@{/assets/js/detect.js}"></script>
-<script th:src="@{/assets/js/fastclick.js}"></script>
-<script th:src="@{/assets/js/jquery.blockUI.js}"></script>
-<script th:src="@{/assets/js/jquery.nicescroll.js}"></script>
+    <script th:src="@{/assets/js/detect.js}"></script>
+    <script th:src="@{/assets/js/fastclick.js}"></script>
+    <script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+    <script th:src="@{/assets/js/jquery.nicescroll.js}"></script>
 
-<!-- App js -->
-<script th:src="@{/assets/js/pikeadmin.js}"></script>
+    <!-- App js -->
+    <script th:src="@{/assets/js/pikeadmin.js}"></script>
 
-<!-- BEGIN Java Script for this page -->
-<script th:src="@{/bootstrap/Chart.min.js}"></script>
-<script th:src="@{/bootstrap/jquery.dataTables.min.js}"></script>
-<script th:src="@{/bootstrap/dataTables.bootstrap4.min.js}"></script>
-<script th:src="@{/bootstrap/base.js}"></script>
-<script th:src="@{/bootstrap/bootbox.js}"></script>
+    <!-- BEGIN Java Script for this page -->
+    <script th:src="@{/bootstrap/Chart.min.js}"></script>
+    <script th:src="@{/bootstrap/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/bootstrap/dataTables.bootstrap4.min.js}"></script>
+    <script th:src="@{/bootstrap/base.js}"></script>
+    <script th:src="@{/bootstrap/bootbox.js}"></script>
+    <script th:src="@{/bootstrap/ekko-lightbox.min.js}"></script>
+    <script th:src="@{/bootstrap/jquery.fancybox.min.js}"></script>
 
-<!-- Counter-Up-->
-<script th:src="@{/assets/plugins/waypoints/lib/jquery.waypoints.min.js}"></script>
-<script th:src="@{/assets/plugins/counterup/jquery.counterup.min.js}"></script>
+    <script th:src="@{/assets/plugins/jquery.filer/js/jquery.filer.min.js}"></script>
+
+    <!-- Counter-Up-->
+    <script th:src="@{/assets/plugins/waypoints/lib/jquery.waypoints.min.js}"></script>
+    <script th:src="@{/assets/plugins/counterup/jquery.counterup.min.js}"></script>
 
 <script th:inline="javascript">
 
@@ -309,13 +319,10 @@
     $(document).ready(function () {
         dataTable = $('#tb_1').DataTable({
             language: _language,
-            ajax: {
-                url: basePath + "/screen/page",
-                type: "POST",
-                async: false
-            },
+            ajax: basePath + "/screen/page",
             serverSide: true,
             pagination: true,
+            iDisplayLength: 5,
             ordering: false,
             bLengthChange: false,
             bFilter: false,
@@ -336,17 +343,19 @@
                 {
                     "data": null,
                     "render": function (data, type, row) {
+                        /*+ "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                        + " href='" + row.id + "' >图片</a>"
+                        + "<a type='button' hidden data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                        + " href='" + row.id + "' >图片</a>"*/
                         var rtnStr =
                             "<button type='button' onclick='onDelete(" + row.no + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
                             + "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>编辑</button>&nbsp;&nbsp;"
-                            + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>轮播详细</button>";
+                            + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>详细信息</button>";
                         return rtnStr;
                     }
 
                 }
-            ],
-            "paging": true, //打开分页设置
-            "iDisplayLength": 5,
+            ]
         });
 
         // counter-up
@@ -366,6 +375,14 @@
         $("#customForm")[0].reset();
         $("#customModal").modal('show');
         $("#customForm")[0].classList.remove('was-validated');//初始不校验
+    }
+    
+    function loadPlayPic() {
+        $('#fb').append('<a name="la" href="./11.png"><img src="./11.png"/></a>');
+        $('#fb').append('<a name="la" href="./22.png"><img src="./22.png"/></a>');
+        $('#fb a').fancybox({
+            'titlePosition' : 'inside'
+        }).open($("#fb a"));
     }
 
     function loadEdit(no) {

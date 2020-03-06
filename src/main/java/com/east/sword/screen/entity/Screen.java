@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.activerecord.Model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * screen
@@ -46,6 +47,9 @@ public class Screen extends Model<Screen> {
 
     @TableField("enable")
     private String enable;
+
+    @TableField(exist = false)
+    private List<Integer> resourceIdList;
 
     @Override
     protected Serializable pkVal() {

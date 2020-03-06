@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequestMapping("/screen")
-public class ScreenController extends BaseController<Screen>{
+public class ScreenController extends BaseController<Screen> {
 
     @Autowired
     private IScreenService screenService;
@@ -56,7 +56,7 @@ public class ScreenController extends BaseController<Screen>{
             List<Screen> screenList = screenService.selectList(entityWrapper);
             return screenList;
         } catch (Exception e) {
-            log.error("screen list error:{}",e);
+            log.error("screen list error:{}", e);
             return null;
         }
 
@@ -67,15 +67,23 @@ public class ScreenController extends BaseController<Screen>{
     public Map screenPageList(PageHelper<Screen> pageHelper) {
         try {
             Map data = new TreeMap();
-            System.out.println(pageHelper.getDraw());
             Page<Screen> page = screenService.selectPage(pageHelper.getPage());
 
-            data.put("data",page.getRecords());
-            data.put("recordsTotal",page.getTotal());
-            data.put("recordsFiltered",page.getTotal());
+            /*page.getRecords().forEach(screen -> {
+                EntityWrapper entityWrapper = new EntityWrapper();
+                entityWrapper.eq("enable", Resource.ENABLE);
+                entityWrapper.eq("delFlag", Resource.UNDEL);
+                List<Resource> playResourceList = resourceService.selectList(entityWrapper);
+                List<Integer> playResourceIdList = playResourceList.stream().map(Resource::getId).collect(Collectors.toList());
+                screen.setResourceIdList(playResourceIdList);
+            });*/
+
+            data.put("data", page.getRecords());
+            data.put("recordsTotal", page.getTotal());
+            data.put("recordsFiltered", page.getTotal());
             return data;
         } catch (Exception e) {
-            log.error("screen list error:{}",e);
+            log.error("screen list error:{}", e);
             return null;
         }
 
@@ -93,7 +101,7 @@ public class ScreenController extends BaseController<Screen>{
             }
             return SUCCESS;
         } catch (Exception e) {
-            log.error("screen resave error:{}",e);
+            log.error("screen resave error:{}", e);
             return FAIL;
         }
     }
@@ -106,7 +114,7 @@ public class ScreenController extends BaseController<Screen>{
         try {
             screen = screenService.selectById(screen.getNo());
             EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
-            entityWrapper.eq("no",screen.getNo());
+            entityWrapper.eq("no", screen.getNo());
             List<Resource> resourceList = resourceService.selectList(entityWrapper);
             List<String> needDelResource = resourceList.stream().map(Resource::getVsnName).collect(Collectors.toList());
 
@@ -114,7 +122,7 @@ public class ScreenController extends BaseController<Screen>{
             List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
             for (VsnPlay vsnPlay : vsnPlayList) {
                 if (needDelResource != null && needDelResource.contains(vsnPlay.getName())) {
-                    String delUrl = kltRoute.delRountPath(screen.getUri(),vsnPlay.getName());
+                    String delUrl = kltRoute.delRountPath(screen.getUri(), vsnPlay.getName());
                     httpClient.httpDelete(delUrl);
                 }
             }
@@ -124,7 +132,7 @@ public class ScreenController extends BaseController<Screen>{
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("screen delete error:{}",e);
+            log.error("screen delete error:{}", e);
             return FAIL;
         }
     }
@@ -136,17 +144,13 @@ public class ScreenController extends BaseController<Screen>{
             screen = screenService.selectById(screen.getNo());
             return screen;
         } catch (Exception e) {
-            log.error("screen delete error:{}",e);
+            log.error("screen delete error:{}", e);
             return null;
         }
     }
 
 
-
     //查看大屏在播图片
-
-
-
 
 
 }
