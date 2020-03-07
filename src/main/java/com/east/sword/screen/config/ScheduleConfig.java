@@ -12,6 +12,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TriggerTask;
+import org.springframework.scheduling.support.CronTrigger;
 
 import java.util.List;
 import java.util.Map;
@@ -55,14 +56,14 @@ public class ScheduleConfig implements SchedulingConfigurer {
 
         //初始化定时任务
         for (Screen screen : screenList) {
-//            this.addTriggerTask(
-//                    String.valueOf(screen.getNo()),
-//                    new TriggerTask(
-//                            () -> sendMsgService.sendMsg(screen),
-//                            new CronTrigger(screen.getCron())
-//                    ),
-//                    screen.getCron()
-//            );
+            this.addTriggerTask(
+                    String.valueOf(screen.getNo()),
+                    new TriggerTask(
+                            () -> sendMsgService.sendMsg(screen),
+                            new CronTrigger(screen.getCron())
+                    ),
+                    screen.getCron()
+            );
         }
     }
 

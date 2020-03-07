@@ -72,7 +72,7 @@ public class ScanJob {
     /**
      * 轮询数据库中的大屏配置的cron ,保持线程内信息一致
      */
-    //@Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void syncDbScreenCron() {
         try {
             EntityWrapper<Screen> entityWrapper = new EntityWrapper<>();
@@ -179,7 +179,7 @@ public class ScanJob {
                         List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
                         if (vsnPlayList.size() > screen.getPlayPicNum()) {//删除过期资源
 
-                            //todo 此处默认大屏端返回的排序按照时间正序排列,测试的时候需要验证
+                            //大屏返回的vsn列表按照时间正序排列
                             List<VsnPlay> needDelVsnList = vsnPlayList.subList(0, vsnPlayList.size() - screen.getPlayPicNum());
                             needDelVsnList.forEach(vsnPlay -> {
                                 msgService.putDownResource(screen.getUri(), vsnPlay.getName());
@@ -260,6 +260,65 @@ public class ScanJob {
     }
 
     /**
+     * 转换文件名
+     *
+     * @param screenList
+     * @param originFileName
+     * @return
+     */
+    public Resource convertFileName(List<Screen> screenList, FTPFile ftpFile, Resource resource) {
+        String todayStamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
+        String originFileName = ftpFile.getName();
+
+        for (Screen screen : screenList) {
+
+            //根据匹配规则,获取新文件名
+            if (validatePicOfScreen(originFileName,screen.getRegexChar())) {
+
+                //新文件名 大屏编号 + 日期 + 权重
+                String prifixName = screen.getNo() + "_" + todayStamp;
+                String picSuffixName = originFileName.substring(originFileName.lastIndexOf("."), originFileName.length());
+                String newFileName = prifixName + picSuffixName;
+                resource.setNo(screen.getNo());
+                resource.setCreateDate(new Date());
+                resource.setFileName(newFileName);
+                resource.setFilePath(constantConfig.fileCache);
+                resource.setOriginName(originFileName);
+                resource.setVsnName(prifixName + ".vsn");
+                resource.setEnable(Resource.ENABLE);//默认设置可用
+                resource.setDelFlag(Resource.UNDEL);//默认没有删除
+                resource.setType(Resource.TYPE_PIC);//默认设置为违法、路况、停车图类,固定播放张数
+
+                //ftpFile.getTimestamp().getTimeZone().getOffset(0); utc 时间加上时差
+                Date date = new Date(ftpFile.getTimestamp().getTimeInMillis());
+                String ftpResourceDate = DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
+                resource.setResourceDateTime(ftpResourceDate);
+            }
+        }
+        return resource;
+    }
+
+    /**
+     * 判断图片是否符合大屏规则
+     * @param originFileName
+     * @param regexChar
+     * @return
+     */
+    public boolean validatePicOfScreen(String originFileName,String regexChar) {
+        if (StringUtils.isBlank(regexChar)) {
+            return false;
+        }
+        String[] regexArray = regexChar.split(",");
+        for (String regex : regexArray) {
+            if (originFileName.indexOf(regex) != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * 生成图片
      *
      * @throws Exception
@@ -285,45 +344,6 @@ public class ScanJob {
             e.printStackTrace();
         }
 
-    }
-
-    /**
-     * 转换文件名
-     *
-     * @param screenList
-     * @param originFileName
-     * @return
-     */
-    public Resource convertFileName(List<Screen> screenList, FTPFile ftpFile, Resource resource) {
-        String todayStamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
-        String originFileName = ftpFile.getName();
-
-        for (Screen screen : screenList) {
-
-            //根据匹配规则,获取新文件名
-            if (originFileName.indexOf(screen.getRegexChar()) != -1) {
-
-                //新文件名 大屏编号 + 日期 + 权重
-                String prifixName = screen.getNo() + "_" + todayStamp;
-                String picSuffixName = originFileName.substring(originFileName.lastIndexOf("."), originFileName.length());
-                String newFileName = prifixName + picSuffixName;
-                resource.setNo(screen.getNo());
-                resource.setCreateDate(new Date());
-                resource.setFileName(newFileName);
-                resource.setFilePath(constantConfig.fileCache);
-                resource.setOriginName(originFileName);
-                resource.setVsnName(prifixName + ".vsn");
-                resource.setEnable(Resource.ENABLE);//默认设置可用
-                resource.setDelFlag(Resource.UNDEL);//默认没有删除
-                resource.setType(Resource.TYPE_PIC);//默认设置为违法、路况、停车图类,固定播放张数
-
-                //ftpFile.getTimestamp().getTimeZone().getOffset(0); utc 时间加上时差
-                Date date = new Date(ftpFile.getTimestamp().getTimeInMillis());
-                String ftpResourceDate = DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
-                resource.setResourceDateTime(ftpResourceDate);
-            }
-        }
-        return resource;
     }
 
 

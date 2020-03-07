@@ -32,7 +32,7 @@
         <!-- LOGO -->
         <div class="headerbar-left">
             <a th:href="@{/index}" class="logo"><img alt="Logo" th:src="@{/assets/images/logo.png}"/>
-                <span>Admin</span></a>
+                <span><font size="3px">智能交通诱导屏管理系统</font></span></a>
         </div>
 
         <nav class="navbar-custom">
@@ -72,8 +72,8 @@
                         </a>
 -->
                         <!-- item-->
-                        <a href="#" class="dropdown-item notify-item">
-                            <i class="fa fa-power-off"></i> <span>Logout</span>
+                        <a href="#" onclick="logOut()" class="dropdown-item notify-item">
+                            <i class="fa fa-power-off"></i> <span>退出</span>
                         </a>
 
                         <!-- item-->
@@ -109,6 +109,11 @@
                     <li class="submenu">
                         <a class="active" th:href="@{/index}"><i class="fa fa-fw fa-bars"></i>
                             <span> 大屏管理 </span>
+                        </a>
+                    </li>
+                    <li class="submenu">
+                        <a class="" th:href="@{/user/index}"><i class="fa fa-fw fa-tv"></i>
+                            <span> 修改密码 </span>
                         </a>
                     </li>
                 </ul>
@@ -221,7 +226,7 @@
 
     <footer class="footer">
         <span class="float-right">
-            Copyright@<a href="#">山东东锟信息技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            Copyright@<a href="#">山东东锟数字技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
 		</span>
     </footer>
 
@@ -410,12 +415,11 @@
         });
     }
 
-</script>
+    function logOut() {
+        window.location.href = basePath + "/logOut";
+    }
 
-<script>
-
 </script>
-<!-- END Java Script for this page -->
 
 </body>
 </html>

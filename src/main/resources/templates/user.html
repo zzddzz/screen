@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Font Awesome CSS -->
+    <link th:href="@{/assets/font-awesome/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css"/>
+    <!-- BEGIN CSS for this page -->
+    <link th:href="@{/bootstrap/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/bootstrap/jquery.fancybox.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer-dragdropbox-theme.css}" rel="stylesheet"
+          type="text/css"/>
+
+    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css"/>
+    <!-- END CSS for this page -->
+</head>
+<body class="adminbody">
+<div id="main">
+    <!-- top bar navigation -->
+    <div class="headerbar">
+
+        <!-- LOGO -->
+        <div class="headerbar-left">
+            <a th:href="@{/index}" class="logo"><img alt="Logo" th:src="@{/assets/images/logo.png}"/>
+                <span><font size="3px">智能交通诱导屏管理系统</font></span></a>
+        </div>
+
+        <nav class="navbar-custom">
+            <ul class="list-inline float-right mb-0">
+                <li class="list-inline-item dropdown notif">
+                    <a class="nav-link dropdown-toggle arrow-none" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="false" aria-expanded="false">
+                        <i class="fa fa-fw fa-question-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-arrow-success dropdown-lg">
+                        <!-- item-->
+                        <div class="dropdown-item noti-title">
+                            <h5>
+                                <small>Help and Support</small>
+                            </h5>
+                        </div>
+
+                    </div>
+                </li>
+
+                <li class="list-inline-item dropdown notif">
+                    <a class="nav-link dropdown-toggle nav-user" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="false" aria-expanded="false">
+                        <img th:src="@{/assets/images/avatars/admin.png}" alt="Profile image" class="avatar-rounded">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
+                        <!-- item-->
+                        <div class="dropdown-item noti-title">
+                            <h5 class="text-overflow">
+                                <small>Hello, admin</small>
+                            </h5>
+                        </div>
+
+                        <!-- item-->
+                        <a href="#" onclick="logOut()" class="dropdown-item notify-item">
+                            <i class="fa fa-power-off"></i> <span>退出</span>
+                        </a>
+
+                    </div>
+                </li>
+
+            </ul>
+
+            <ul class="list-inline menu-left mb-0">
+                <li class="float-left">
+                    <button class="button-menu-mobile open-left">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </li>
+            </ul>
+
+        </nav>
+
+    </div>
+    <!-- End Navigation -->
+
+
+    <!-- Left Sidebar -->
+    <div class="left main-sidebar">
+
+        <div class="sidebar-inner leftscroll">
+
+            <div id="sidebar-menu">
+                <ul>
+                    <li class="submenu">
+                        <a  th:href="@{/index}"><i class="fa fa-fw fa-bars"></i>
+                            <span> 大屏管理 </span>
+                        </a>
+                    </li>
+                    <li class="submenu">
+                        <a class="active" th:href="@{/user/index}"><i class="fa fa-fw fa-tv"></i>
+                            <span> 修改密码 </span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <!-- End Sidebar -->
+
+    <div class="content-page">
+
+        <!-- Start content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                    </div>
+                </div>
+                <!-- end row -->
+
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/index}">首页</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">修改密码</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="modal-body">
+                                    <form id="customForm" th:action="@{/resource/compPic}" method="post"
+                                          enctype="multipart/form-data">
+                                        <input id="no" name="no" type="hidden" th:value="${no}">
+                                        <div class="form-group row">
+                                            <label for="oldPass" class=" star col-sm-2 col-form-label">原密码</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" name="size" id="oldPass" placeholder="请输入原密码" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="newPass1" class=" star col-sm-2 col-form-label">新密码</label>
+                                            <div class="col-sm-10">
+                                                <input type="password" class="form-control" name="size" id="newPass1" placeholder="请输入新密码" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="newPass2" class=" star col-sm-2 col-form-label">确认密码</label>
+                                            <div class="col-sm-10">
+                                                <input type="password" class="form-control" name="size" id="newPass2" placeholder="确认密码" required/>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" onclick="onModify()" class="btn btn-primary">保存</button>
+                                </div>
+
+                            </div>
+                        </div><!-- end card-->
+                    </div>
+                </div>
+            </div>
+            <!-- END container-fluid -->
+
+            <!-- Modal add -->
+            <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+                 aria-labelledby="customModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- END content -->
+
+    </div>
+    <!-- END content-page -->
+
+    <footer class="footer">
+        <span class="float-right">
+            Copyright@<a href="#">山东东锟数字技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>
+    </footer>
+
+</div>
+<!-- END main -->
+
+<script th:src="@{/assets/js/modernizr.min.js}"></script>
+<script th:src="@{/assets/js/jquery.min.js}"></script>
+<script th:src="@{/assets/js/moment.min.js}"></script>
+
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+
+<script th:src="@{/assets/js/detect.js}"></script>
+<script th:src="@{/assets/js/fastclick.js}"></script>
+<script th:src="@{/assets/js/jquery.blockUI.js}"></script>
+<script th:src="@{/assets/js/jquery.nicescroll.js}"></script>
+
+<!-- App js -->
+<script th:src="@{/assets/js/pikeadmin.js}"></script>
+
+<!-- BEGIN Java Script for this page -->
+<script th:src="@{/bootstrap/Chart.min.js}"></script>
+<script th:src="@{/bootstrap/jquery.dataTables.min.js}"></script>
+<script th:src="@{/bootstrap/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/bootstrap/base.js}"></script>
+<script th:src="@{/bootstrap/bootbox.js}"></script>
+<script th:src="@{/bootstrap/ekko-lightbox.min.js}"></script>
+<script th:src="@{/bootstrap/jquery.fancybox.min.js}"></script>
+
+<script th:src="@{/assets/plugins/jquery.filer/js/jquery.filer.min.js}"></script>
+
+<!-- Counter-Up-->
+<script th:src="@{/assets/plugins/waypoints/lib/jquery.waypoints.min.js}"></script>
+<script th:src="@{/assets/plugins/counterup/jquery.counterup.min.js}"></script>
+
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+
+    //修改密码
+    function onModify() {
+        var form = $("#customForm")[0];
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+
+        var oldPass = $("#oldPass").val();
+        var newPass1 = $("#newPass1").val();
+        var newPass2 = $("#newPass2").val();
+
+        if (newPass1 != newPass2) {
+            bootbox.alert("新密码两次输入不一致");
+            return;
+        }
+        $.post(
+            basePath + "/user/modify",
+            {
+                "oldPass":oldPass,
+                "newPass":newPass1
+            },
+            function (result) {
+                if (result == 'success') {
+                    bootbox.alert("修改成功",function () {
+                        window.location.reload();
+                    });
+                } else if(result == 'oldFail') {
+                    bootbox.alert("原密码错误");
+                } else {
+                    bootbox.alert("修改异常");
+                }
+            }
+        );
+    }
+
+
+
+    function logOut() {
+        window.location.href = basePath + "/logOut";
+    }
+
+</script>
+
+</body>
+</html>

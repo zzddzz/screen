@@ -108,7 +108,7 @@ public class MpHelper {
                 "root",
                 "jdbc:mysql://127.0.0.1:3306/screen?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai",
                 "screen");
-        mh.setIncludeTable(new String []{"resource"});// 需要自动生成的table 列表
+        mh.setIncludeTable(new String []{"user"});// 需要自动生成的table 列表
         mh.execute();
     }
 }

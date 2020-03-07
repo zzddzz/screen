@@ -1,0 +1,105 @@
+html,body{background:#124890; font-family:"宋体"; font-size:12px; height:100%;}
+html{
+	  scrollbar-face-color:#e6e6e6 ;
+	  scrollbar-highlight-color:#ffffff;
+	  scrollbar-3dlight-color:#e6e6e6;
+	  scrollbar-darkshadow-color:#828697;
+	  scrollbar-shadow-color:#e6e6e6;
+	  scrollbar-track-color:#e6e6e6 ;
+	  scrollbar-arrow-color:#39457b;
+	  height:100%;
+	  overflow:auto;
+}
+body{overflow: hidden;}
+.wraper{width:100%;  position:relative;min-width:962px;height:100%;  min-height:600px;width:expression((document.documentElement.clientWidth||document.body.clientWidth)<962?"962px":"");height:expression((document.documentElement.clientHeight||document.body.clientHeight)<600?"600px":"");overflow:hidden;}
+.login-wraper{ width:1015px; height:547px; position:absolute;left:50%; top:50%; margin: -304px 0 0 -507px;}
+.login-logo{  height:50px; margin-bottom:15px; font:bold 30px/45px "微软雅黑"; color:#eff1fa; letter-spacing:3px; vertical-align:middle; }
+.login-logo img {
+    vertical-align: middle;
+}
+.login-logo span{
+	filter:glow(color=#373e59,strength=1); text-shadow:0 1px 1px #373e59;display:inline-block;
+} 
+.login-form{padding:55px 0 0 696px; height:351px;background:url(./banner.png) no-repeat left 0px #fff;}
+.login-form-matrix{padding:55px 0 0 696px; height:351px;background:url(./banner.png) no-repeat left 0px #fff;}
+.form-line{  clear:both; color:#000;}
+.form-label{ float:left;width:65px; text-align:right;height:32px; line-height:32px;}
+.form-input{ float:left;position: relative; width:250px; height:30px; background:#FFF; border:1px solid #C1C6D8;}
+.form-input:hover{ border-color: #8597DD;}
+.form-input .loginNameIcon,.form-input .loginPassIcon {width:20px; height:20px; display:inline-block; float:left; margin:5px 0 0 5px; background:url(./login-icon.png) no-repeat;_background:url(../images/login/login-icon-ie6.png) no-repeat;}
+.form-input .loginPassIcon{background-position:0 -20px;}
+.form-input input.text{ background: transparent; color:#000; border: none; padding:0; line-height:30px; width:225px; height:30px; float:left; text-indent: 8px;}
+.form-input input.login-input{ background: transparent; color:#000; border: none; padding:0; line-height:30px; width:217px;height:30px; padding-left: 8px;float:left;}
+.space-line{ line-height:20px; height:20px; padding-left:60px; clear:both;}
+.error-msg{color:#ff0f0f; text-indent:5px;}
+#loginPassTip{margin-top:-20px;}
+.checkbox-line{ line-height:18px; height:18px; clear:both;vertical-align: middle;}
+.default{position: absolute;left:35px;top:8px;color:#babbbf;display:none;}
+
+.btn_down{width:25px; height:28px; display:inline-block; margin:1px 0; overflow:hidden; float:left;}
+.btn_down:hover{ background-position: -25px 0;}
+.btn_down:active{ background-position: -50px 0;}
+
+.checkbox{width:18px; height:18px; display:inline-block; overflow:hidden; margin-right:4px; vertical-align:middle;blr: expression(this.onFocus = this.blur ());}
+.checkbox:hover{ background-position:-18px 0;}
+.checked,.checked:hover{ background-position:-36px 0;}
+a.checkbox:focus {outline: none;}
+
+.buttons{ height:35px; margin-top: 5px;}
+.login-button,.cert-button{ background:#5baa21; width:115px; height:35px; text-align:center; line-height:35px; color:#FFF; font-size:14px; font-weight:bold; overflow:hidden;display:inline-block;blr: expression(this.onFocus = this.blur ());}
+.login-button{ background:#2a6cc4; margin-right:20px;}
+.login-button:hover{ background:#2457b3;}
+.login-button:active{ background-position: -230px 0;}
+a.login-button:focus,a.cert-button:focus {outline: none;}
+.disabled .login-button{ background-position:-345px 0;}
+.cert-button{ background-position: 0 -35px;}
+.cert-button:hover{ background:#439414;}
+.cert-button:active{ background-position: -230px -35px;}
+.disabled .cert-button{ background-position: -345px -35px;}
+
+.download-link{ color: #4c5d9e; margin:0 8px;}
+.download-link:hover{ text-decoration:underline;}
+
+.float-left{ float:left;}
+.pl {padding-left:34px;}
+.margin-top{ margin:20px 0 0 -34px; padding-left:34px; border-top:1px solid #e3e3e3;}
+.download-area{ position:relative; padding-top:18px; z-index:9999;}
+.ico_more{ width:100px; height:25px; overflow:hidden;margin-left: 6px;color:#4c5d9e;}
+.ico_more:hover{ background-position:-100px 0;}
+.btn_layer{ background: #deeaf7; border: 1px solid #616C94; padding: 10px 20px 10px 10px; position: absolute; left:188px; top:-2px; display: none; z-index: 9999;}
+.layer-tl,.layer-tr,.layer-bl,.layer-br,.layer-pointer{position: absolute; overflow: hidden;}
+.layer-tl{ background-position: 0 0; width:3px;height:3px; left:-1px; top:-1px;}
+.layer-tr{ background-position: -4px 0; width:3px;height:3px; top:-1px; right:-1px;}
+.layer-bl{ background-position: 0 -15px; width:3px;height:3px; left:-1px; bottom:-1px;}
+.layer-br{ background-position: -4px -15px; width:3px;height:3px; bottom:-1px; right:-1px;}
+.layer-pointer{ background-position: -8px 0; width:9px;height:17px; left:-9px;top:28px; margin-top: -8px;}
+
+.toolcss{ color: #4c5d9e; display: block; height:24px; line-height: 24px; white-space: nowrap;}
+.toolcss:hover{ text-decoration: underline;}
+
+.person-layer{ background:#81a5d7; right:70px; position: absolute;border:2px solid #013780; border-top:none; padding:5px;}
+.person-layer-tl,.person-layer-tr,.person-layer-bl,.person-layer-br{  position: absolute; overflow: hidden;}
+.person-layer-tl{ background-position: 0 0; width:10px;height:10px; left:-5px; top:0px;}
+.person-layer-tr{ background-position: -10px 0; width:10px;height:10px; top:0; right:-5px; }
+.person-layer-bl{ background-position: 0 -10px; width:10px;height:10px; left:-5px; bottom:-5px;}
+.person-layer-br{ background-position: -10px -10px; width:10px;height:10px; bottom:-5px; right:-5px;}
+
+.person-info{ float:left; width:160px; line-height:24px;}
+.person-info p{line-height:24px; text-overflow:ellipsis; white-space: nowrap; overflow: hidden;}
+.title{ color:#323250; font-weight:bold; text-align:center; width: 140px; padding-top: 11px;}
+
+.ico-arrow{ width:22px; height:22px; position:absolute; top:10px; top:7px\9; right:5px;}
+.ico-arrow:hover{ background-position:-22px 0;}
+.ico-arrow:active{ background-position:-44px 0;}
+.down{ background-position: 0 -22px;}
+.down:hover{ background-position:-22px -22px;}
+.down:active{ background-position:-44px -22px;}
+
+.person-area{width:800px;  margin:10px 0 5px 0;  margin:5px 0 5px 0\0;height:48px; display:none;}
+
+.help-area{ height:18px; width:120px; line-height:18px;  padding-left:25px; margin:10px 0 5px 25px; margin:5px 0 5px 25px\0; vertical-align:middle;}
+
+.copyright{color: #AEB4CA; text-align:center; position:absolute;bottom:20px;width:962px; left:50%; margin-left:-481px;}
+.w-f{width:240px;}
+.top-link{position: absolute;right:20px;top:20px;}
+.login-link{ color:#aeb4ca;}

@@ -33,7 +33,7 @@
         <!-- LOGO -->
         <div class="headerbar-left">
             <a th:href="@{/index}" class="logo"><img alt="Logo" th:src="@{/assets/images/logo.png}"/>
-                <span>Admin</span></a>
+                <span><font size="3px">智能交通诱导屏管理系统</font></span></a>
         </div>
 
         <nav class="navbar-custom">
@@ -73,8 +73,8 @@
                         </a>
 -->
                         <!-- item-->
-                        <a href="#" class="dropdown-item notify-item">
-                            <i class="fa fa-power-off"></i> <span>Logout</span>
+                        <a href="#" onclick="logOut()" class="dropdown-item notify-item">
+                            <i class="fa fa-power-off"></i> <span>退出</span>
                         </a>
 
                         <!-- item-->
@@ -110,6 +110,11 @@
                     <li class="submenu">
                         <a class="active" th:href="@{/index}"><i class="fa fa-fw fa-bars"></i>
                             <span> 大屏管理 </span>
+                        </a>
+                    </li>
+                    <li class="submenu">
+                        <a class="" th:href="@{/user/index}"><i class="fa fa-fw fa-tv"></i>
+                            <span> 修改密码 </span>
                         </a>
                     </li>
                 </ul>
@@ -263,20 +268,20 @@
             </div>
             <!-- END container-fluid -->
             <div id="fb">
+            </div>
+            <!-- END content -->
+
         </div>
-        <!-- END content -->
+        <!-- END content-page -->
+
+        <footer class="footer">
+        <span class="float-right">
+            Copyright@<a href="#">山东东锟数字技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>
+        </footer>
 
     </div>
-    <!-- END content-page -->
-
-    <footer class="footer">
-        <span class="float-right">
-            Copyright@<a href="#">山东东锟信息技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
-		</span>
-    </footer>
-
-</div>
-<!-- END main -->
+    <!-- END main -->
 
     <script th:src="@{/assets/js/modernizr.min.js}"></script>
     <script th:src="@{/assets/js/jquery.min.js}"></script>
@@ -308,149 +313,154 @@
     <script th:src="@{/assets/plugins/waypoints/lib/jquery.waypoints.min.js}"></script>
     <script th:src="@{/assets/plugins/counterup/jquery.counterup.min.js}"></script>
 
-<script th:inline="javascript">
+    <script th:inline="javascript">
 
-    bootbox.setDefaults("locale", "zh_CN");
+        bootbox.setDefaults("locale", "zh_CN");
 
-    /*<![CDATA[*/
-    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+        /*<![CDATA[*/
+        var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
-    var dataTable;
-    $(document).ready(function () {
-        dataTable = $('#tb_1').DataTable({
-            language: _language,
-            ajax: basePath + "/screen/page",
-            serverSide: true,
-            pagination: true,
-            iDisplayLength: 5,
-            ordering: false,
-            bLengthChange: false,
-            bFilter: false,
-            columns: [
-                {"data": "no"},
-                {"data": "name"},
-                {"data": "uri"},
-                {"data": "descInfo"},
-                {"data": "cron"},
-                {"data": "playPicNum"},
-                {"data": "regexChar"},
-                {
-                    "data": "enable",
-                    render: function (data) {
-                        return data == '0' ? "<font color='red'>停播</font>" : "<font color='green'>正常</font>";
-                    }
-                },
-                {
-                    "data": null,
-                    "render": function (data, type, row) {
-                        /*+ "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                        + " href='" + row.id + "' >图片</a>"
-                        + "<a type='button' hidden data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                        + " href='" + row.id + "' >图片</a>"*/
-                        var rtnStr =
-                            "<button type='button' onclick='onDelete(" + row.no + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
-                            + "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>编辑</button>&nbsp;&nbsp;"
-                            + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>详细信息</button>";
-                        return rtnStr;
-                    }
-
-                }
-            ]
-        });
-
-        // counter-up
-        $('.counter').counterUp({
-            delay: 10,
-            time: 600
-        });
-
-    });
-
-    //加载大屏资源
-    function loadResource(no) {
-        window.location.href = basePath + "/resource/index?no=" + no;
-    }
-
-    function loadAdd() {
-        $("#customForm")[0].reset();
-        $("#customModal").modal('show');
-        $("#customForm")[0].classList.remove('was-validated');//初始不校验
-    }
-    
-    function loadPlayPic() {
-        $('#fb').append('<a name="la" href="./11.png"><img src="./11.png"/></a>');
-        $('#fb').append('<a name="la" href="./22.png"><img src="./22.png"/></a>');
-        $('#fb a').fancybox({
-            'titlePosition' : 'inside'
-        }).open($("#fb a"));
-    }
-
-    function loadEdit(no) {
-        $.post(
-            basePath + "/screen/queryById",
-            {"no": no},
-            function (response) {
-                $("#no").val(response.no);
-                $("#name").val(response.name);
-                $("#enable").val(response.enable);
-                $("#descInfo").val(response.descInfo);
-                $("#uri").val(response.uri);
-                $("#regexChar").val(response.regexChar);
-                $("#playPicNum").val(response.playPicNum);
-                $("#cron").val(response.cron);
-                $("#customModal").modal('show');
-            }
-        );
-    }
-
-    function onEdit() {
-        var form = $("#customForm")[0];
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
-
-        $.post(
-            basePath + "/screen/resave",
-            {
-                "no": $("#no").val(),
-                "name": $("#name").val(),
-                "enable": $("#enable").val(),
-                "descInfo": $("#descInfo").val(),
-                "uri": $("#uri").val(),
-                "regexChar": $("#regexChar").val(),
-                "playPicNum": $("#playPicNum").val(),
-                "cron": $("#cron").val()
-            },
-            function (response) {
-                if (response == 'success') {
-                    window.location.reload();
-                }
-
-            }
-        );
-    }
-
-    function onDelete(no) {
-        bootbox.confirm("确认删除?", function (result) {
-            if (result) {
-                $.post(
-                    basePath + "/screen/delete",
-                    {"no": no},
-                    function (response) {
-                        if (response == 'success') {
-                            window.location.reload();
-                        } else {
-                            bootbox.alert("删除异常");
+        var dataTable;
+        $(document).ready(function () {
+            dataTable = $('#tb_1').DataTable({
+                language: _language,
+                ajax: basePath + "/screen/page",
+                serverSide: true,
+                pagination: true,
+                iDisplayLength: 5,
+                ordering: false,
+                bLengthChange: false,
+                bFilter: false,
+                columns: [
+                    {"data": "no"},
+                    {"data": "name"},
+                    {"data": "uri"},
+                    {"data": "descInfo"},
+                    {"data": "cron"},
+                    {"data": "playPicNum"},
+                    {"data": "regexChar"},
+                    {
+                        "data": "enable",
+                        render: function (data) {
+                            return data == '0' ? "<font color='red'>停播</font>" : "<font color='green'>正常</font>";
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            /*+ "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                            + " href='" + row.id + "' >图片</a>"
+                            + "<a type='button' hidden data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                            + " href='" + row.id + "' >图片</a>"*/
+                            var rtnStr =
+                                "<button type='button' onclick='onDelete(" + row.no + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>编辑</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>详细信息</button>";
+                            return rtnStr;
                         }
 
                     }
-                );
-            }
+                ]
+            });
+
+            // counter-up
+            $('.counter').counterUp({
+                delay: 10,
+                time: 600
+            });
+
         });
 
-    }
-</script>
+        //加载大屏资源
+        function loadResource(no) {
+            window.location.href = basePath + "/resource/index?no=" + no;
+        }
 
+        function loadAdd() {
+            $("#customForm")[0].reset();
+            $("#customModal").modal('show');
+            $("#customForm")[0].classList.remove('was-validated');//初始不校验
+        }
+
+        function loadPlayPic() {
+            $('#fb').append('<a name="la" href="./11.png"><img src="./11.png"/></a>');
+            $('#fb').append('<a name="la" href="./22.png"><img src="./22.png"/></a>');
+            $('#fb a').fancybox({
+                'titlePosition': 'inside'
+            }).open($("#fb a"));
+        }
+
+        function loadEdit(no) {
+            $.post(
+                basePath + "/screen/queryById",
+                {"no": no},
+                function (response) {
+                    $("#no").val(response.no);
+                    $("#name").val(response.name);
+                    $("#enable").val(response.enable);
+                    $("#descInfo").val(response.descInfo);
+                    $("#uri").val(response.uri);
+                    $("#regexChar").val(response.regexChar);
+                    $("#playPicNum").val(response.playPicNum);
+                    $("#cron").val(response.cron);
+                    $("#customModal").modal('show');
+                }
+            );
+        }
+
+        function onEdit() {
+            var form = $("#customForm")[0];
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            $.post(
+                basePath + "/screen/resave",
+                {
+                    "no": $("#no").val(),
+                    "name": $("#name").val(),
+                    "enable": $("#enable").val(),
+                    "descInfo": $("#descInfo").val(),
+                    "uri": $("#uri").val(),
+                    "regexChar": $("#regexChar").val(),
+                    "playPicNum": $("#playPicNum").val(),
+                    "cron": $("#cron").val()
+                },
+                function (response) {
+                    if (response == 'success') {
+                        window.location.reload();
+                    }
+
+                }
+            );
+        }
+
+        function onDelete(no) {
+            bootbox.confirm("确认删除?", function (result) {
+                if (result) {
+                    $.post(
+                        basePath + "/screen/delete",
+                        {"no": no},
+                        function (response) {
+                            if (response == 'success') {
+                                window.location.reload();
+                            } else {
+                                bootbox.alert("删除异常");
+                            }
+
+                        }
+                    );
+                }
+            });
+
+        }
+        
+        function logOut() {
+            window.location.href = basePath + "/logOut";
+        }
+    </script>
+    
+</div>
 </body>
 </html>
