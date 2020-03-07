@@ -263,7 +263,7 @@
                     <br/> <br/>
                     <div>
                         <div style="text-align: left;padding-top: 10px;margin-top: 10px;">
-                            <span id="validateInfo"></span>
+                            <span id="validateInfo">&nbsp;&nbsp;</span>
                         </div>
                     </div>
                     <div class="space-line"><input type="checkbox" name="isSave" value="true" id="isSave"
@@ -331,6 +331,7 @@
         if (!name || !pass) {
             $("#validateInfo").html("<font color='red'>用户名/密码不为空</font>");
             $("#validateInfo").show();
+            return
         } else {
             $("#validateInfo").hide();
         }
@@ -356,6 +357,7 @@
     function resetInfo() {
         $("#loginName").val('');
         $("#loginPass").val('');
+        $("#validateInfo").hide();
     }
 
 </script>
