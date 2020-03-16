@@ -1,6 +1,6 @@
 package com.east.sword.screen.service;
 
-import com.east.sword.screen.entity.User;
+import com.east.sword.screen.entity.SysRole;
 import com.baomidou.mybatisplus.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.service.IService;
  * </p>
  *
  * @author ZZD
- * @since 2020-03-07
+ * @since 2020-03-16
  */
-public interface IUserService extends IService<User> {
+public interface ISysRoleService extends IService<SysRole> {
 
 }

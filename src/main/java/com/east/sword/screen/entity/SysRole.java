@@ -1,6 +1,7 @@
 package com.east.sword.screen.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
 
 /**
@@ -9,15 +10,16 @@ import java.io.Serializable;
  * </p>
  *
  * @author ZZD
- * @since 2020-03-07
+ * @since 2020-03-16
  */
-public class User extends Model<User> {
+@TableName("sys_role")
+public class SysRole extends Model<SysRole> {
 
     private static final long serialVersionUID = 1L;
 
     private Integer id;
     private String name;
-    private String password;
+    private String describeInfo;
 
 
     public Integer getId() {
@@ -36,12 +38,12 @@ public class User extends Model<User> {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getDescribeInfo() {
+        return describeInfo;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setDescribeInfo(String describeInfo) {
+        this.describeInfo = describeInfo;
     }
 
     @Override
@@ -51,10 +53,10 @@ public class User extends Model<User> {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "SysRole{" +
         ", id=" + id +
         ", name=" + name +
-        ", password=" + password +
+        ", describeInfo=" + describeInfo +
         "}";
     }
 }

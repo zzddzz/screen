@@ -116,6 +116,11 @@ public class MsgServiceImpl implements IMsgService {
         return vsnPlayList;
     }
 
+    /**
+     * 下架资源
+     * @param uri
+     * @param vsnName
+     */
     @Override
     public void putDownResource(String uri, String vsnName) {
         String delUrl = kltRoute.delRountPath(uri, vsnName);
@@ -128,6 +133,11 @@ public class MsgServiceImpl implements IMsgService {
         resourceService.update(resource,entityWrapper);
     }
 
+    /**
+     * 删除资源
+     * @param uri
+     * @param vsnName
+     */
     @Override
     public void delResource(String uri, String vsnName) {
         String delUrl = kltRoute.delRountPath(uri, vsnName);
@@ -141,10 +151,26 @@ public class MsgServiceImpl implements IMsgService {
         resourceService.update(resource,entityWrapper);
     }
 
+    /**
+     * 上架资源
+     * @param uri
+     * @param resource
+     */
     @Override
     public void putResource(String uri, Resource resource) {
         String uploadUrl = kltRoute.uploadRountPath(uri,resource.getVsnName());
         httpClient.httpPostMedia(uploadUrl, resource);
+    }
+
+    /**
+     * 查询资源状态
+     * @param uri
+     */
+    public int searchStatus(String uri) {
+        String searchStatus = kltRoute.powerStatusPath(uri);
+        String result = httpClient.httpGet(searchStatus);
+        JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
+        return jsonObject.get("powerstatus").getAsInt();
     }
 }
 

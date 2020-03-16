@@ -2,9 +2,9 @@ package com.east.sword.screen.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Screen;
-import com.east.sword.screen.entity.User;
+import com.east.sword.screen.entity.SysUser;
 import com.east.sword.screen.service.IScreenService;
-import com.east.sword.screen.service.IUserService;
+import com.east.sword.screen.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +27,7 @@ public class IndexController extends BaseController {
     private IScreenService screenService;
 
     @Autowired
-    private IUserService userService;
+    private ISysUserService userService;
 
     @GetMapping("/")
     public String login() {
@@ -41,8 +41,8 @@ public class IndexController extends BaseController {
         entityWrapper.eq("name",name);
         entityWrapper.eq("password",password);
 
-        List<User> users = userService.selectList(entityWrapper);
-        if (null != users && users.size() > 0 ) {
+        List<SysUser> sysUsers = userService.selectList(entityWrapper);
+        if (null != sysUsers && sysUsers.size() > 0 ) {
             httpSession.setAttribute("isLogin","yes");
             return SUCCESS;
         } else {
