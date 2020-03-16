@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.Date;
  * @author ZZD
  * @since 2020-03-16
  */
+@Data
 @TableName("screen_ftp")
 public class ScreenFtp extends Model<ScreenFtp> {
 
@@ -28,38 +30,6 @@ public class ScreenFtp extends Model<ScreenFtp> {
     private Date begTime;
     private Date endTime;
 
-
-    public Integer getScreenId() {
-        return screenId;
-    }
-
-    public void setScreenId(Integer screenId) {
-        this.screenId = screenId;
-    }
-
-    public Integer getFtpId() {
-        return ftpId;
-    }
-
-    public void setFtpId(Integer ftpId) {
-        this.ftpId = ftpId;
-    }
-
-    public Date getBegTime() {
-        return begTime;
-    }
-
-    public void setBegTime(Date begTime) {
-        this.begTime = begTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
 
     @Override
     protected Serializable pkVal() {

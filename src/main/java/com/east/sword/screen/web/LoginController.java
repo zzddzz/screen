@@ -2,9 +2,14 @@ package com.east.sword.screen.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Screen;
-import com.east.sword.screen.entity.SysUser;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.service.ISysUserService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,8 +25,9 @@ import java.util.List;
  * @CreateDate 23:05 2020/2/21.
  * @Author ZZD
  */
+@Slf4j
 @Controller
-public class IndexController extends BaseController {
+public class LoginController extends BaseController {
 
     @Autowired
     private IScreenService screenService;
@@ -37,17 +43,25 @@ public class IndexController extends BaseController {
     @ResponseBody
     @PostMapping("/login")
     public String validateLogin(String name, String password, HttpSession httpSession) {
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("name",name);
-        entityWrapper.eq("password",password);
 
-        List<SysUser> sysUsers = userService.selectList(entityWrapper);
-        if (null != sysUsers && sysUsers.size() > 0 ) {
-            httpSession.setAttribute("isLogin","yes");
-            return SUCCESS;
-        } else {
+        //添加用户认证信息
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(
+                name,password);
+        try {
+            //进行验证，这里可以捕获异常，然后返回对应信息
+            subject.login(usernamePasswordToken);
+//            subject.checkRole("admin");
+//            subject.checkPermissions("query", "add");
+        } catch (AuthenticationException e) {
+            log.error("账号密码错误",e);
+            return FAIL;
+        } catch (AuthorizationException e) {
+            log.error("没有权限",e);
             return FAIL;
         }
+        return SUCCESS;
+
     }
 
     @GetMapping("logOut")

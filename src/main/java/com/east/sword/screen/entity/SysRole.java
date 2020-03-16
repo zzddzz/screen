@@ -1,7 +1,10 @@
 package com.east.sword.screen.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -12,6 +15,7 @@ import java.io.Serializable;
  * @author ZZD
  * @since 2020-03-16
  */
+@Data
 @TableName("sys_role")
 public class SysRole extends Model<SysRole> {
 
@@ -19,32 +23,9 @@ public class SysRole extends Model<SysRole> {
 
     private Integer id;
     private String name;
+
+    @TableField("describeInfo")
     private String describeInfo;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescribeInfo() {
-        return describeInfo;
-    }
-
-    public void setDescribeInfo(String describeInfo) {
-        this.describeInfo = describeInfo;
-    }
 
     @Override
     protected Serializable pkVal() {

@@ -1,7 +1,9 @@
 package com.east.sword.screen.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -13,6 +15,7 @@ import java.io.Serializable;
  * @author ZZD
  * @since 2020-03-07
  */
+@Data
 @TableName("sys_user")
 public class SysUser extends Model<SysUser> {
 
@@ -22,30 +25,11 @@ public class SysUser extends Model<SysUser> {
     private String name;
     private String password;
 
+    @TableField("role_id")
+    private Integer roleId;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @TableField(exist = false)
+    private SysRole sysRole;
 
     @Override
     protected Serializable pkVal() {
