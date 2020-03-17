@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="common/header :: header(~{},~{},~{})">
+</head>
+<body class="adminbody">
+<div id="main">
+    <!-- top bar navigation -->
+    <div class="headerbar" th:replace="common/topbar :: topbar(~{})"></div>
+    <!-- End Navigation -->
+
+    <!-- Left Sidebar -->
+    <div class="left main-sidebar">
+        <div class="sidebar-inner leftscroll">
+            <div id="sidebar-menu">
+                <ul th:each="menu,stat:${menus}" th:switch="${menu.subMenu.size() > 0}">
+                    <li class="submenu">
+                        <a onclick="menuClick(this)" th:classappend="${stat.index == 2 ? 'active' : '' }"
+                           href="javascript:void(0);">
+                            <i th:class="${menu.icon}"></i>
+                            <span th:text="${menu.name}"> </span>
+                            <span th:classappend="${menu.subMenu.size() > 0 ? 'menu-arrow' : ''}"></span>
+                        </a>
+                        <ul class="list-unstyled" th:case="true">
+                            <li class="subItem" th:each="secondMenu,statSub:${menu.subMenu}">
+                                <a name="subItem" onclick="menuClick(this)" href="javascript:void(0);"
+                                   th:text="${secondMenu.name}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <!-- End Sidebar -->
+
+    <iframe id="mainiframe" width="100%" height="600" th:src="@{/screen/index}" frameborder="0" scrolling="auto"></iframe>
+
+    <div th:replace="common/foot :: foot"></div>
+    <!-- END main -->
+    <div th:replace="common/commjs :: comm"></div>
+
+    <script th:inline="javascript">
+
+        function menuClick(obj) {
+            var subItem = $(obj).attr('name');
+            var nextEle = $(obj).next();
+            if (nextEle.attr('class') == 'list-unstyled') {
+                $(".list-unstyled").hide();
+                if (!nextEle.attr('style') || nextEle.attr('style') == 'display: none;') {
+                    $('ul a').each(function () {
+                        $(this).attr('class', '');
+                    });
+                    $(obj).addClass('active');
+                }
+
+            } else if (subItem == 'subItem') {
+                $(obj).addClass('active');
+            } else {
+                $('ul a').each(function () {
+                    $(this).attr('class', '');
+                });
+                $(".list-unstyled").hide();
+                $(obj).addClass('active');
+            }
+            return false;
+        }
+
+        function changeFrameHeight() {
+            var ifm = document.getElementById("mainiframe");
+            ifm.height = document.documentElement.clientHeight - 56;
+        }
+
+        window.onresize = function () {
+            changeFrameHeight();
+        };
+
+        $(function () {
+            changeFrameHeight();
+        });
+
+
+    </script>
+</div>
+</body>
+
+</html>

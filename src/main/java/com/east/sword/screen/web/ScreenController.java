@@ -15,6 +15,7 @@ import com.east.sword.screen.web.dto.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -49,6 +50,11 @@ public class ScreenController extends BaseController<Screen> {
     @Autowired
     private HttpClient httpClient;
 
+    @GetMapping("/index")
+    public String loadScreenIndex() {
+        return "screen";
+    }
+
     @ResponseBody
     @RequestMapping("/list")
     public List<Screen> screenList() {
@@ -68,16 +74,6 @@ public class ScreenController extends BaseController<Screen> {
         try {
             Map data = new TreeMap();
             Page<Screen> page = screenService.selectPage(pageHelper.getPage());
-
-            /*page.getRecords().forEach(screen -> {
-                EntityWrapper entityWrapper = new EntityWrapper();
-                entityWrapper.eq("enable", Resource.ENABLE);
-                entityWrapper.eq("delFlag", Resource.UNDEL);
-                List<Resource> playResourceList = resourceService.selectList(entityWrapper);
-                List<Integer> playResourceIdList = playResourceList.stream().map(Resource::getId).collect(Collectors.toList());
-                screen.setResourceIdList(playResourceIdList);
-            });*/
-
             data.put("data", page.getRecords());
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());

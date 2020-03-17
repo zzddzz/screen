@@ -2,4 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.east.sword.screen.mapper.SysMenuMapper">
 
+    <select id="selectList" resultType="com.east.sword.screen.entity.SysMenu">
+        SELECT
+        t1.id,
+        t1.parent_id AS parentId,
+        t1.name,
+        t1.url,
+        t1.icon
+        from sys_menu t1 INNER JOIN sys_role_menu t2
+        on t1.id = t2.menu_id where t2.role_id = #{roleId}
+    </select>
 </mapper>

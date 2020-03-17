@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -27,6 +28,9 @@ public class SysMenu extends Model<SysMenu> {
     private String name;
     private String url;
     private String icon;
+
+    @TableField(exist = false)
+    private List<SysMenu> subMenu;
 
 
     @Override

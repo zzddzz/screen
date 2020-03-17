@@ -1,7 +1,9 @@
 package com.east.sword.screen.service;
 
-import com.east.sword.screen.entity.SysMenu;
 import com.baomidou.mybatisplus.service.IService;
+import com.east.sword.screen.entity.SysMenu;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.service.IService;
  */
 public interface ISysMenuService extends IService<SysMenu> {
 
+    List<SysMenu> selectList(int roleId);
 }

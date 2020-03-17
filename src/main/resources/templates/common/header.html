@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header(title,links,styles)">
+    <meta charset="UTF-8">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Font Awesome CSS -->
+    <link th:href="@{/assets/font-awesome/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet" type="text/css"/>
+    <!-- BEGIN CSS for this page -->
+    <link th:href="@{/bootstrap/dataTables.bootstrap4.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/bootstrap/jquery.fancybox.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/plugins/jquery.filer/js/jquery.filer-dragdropbox-theme.css}" rel="stylesheet"
+          type="text/css"/>
+
+    <link th:href="@{/bootstrap/base.css}" rel="stylesheet" type="text/css"/>
+    <!-- END CSS for this page -->
+
+    <title th:replace="${title}">智能交通诱导屏管理系统</title>
+</head>
+</html>

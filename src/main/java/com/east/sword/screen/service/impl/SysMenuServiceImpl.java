@@ -6,6 +6,8 @@ import com.east.sword.screen.service.ISysMenuService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -17,4 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements ISysMenuService {
 
+    @Override
+    public List<SysMenu> selectList(int roleId) {
+        return baseMapper.selectList(roleId);
+    }
 }

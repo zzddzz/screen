@@ -2,6 +2,7 @@ package com.east.sword.screen.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Screen;
+import com.east.sword.screen.entity.SysUser;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +80,9 @@ public class LoginController extends BaseController {
         model.addAttribute("total",screenList.size());
         model.addAttribute("enable",enableNum);
         model.addAttribute("unable",unable);
-        return "screen";
+
+        SysUser sysUser = (SysUser) SecurityUtils.getSubject().getPrincipal();
+        model.addAttribute("menus",sysUser.getSysRole().getSysMenus());
+        return "index";
     }
 }

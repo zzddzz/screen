@@ -1,7 +1,10 @@
 package com.east.sword.screen.mapper;
 
-import com.east.sword.screen.entity.SysMenu;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.east.sword.screen.entity.SysMenu;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
+    List<SysMenu> selectList(@Param("roleId") int roleId);
 }

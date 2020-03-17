@@ -103,7 +103,7 @@ $( document ).ready(function() {
       });
 
       //RUN RESIZE ITEMS
-      $(window).resize(debounce(resizeitems,100));
+      //$(window).resize(debounce(resizeitems,100));
       $("body").trigger("resize");
 
       // right side-bar toggle

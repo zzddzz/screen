@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -26,6 +27,9 @@ public class SysRole extends Model<SysRole> {
 
     @TableField("describeInfo")
     private String describeInfo;
+
+    @TableField(exist = false)
+    private List<SysMenu> sysMenus;
 
     @Override
     protected Serializable pkVal() {
