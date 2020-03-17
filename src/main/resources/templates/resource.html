@@ -5,37 +5,20 @@
 <body class="adminbody">
 <div id="main">
 
-    <!-- top bar navigation -->
-    <div class="headerbar" th:replace="common/headerbar :: headerbar(~{})">
-    </div>
-    <!-- End Navigation -->
-
-    <!-- Left Sidebar -->
-    <div class="left main-sidebar" th:replace="common/left :: left()">
-    </div>
-    <!-- End Sidebar -->
-
     <div class="content-page">
 
         <!-- Start content -->
         <div class="content">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-xl-12">
-                    </div>
-                </div>
                 <!-- end row -->
-
-
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/index}">首页</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">大屏资源管理</li>
-                    </ol>
-                </nav>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <br/>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                            </div>
+                        </div>
                         <div class="card mb-3">
                             <div class="card-body">
                                 <table id="tb_1" class="table table-responsive-xl table-hover display">
@@ -114,31 +97,22 @@
 
     </div>
     <!-- END content-page -->
-
-    <footer class="footer">
-        <span class="float-right">
-            Copyright@<a href="#">山东东锟数字技术有限公司</a>&nbsp;&nbsp;&nbsp;&nbsp;
-		</span>
-    </footer>
-
 </div>
 <!-- END main -->
 
+<div  th:replace="common/commjs :: comm"></div>
 <script th:inline="javascript">
 
     /*<![CDATA[*/
-    // language=ThymeleafExpressions
     var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
     bootbox.setDefaults("locale", "zh_CN");
 
-    var no = $("#no").val();
     $(document).ready(function () {
         $('#tb_1').DataTable({
             language: _language,
             ajax: {
                 url: basePath + "/resource/page",
-                data: {"no": no},
                 type: "POST",
                 async: false
             },
@@ -156,7 +130,7 @@
                 {
                     "data": "type",
                     render: function (data) {
-                        return data == 'font' ? "<font " + " color='#daa520'>合成</font>" : "<font " + " color='green'>FTP图</font>";
+                        return data == 'font' ? "<font " + " color='#daa520'>插播</font>" : "<font " + " color='green'>FTP图</font>";
                     }
                 },
                 {
@@ -273,10 +247,6 @@
                 );
             }
         });
-    }
-
-    function logOut() {
-        window.location.href = basePath + "/logOut";
     }
 
 </script>

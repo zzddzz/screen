@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="common/header :: header(~{},~{},~{})">
+</head>
+<body class="adminbody">
+<div id="main">
+    <!-- top bar navigation -->
+    <div class="headerbar" th:replace="common/topbar :: topbar(~{})"></div>
+    <!-- End Navigation -->
+
+
+    <!-- Left Sidebar -->
+    <div class="left main-sidebar">
+
+        <div class="sidebar-inner leftscroll">
+
+            <div id="sidebar-menu">
+
+                <ul>
+
+                    <li class="submenu">
+                        <a href="index.html"><i class="fa fa-fw fa-bars"></i><span> Dashboard </span> </a>
+                    </li>
+
+                    <li class="submenu">
+                        <a href="charts.html"><i class="fa fa-fw fa-area-chart"></i><span> Charts </span> </a>
+                    </li>
+
+                    <li class="submenu">
+                        <a href="#"><i class="fa fa-fw fa-table"></i> <span> Tables </span> <span class="menu-arrow"></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="tables-basic.html">Basic Tables</a></li>
+                            <li><a href="tables-datatable.html">Data Tables</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="submenu">
+                        <a href="#" class="active"><i class="fa fa-fw fa-file-text-o"></i> <span> sdfForms </span> <span class="menu-arrow"></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="forms-general.html">General Elements</a></li>
+                            <li class="active"><a href="forms-select2.html">Select2</a></li>
+                            <li><a href="forms-validation.html">Form Validation</a></li>
+                            <li><a href="forms-text-editor.html">Text Editors</a></li>
+                            <li><a href="forms-upload.html">Multiple File Upload</a></li>
+                            <li><a href="forms-datetime-picker.html">Date and Time Picker</a></li>
+                            <li><a href="forms-color-picker.html">Color Picker</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <div class="clearfix"></div>
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+    <!-- End Sidebar -->
+
+    <div class="content-page">
+
+        <!-- Start content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                    </div>
+                </div>
+                <!-- end row -->
+
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/index}">首页</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">修改密码</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="modal-body">
+                                    <form id="customForm" th:action="@{/resource/compPic}" method="post"
+                                          enctype="multipart/form-data">
+                                        <input id="no" name="no" type="hidden" th:value="${no}">
+                                        <div class="form-group row">
+                                            <label for="oldPass" class=" star col-sm-2 col-form-label">原密码</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" name="size" id="oldPass" placeholder="请输入原密码" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="newPass1" class=" star col-sm-2 col-form-label">新密码</label>
+                                            <div class="col-sm-10">
+                                                <input type="password" class="form-control" name="size" id="newPass1" placeholder="请输入新密码" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="newPass2" class=" star col-sm-2 col-form-label">确认密码</label>
+                                            <div class="col-sm-10">
+                                                <input type="password" class="form-control" name="size" id="newPass2" placeholder="确认密码" required/>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onclick="onModify()" class="btn btn-primary">保存</button>
+                                </div>
+
+                            </div>
+                        </div><!-- end card-->
+                    </div>
+                </div>
+            </div>
+            <!-- END container-fluid -->
+
+            <!-- Modal add -->
+            <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+                 aria-labelledby="customModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- END content -->
+
+    </div>
+    <!-- END content-page -->
+
+    <div  th:replace="common/foot :: foot"></div>
+
+</div>
+<!-- END main -->
+
+
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+
+    //修改密码
+    function onModify() {
+        var form = $("#customForm")[0];
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+
+        var oldPass = $("#oldPass").val();
+        var newPass1 = $("#newPass1").val();
+        var newPass2 = $("#newPass2").val();
+
+        if (newPass1 != newPass2) {
+            bootbox.alert("新密码两次输入不一致");
+            return;
+        }
+        $.post(
+            basePath + "/user/modify",
+            {
+                "oldPass":oldPass,
+                "newPass":newPass1
+            },
+            function (result) {
+                if (result == 'success') {
+                    bootbox.alert("修改成功",function () {
+                        window.location.reload();
+                    });
+                } else if(result == 'oldFail') {
+                    bootbox.alert("原密码错误");
+                } else {
+                    bootbox.alert("修改异常");
+                }
+            }
+        );
+    }
+
+
+
+    function logOut() {
+        window.location.href = basePath + "/logOut";
+    }
+
+</script>
+
+</body>
+</html>

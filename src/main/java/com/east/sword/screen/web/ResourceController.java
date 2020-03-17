@@ -10,9 +10,7 @@ import com.east.sword.screen.job.msg.IMsgService;
 import com.east.sword.screen.service.IResourceService;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.FileUtil;
-import com.east.sword.screen.util.HttpClient;
 import com.east.sword.screen.util.WaterMarkUtils;
-import com.east.sword.screen.vo.KltRoute;
 import com.east.sword.screen.vo.VsnJson;
 import com.east.sword.screen.web.dto.PageHelper;
 import com.google.gson.Gson;
@@ -53,19 +51,11 @@ public class ResourceController extends BaseController {
 
     private static Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 
-    private static final String BUSINESS_FULL = "full";
-
     @Autowired
     private IResourceService resourceService;
 
     @Autowired
     private IScreenService screenService;
-
-    @Autowired
-    private KltRoute kltRoute;
-
-    @Autowired
-    private HttpClient httpClient;
 
     @Autowired
     private ConstantConfig constantConfig;
@@ -87,14 +77,13 @@ public class ResourceController extends BaseController {
 
     @ResponseBody
     @RequestMapping("/page")
-    public Map screenPageList(PageHelper<Resource> pageHelper, String no) {
+    public Map screenPageList(PageHelper<Resource> pageHelper) {
         try {
             Map data = new TreeMap();
             EntityWrapper entityWrapper = new EntityWrapper();
-            entityWrapper.eq("no", no);
+            entityWrapper.eq("type", Resource.TYPE_FONT);
             entityWrapper.eq("delFlag", Resource.UNDEL);
             entityWrapper.orderBy("resourceDateTime", false);
-            //entityWrapper.orderBy("enable",false);
             Page<Resource> page = resourceService.selectPage(pageHelper.getPage(), entityWrapper);
             data.put("data", page.getRecords());
             data.put("recordsTotal", page.getTotal());
