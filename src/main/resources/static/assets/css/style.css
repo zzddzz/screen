@@ -410,7 +410,7 @@ body.adminbody .main-sidebar.left {
     margin-top: 2px; }
   #sidebar-menu .subdrop {
     color: #fff !important; 
-	background-color: #414d58; 
+	/*background-color: #414d58; */
 	border-left: 2px solid #608ab3; }
 	
   #sidebar-menu .submenu ul .submenu .menu-arrow {

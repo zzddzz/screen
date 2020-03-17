@@ -14,8 +14,8 @@
             <div id="sidebar-menu">
                 <ul th:each="menu,stat:${menus}" th:switch="${menu.subMenu.size() > 0}">
                     <li class="submenu">
-                        <a onclick="menuClick(this)" th:classappend="${stat.index == 2 ? 'active' : '' }"
-                           href="javascript:void(0);">
+                        <a name="subMenu" onclick="menuClick(this)" th:classappend="${stat.index == 0 ? 'active' : '' }"
+                           href="javascript:void(0);" th:load="${menu.url}">
                             <i th:class="${menu.icon}"></i>
                             <span th:text="${menu.name}"> </span>
                             <span th:classappend="${menu.subMenu.size() > 0 ? 'menu-arrow' : ''}"></span>
@@ -23,7 +23,7 @@
                         <ul class="list-unstyled" th:case="true">
                             <li class="subItem" th:each="secondMenu,statSub:${menu.subMenu}">
                                 <a name="subItem" onclick="menuClick(this)" href="javascript:void(0);"
-                                   th:text="${secondMenu.name}"></a>
+                                   th:text="${secondMenu.name}" th:load="${secondMenu.url}"></a>
                             </li>
                         </ul>
                     </li>
@@ -49,28 +49,33 @@
             if (nextEle.attr('class') == 'list-unstyled') {
                 $(".list-unstyled").hide();
                 if (!nextEle.attr('style') || nextEle.attr('style') == 'display: none;') {
-                    $('ul a').each(function () {
+                    $('#sidebar-menu ul a').each(function () {
                         $(this).attr('class', '');
                     });
                     $(obj).addClass('active');
                 }
 
             } else if (subItem == 'subItem') {
-                $(obj).addClass('active');
+                $(obj).attr('class','');
             } else {
-                $('ul a').each(function () {
+                $('#sidebar-menu ul a').each(function () {
                     $(this).attr('class', '');
                 });
                 $(".list-unstyled").hide();
                 $(obj).addClass('active');
             }
+
+            var loadUrl = $(obj).attr('load');
+            if (loadUrl) {
+                $('#mainiframe').attr('src',loadUrl);
+            }
             return false;
-        }
+        };
 
         function changeFrameHeight() {
             var ifm = document.getElementById("mainiframe");
             ifm.height = document.documentElement.clientHeight - 56;
-        }
+        };
 
         window.onresize = function () {
             changeFrameHeight();

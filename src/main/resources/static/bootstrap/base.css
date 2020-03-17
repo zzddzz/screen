@@ -1,4 +1,8 @@
-.star:after{
+.star:after {
     content: ' *';
     color: red;
+}
+
+.modal.fade {
+    top: 80px;
 }
