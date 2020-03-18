@@ -1,4 +1,4 @@
-package com.east.sword.screen.job.msg;
+package com.east.sword.screen.msg;
 
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
@@ -26,7 +26,7 @@ public interface IMsgService {
     List<VsnPlay> getRemoteScreenPlayList(Screen screen);
 
     /**
-     * 上架资源信息
+     * 下架资源信息
      * @param uri
      * @param vsnName
      */

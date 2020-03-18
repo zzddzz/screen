@@ -1,4 +1,4 @@
-package com.east.sword.screen.util;
+package com.east.sword.screen.util.http;
 
 import com.east.sword.screen.entity.Resource;
 import lombok.extern.slf4j.Slf4j;

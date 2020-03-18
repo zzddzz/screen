@@ -1,4 +1,4 @@
-package com.east.sword.screen.config.socket;
+package com.east.sword.screen.util.socket;
 
 import java.util.concurrent.ConcurrentHashMap;
 

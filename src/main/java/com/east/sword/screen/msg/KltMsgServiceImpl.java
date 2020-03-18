@@ -1,10 +1,10 @@
-package com.east.sword.screen.job.msg;
+package com.east.sword.screen.msg;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
 import com.east.sword.screen.service.IResourceService;
-import com.east.sword.screen.util.HttpClient;
+import com.east.sword.screen.util.http.HttpClient;
 import com.east.sword.screen.vo.KltRoute;
 import com.east.sword.screen.vo.VsnPlay;
 import com.google.gson.*;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class MsgServiceImpl implements IMsgService {
+public class KltMsgServiceImpl implements IMsgService {
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 

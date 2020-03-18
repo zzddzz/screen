@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.east.sword.screen.config.ConstantConfig;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
-import com.east.sword.screen.job.msg.IMsgService;
+import com.east.sword.screen.msg.IMsgService;
 import com.east.sword.screen.service.IResourceService;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.FileUtil;

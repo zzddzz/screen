@@ -2,7 +2,7 @@ package com.east.sword.screen.config;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Screen;
-import com.east.sword.screen.job.msg.IMsgService;
+import com.east.sword.screen.msg.IMsgService;
 import com.east.sword.screen.service.IScreenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
