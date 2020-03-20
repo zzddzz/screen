@@ -27,17 +27,16 @@
                                         <td colspan="9" class="text-left">
                                             <a href="#" onclick="loadAdd()" data-toggle="modal"
                                                class="submitBtn btn btn-info btn-sm inline">
-                                                <i class="fa fa-check-circle-o"></i> 自定义(口号类)
+                                                <i class="fa fa-check-circle-o"></i> 新增
                                             </a>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>编号</th>
                                         <th>用户名</th>
-                                        <th>密码</th>
-                                        <th>角色</th>
-                                        <th>状态</th>
-                                        <th>操作</th>
+                                        <th>创建时间</th>
+                                        <th>所属角色</th>
+                                        <th width="160">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -56,35 +55,39 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
+                            <h5 class="modal-title" id="exampleModalLabel2">新增用户</h5>
                         </div>
                         <div class="modal-body">
                             <form id="customForm" th:action="@{/resource/compPic}" method="post"
                                   enctype="multipart/form-data">
                                 <input id="no" name="no" type="hidden" th:value="${no}">
                                 <div class="form-group row">
-                                    <label for="backPic" class="star col-sm-2 col-form-label">背景图</label>
+                                    <label for="name" class="star col-sm-2 col-form-label">用户名</label>
                                     <div class="col-sm-10">
-                                        <input type="file" name="backGround" id="backPic" multiple="multiple" required/>
+                                        <input class="form-control" name="size" id="name" required/>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="descInfo" class=" star col-sm-2 col-form-label">字体大小</label>
+                                    <label for="pass" class=" star col-sm-2 col-form-label">密码</label>
                                     <div class="col-sm-10">
-                                        <input class="form-control" name="size" id="size" placeholder="90" required/>
+                                        <input class="form-control" name="size" id="pass" required/>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="descInfo" class=" star col-sm-2 col-form-label">描述</label>
+                                    <label for="role" class=" star col-sm-2 col-form-label">所属角色</label>
                                     <div class="col-sm-10">
-                                        <textarea class="form-control" name="content" id="descInfo" required></textarea>
+                                        <select id="role" class="form-control" name="roleId">
+                                            <option value="">请选择</option>
+                                            <option th:each="role:${roles}" th:value="${role.id}"
+                                                    th:text="${role.name}"></option>
+                                        </select>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                            <button type="button" onclick="onAdd()" class="btn btn-primary">保存</button>
+                            <button type="button" onclick="onEdit()" class="btn btn-primary">保存</button>
                         </div>
                     </div>
                 </div>
@@ -98,7 +101,7 @@
 </div>
 <!-- END main -->
 
-<div  th:replace="common/commjs :: comm"></div>
+<div th:replace="common/commjs :: comm"></div>
 <script th:inline="javascript">
 
     /*<![CDATA[*/
@@ -122,27 +125,22 @@
             columns: [
                 {"data": "id"},
                 {"data": "name"},
-                {"data": "password"},
-                {"data": "roleId"},
+                {"data": "createDate"},
+                {"data": "roleName"},
                 {
                     "data": null,
                     "render":
                         function (data, type, row) {
-                            var tip = '';
-                            var showpicUrl = basePath + "/resource/showPic?id=";
                             var rtn =
-                                "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
+                                "<button type='button' onclick='onEdit(" + row.id + ")' class='btn btn-outline-primary btn-sm'>修改</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
-                                + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                                + " href='" + showpicUrl + row.id + "' >图片</a>";
-
                             return rtn
                         }
 
                 }
             ],
-            "paging":true, //打开分页设置
-            "iDisplayLength":5,
+            "paging": true, //打开分页设置
+            "iDisplayLength": 5,
         })
         ;
 
@@ -164,21 +162,28 @@
     });
 
 
-    //更改状态
-    function onEdit(id, enable) {
-        var tip = enable == '0' ? "确认播放图片?" : "确认禁止播放?";
+    //修改、保存用户
+    function onEdit(id) {
+        var tip = id ? "确认保存?" : "确认修改?";
+        var id = id;
+        var name = $("#name").val();
+        var pass = $("#pass").val();
+        var roleId = $("#role").val();
         bootbox.confirm(tip, function (result) {
             if (result) {
                 $.post(
-                    basePath + "/resource/change",
-                    {"resourceId": id, "enable": enable == '0' ? '1' : '0'},
+                    basePath + "/user/resave",
+                    {
+                        "id": id,
+                        "name": name,
+                        "password": pass,
+                        "roleId": roleId
+                    },
                     function (response) {
-                        if (response != 'success' && response != 'fail') {
-                            bootbox.alert('大屏最多播放' + response + "张图片！");
-                        } else if (response == 'success') {
-                            window.location.reload();
+                        if(response == 'success') {
+
                         } else {
-                            bootbox.alert("变更异常");
+
                         }
 
                     }
@@ -187,7 +192,7 @@
         });
     }
 
-    //自定义口号
+    //添加用户
     function loadAdd() {
         $("#customForm")[0].reset();
         $("#customModal").modal('show');
@@ -197,7 +202,7 @@
 
     }
 
-    //删除资源
+    //删除用户
     function onDel(id) {
         bootbox.confirm('确认删除?', function (result) {
             if (result) {

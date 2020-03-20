@@ -3,17 +3,20 @@ package com.east.sword.screen.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.east.sword.screen.entity.Resource;
+import com.east.sword.screen.entity.SysRole;
 import com.east.sword.screen.entity.SysUser;
+import com.east.sword.screen.service.ISysRoleService;
 import com.east.sword.screen.service.ISysUserService;
 import com.east.sword.screen.web.dto.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,8 +36,13 @@ public class SysUserController extends BaseController{
     @Autowired
     private ISysUserService userService;
 
+    @Autowired
+    private ISysRoleService roleService;
+
     @GetMapping("index")
-    public String loadIndex(){
+    public String loadIndex(Model model){
+        List<SysRole> roles = roleService.selectList(null);
+        model.addAttribute("roles",roles);
         return "user";
     }
 
@@ -43,15 +51,30 @@ public class SysUserController extends BaseController{
     public Map screenPageList(PageHelper<SysUser> pageHelper) {
         try {
             Map data = new TreeMap();
-            EntityWrapper entityWrapper = new EntityWrapper();
-            Page<Resource> page = userService.selectPage(pageHelper.getPage(), entityWrapper);
-            data.put("data", page.getRecords());
+            Page<SysUser> page = pageHelper.getPage();
+            List<SysUser> records = userService.selectUserPage(page);
+            data.put("data", records);
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
             return data;
         } catch (Exception e) {
             log.error("usre list error:{}", e);
             return null;
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("resave")
+    public String resave(SysUser sysUser) {
+        try {
+            if (sysUser.getId() == null) {
+                userService.insert(sysUser);
+            } else {
+                userService.updateById(sysUser);
+            }
+            return SUCCESS;
+        } catch (Exception e) {
+            return FAIL;
         }
     }
 

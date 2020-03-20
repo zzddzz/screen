@@ -3,9 +3,11 @@ package com.east.sword.screen.entity;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -29,7 +31,14 @@ public class SysUser extends Model<SysUser> {
     private Integer roleId;
 
     @TableField(exist = false)
+    private String roleName;
+
+    @TableField(exist = false)
     private SysRole sysRole;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField("create_date")
+    private Date createDate;
 
     @Override
     protected Serializable pkVal() {

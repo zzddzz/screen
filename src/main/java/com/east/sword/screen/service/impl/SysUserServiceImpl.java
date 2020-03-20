@@ -1,6 +1,7 @@
 package com.east.sword.screen.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.east.sword.screen.entity.SysMenu;
 import com.east.sword.screen.entity.SysRole;
@@ -64,5 +65,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return sysUser;
         }
         return null;
+    }
+
+    @Override
+    public List<SysUser> selectUserPage(Page page) {
+        return baseMapper.selectUserPage(page);
     }
 }

@@ -1,7 +1,11 @@
 package com.east.sword.screen.service;
 
-import com.east.sword.screen.entity.SysUser;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.east.sword.screen.entity.SysUser;
+
+import java.util.List;
+
 
 /**
  * <p>
@@ -14,4 +18,6 @@ import com.baomidou.mybatisplus.service.IService;
 public interface ISysUserService extends IService<SysUser> {
 
     SysUser getUserByName(String name);
+
+    List<SysUser> selectUserPage(Page page);
 }
