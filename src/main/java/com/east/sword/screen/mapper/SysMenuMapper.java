@@ -16,5 +16,5 @@ import java.util.List;
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<SysMenu> selectList(@Param("roleId") int roleId);
+    List<SysMenu> selectListByRole(@Param("roleId") int roleId);
 }

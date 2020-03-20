@@ -6,6 +6,7 @@ import com.east.sword.screen.msg.IMsgService;
 import com.east.sword.screen.service.IScreenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.SchedulingException;
 import org.springframework.scheduling.TaskScheduler;
@@ -39,6 +40,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
     @Autowired
     private IScreenService screenService;
 
+    @Qualifier("kltMsgService")
     @Autowired
     private IMsgService sendMsgService;
 

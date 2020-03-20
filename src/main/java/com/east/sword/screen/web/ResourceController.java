@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -60,6 +61,7 @@ public class ResourceController extends BaseController {
     @Autowired
     private ConstantConfig constantConfig;
 
+    @Qualifier("kltMsgService")
     @Autowired
     private IMsgService msgService;
 

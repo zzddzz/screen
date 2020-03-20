@@ -14,7 +14,7 @@ import java.util.List;
  * @Author ZZD
  */
 @Slf4j
-@Service
+@Service("jxMsgService")
 public class JxMsgServiceImpl implements IMsgService {
 
     @Override

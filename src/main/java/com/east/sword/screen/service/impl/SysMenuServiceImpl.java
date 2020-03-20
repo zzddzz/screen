@@ -21,6 +21,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<SysMenu> selectList(int roleId) {
-        return baseMapper.selectList(roleId);
+        return baseMapper.selectListByRole(roleId);
     }
 }

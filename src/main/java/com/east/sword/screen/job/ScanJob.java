@@ -9,8 +9,8 @@ import com.east.sword.screen.msg.IMsgService;
 import com.east.sword.screen.service.IResourceService;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.FileUtil;
-import com.east.sword.screen.util.http.HttpClient;
 import com.east.sword.screen.util.ftp.FTPUtils;
+import com.east.sword.screen.util.http.HttpClient;
 import com.east.sword.screen.vo.KltRoute;
 import com.east.sword.screen.vo.VsnJson;
 import com.east.sword.screen.vo.VsnPlay;
@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
@@ -66,7 +67,8 @@ public class ScanJob {
     @Autowired
     private IResourceService resourceService;
 
-    @Autowired
+    @Qualifier("kltMsgService")
+    @Autowired()
     private IMsgService msgService;
 
     /**

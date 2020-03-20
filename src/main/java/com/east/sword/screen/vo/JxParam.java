@@ -1,9 +1,7 @@
 package com.east.sword.screen.vo;
 
-import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 金晓命令格式
@@ -11,112 +9,9 @@ import java.util.Arrays;
  * @CreateDate 10:52 2020/3/18.
  * @Author ZZD
  */
-@Data
+@Slf4j
 public class JxParam {
 
-    /**
-     * 取当前故障
-     */
-    private static final String JX_ERROR = "01";
-
-    /**
-     * 上传文件
-     */
-    private static final String JX_UPLOAD = "10";
-
-    /**
-     * 下载文件
-     */
-    private static final String JX_DOWNLOAD = "09";
-
-    /**
-     * 显示预置播放列表内容
-     */
-    private static final String JX_ACTIVE_PLAY = "98";
-
-    /**
-     * 取当前显示内容
-     */
-    private static final String JX_GET_PLAY = "97";
-
-    /**
-     * 设置亮度方式/调节亮度
-     */
-    private static final String JX_ACTIVE_LIGHT = "03";
-
-    /**
-     * 取亮度方式/显示亮度
-     */
-    private static final String JX_GET_LIGHT = "98";
-
-
-    /**
-     * 帧头
-     */
-    private static final String frameHeader = "0x02";
-
-    /**
-     * 地址
-     */
-    private static final String frameAddress = "0x000x00";
-
-    /**
-     * 帧类型(指令)
-     * 取当前故障           (01 0x30 0x31)
-     * 上传文件             (10 0x31 0x30)
-     * 下载文件             (09 0x30 0x39)
-     * 显示预置播放列表       (98 0x39 0x38)
-     * 取当前显示内容         (97 0x39 0x37)
-     * 设置亮度方式/调节亮度   (03 0x30 0x33)
-     * 取亮度方式/显示亮度     (06 0x30 0x36)
-     */
-    private static String frameType[] = {"01", "0x300x31", "10", "0x310x30", "09", "0x300x39", "98", "0x390x38",
-            "97", "0x390x37", "03", "0x300x33", "06", "0x300x36"};
-
-    /**
-     * 帧数据
-     */
-    private String frameData;
-
-    /**
-     * 帧校验
-     */
-    private String frameCrc;
-
-    /**
-     * 帧尾
-     */
-    private static final String frameBar = "0x03";
-
-
-    /**
-     * 获取请求命令
-     *
-     * @param orderType
-     * @return
-     */
-    public static String getJxRequest(String orderType, String data) {
-        int orderPos = Arrays.asList(frameType).indexOf(orderType);
-        String typeOrder = frameType[orderPos + 1];
-
-        int frameCrc = getCrc(frameAddress, typeOrder, data);
-        return StringUtils.join(frameHeader, frameAddress, typeOrder, data, frameCrc, frameBar);
-    }
-
-    /**
-     * 获取加密CRC 帧校验
-     *
-     * @param frameAddress
-     * @param orderType
-     * @param data
-     */
-    public static int getCrc(String frameAddress, String typeOrder, String data) {
-        String finalStr = StringUtils.join(frameAddress, typeOrder, data);
-        byte[] dataFrame = finalStr.getBytes();
-        int crc = calCRC(dataFrame);
-        return crc;
-
-    }
 
     static int[] fcstab = {
             0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -154,83 +49,63 @@ public class JxParam {
     };
 
 
-    public static int calCRC(byte[] dataFrame) {
-        int fcs = 0xffff;
-        for (int i = 0, j = dataFrame.length; i < j; i++) {
-            fcs = ((fcs >> 8) ^ fcstab[(fcs ^ dataFrame[i]) & 0xff]);
+    public static char calCRC(byte[] data_arr) {
+        char crc16 = 0;
+        int i;
+        int data_len = data_arr.length;
+        for (i = 0; i < (data_len); i++) {
+            crc16 = (char) ((crc16 >> 8) | (crc16 << 8));
+            crc16 ^= data_arr[i] & 0xFF;
+            crc16 ^= (char) ((crc16 & 0xFF) >> 4);
+            crc16 ^= (char) ((crc16 << 8) << 4);
+            crc16 ^= (char) (((crc16 & 0xFF) << 4) << 1);
         }
-        return fcs;
+        return crc16;
+    }
+
+    public static int getCRC(byte[] src) {
+        int CRC = 0xFFFF;
+        int num = 0xA001;
+        int inum = 0;
+        for(int j = 0; j < src.length; j ++) {
+            inum = src[j];
+            CRC = (CRC >> 8) & 0x00FF;
+            CRC ^= inum;
+            for(int k = 0; k < 8; k++) {
+                int flag = CRC % 2;
+                CRC = CRC >> 1;
+
+                if(flag == 1) {
+                    CRC = CRC ^ num;
+                }
+            }
+        }
+        return CRC;
     }
 
     public static void main(String[] args) {
-
-        String frameHeader = "0x02";//帧头
         String frameAddress = "0x000x00";//默认地址
         String frameType = "0x390x37";//取当前显示内容命令
 
         //获取CRC
-        String crcStr = StringUtils.join(frameAddress, frameType, null);
-        byte[] dataFrame = crcStr.getBytes();
-        int crc = calCRC(dataFrame);
+        byte[] aa = {0x00, 0x00, 0x30, 0x36};
+
+        //byte[] aa = {0x7E,0x00,0x05,0x60,0x31,0x32,0x33};
+
+        int crc = calCRC(aa);
 
         System.out.println(crc);
-        String finalSendStr = StringUtils.join(frameHeader, frameAddress, frameType, null, crc, frameBar);
-        System.out.println(finalSendStr);
-    }
 
+        //System.out.println(getCRC(aa));
+        System.out.println(crc/256);
+        System.out.println(crc%256);
 
-    /**
-     * 帧数据,帧校验 字符特殊处理
-     *
-     * @param src
-     * @return
-     */
-    public String specialEncode(String src) {
-        src = src.replaceAll("0x1B", "0x1B0x00");
-        src = src.replaceAll("0x02", "0x1B0xE7");
-        src = src.replaceAll("0x03", "0x1B0xE8");
-        return src;
-    }
+        System.out.println("高字节" + Integer.toHexString(crc/256));
+        System.out.println("低字节" + Integer.toHexString(crc%256));
 
-    /**
-     * 帧数据解码处理
-     *
-     * @param src
-     * @return
-     */
-    public String specialDecode(String src) {
-        src = src.replaceAll("0x1B0x00", "0x1B");
-        src = src.replaceAll("0x1B0xE7", "0x02");
-        src = src.replaceAll("0x1B0xE8", "0x03");
-        return src;
-    }
-
-    /**
-     * 字符串转16进制
-     *
-     * @param s
-     * @return
-     */
-    public static String strTo16(String s) {
-        String str = "";
-        for (int i = 0; i < s.length(); i++) {
-            int ch = (int) s.charAt(i);
-            String s4 = "0x" + Integer.toHexString(ch);
-            str = str + s4;
-        }
-        return str;
-    }
-
-    /**
-     * 16进制转2进制数据
-     *
-     * @param str
-     * @return
-     */
-    public static String strToByteFrom16(String str) {
-        byte res = (byte) Integer.parseInt(str, 16);
-        String code = Integer.toBinaryString((res & 0xFF) + 0x100);
-        return code;
+        int big = (crc & 0xFF00) >> 8;
+        int little = crc & 0xFF;
+        System.out.println("big" + big + "litter" + little);
     }
 
 

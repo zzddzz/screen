@@ -25,7 +25,7 @@ import java.util.List;
  * @Author ZZD
  */
 @Slf4j
-@Service
+@Service("kltMsgService")
 public class KltMsgServiceImpl implements IMsgService {
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
