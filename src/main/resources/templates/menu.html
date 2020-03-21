@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="common/header :: header(~{},~{},~{})">
+</head>
+<body class="adminbody">
+<div id="main">
+
+    <div class="content-page">
+
+        <!-- Start content -->
+        <div class="content">
+            <div class="container-fluid">
+                <!-- end row -->
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <br/>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <table id="tb_1" class="table table-responsive-xl table-hover display">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>上级ID</th>
+                                        <th>名称</th>
+                                        <th>url</th>
+                                        <th>icon</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+                            </div>
+                        </div><!-- end card-->
+                    </div>
+                </div>
+            </div>
+            <!-- END container-fluid -->
+
+        </div>
+        <!-- END content -->
+
+    </div>
+    <!-- END content-page -->
+</div>
+<!-- END main -->
+
+<div th:replace="common/commjs :: comm"></div>
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+
+    bootbox.setDefaults("locale", "zh_CN");
+
+    $(document).ready(function () {
+        $('#tb_1').DataTable({
+            language: _language,
+            ajax: {
+                url: basePath + "/menu/page",
+                type: "POST",
+                async: false
+            },
+            serverSide: true,
+            pagination: true,
+            ordering: false,
+            bLengthChange: false,
+            bFilter: false,
+            columns: [
+                {"data": "id"},
+                {"data": "parentId"},
+                {"data": "name"},
+                {"data": "url"},
+                {"data": "icon"}
+            ],
+            "paging": true, //打开分页设置
+            "iDisplayLength": 5,
+        })
+        ;
+
+        // counter-up
+        $('.counter').counterUp({
+            delay: 10,
+            time: 600
+        });
+
+        $('#backPic').filer({
+            limit: 1,
+            maxSize: 10,
+            extensions: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP'],
+            changeInput: true,
+            showThumbs: true,
+            addMore: false
+        });
+
+    });
+
+</script>
+
+</body>
+</html>
