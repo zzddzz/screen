@@ -10,4 +10,25 @@
         SELECT count(1) FROM resource WHERE originName = #{originName}
         AND resourceDateTime = #{resourceDateTime}
     </select>
+
+    <select id="selectResourcePage" resultType="com.east.sword.screen.entity.Resource">
+        SELECT t1.*,t2.name AS noName FROM resource t1 INNER  JOIN screen t2 ON t1.no = t2.no
+        WHERE 1 = 1
+        <if test="fileName != null and fileName != ''">
+          AND t1.originName LIKE concat('%',#{fileName},'%')
+        </if>
+        <if test="noName != null and noName != ''">
+            AND t2.name LIKE concat('%',#{noName},'%')
+        </if>
+        <if test="begDate != null and begDate != ''">
+            AND t1.resourceDateTime &gt;= #{begDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND t1.resourceDateTime &lt;= #{endDate}
+        </if>
+        <if test="srcType != null and srcType != ''">
+          AND t1.srcType = #{srcType}
+        </if>
+        ORDER BY enable DESC
+    </select>
 </mapper>

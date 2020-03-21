@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -77,17 +78,24 @@ public class ResourceController extends BaseController {
         return "resource";
     }
 
+    /**
+     * 插播管理
+     * @param model
+     * @return
+     */
+    @GetMapping("/inter-index")
+    public String loadInterIndex(Model model) {
+        return "inter";
+    }
+
     @ResponseBody
     @RequestMapping("/page")
-    public Map screenPageList(PageHelper<Resource> pageHelper) {
+    public Map screenPageList(PageHelper<Resource> pageHelper,Resource resource ) {
         try {
             Map data = new TreeMap();
-            EntityWrapper entityWrapper = new EntityWrapper();
-            entityWrapper.eq("type", Resource.TYPE_FONT);
-            entityWrapper.eq("delFlag", Resource.UNDEL);
-            entityWrapper.orderBy("resourceDateTime", false);
-            Page<Resource> page = resourceService.selectPage(pageHelper.getPage(), entityWrapper);
-            data.put("data", page.getRecords());
+            Page page = pageHelper.getPage();
+            List<Resource>  records = resourceService.selectResourcePage(page,resource);
+            data.put("data", records);
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
             return data;

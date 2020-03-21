@@ -16,21 +16,37 @@
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <br/>
                         <div class="card mb-3">
-                            <div class="card-body">
+                            <div class="card-header">
+                                <div class="row">
+                                    <label class="col-form-label">原始文件名</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="search_name"  class="form-control">
+                                    </div>
+                                    <label class="col-form-label">&nbsp;&nbsp;开始时间</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="search_beg" class="form-control lay" placeholder="FTP开始日期" >
+                                    </div>
+                                    <label class="col-form-label">&nbsp;&nbsp;结束时间</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="search_end" class="form-control lay" placeholder="FTP结束日期" >
+                                    </div>
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm" onclick="onSearch()">
+                                            <i class="fa fa-search" aria-hidden="true"></i> 查询
+                                        </button>
+                                    </div>&nbsp;&nbsp;
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm"
+                                                onclick="history.back()">
+                                            <i class="fa fa-reply" aria-hidden="true"></i> 返回
+                                        </button>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-                        <div class="card mb-3">
                             <div class="card-body">
                                 <table id="tb_1" class="table table-responsive-xl table-hover display">
                                     <thead>
-                                    <tr>
-                                        <td colspan="9" class="text-left">
-                                            <a href="#" onclick="loadAdd()" data-toggle="modal"
-                                               class="submitBtn btn btn-info btn-sm inline">
-                                                <i class="fa fa-check-circle-o"></i> 自定义(口号类)
-                                            </a>
-                                        </td>
-                                    </tr>
                                     <tr>
                                         <th>编号</th>
                                         <th>原始文件</th>
@@ -51,47 +67,6 @@
                 </div>
             </div>
             <!-- END container-fluid -->
-
-            <!-- Modal add -->
-            <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
-                 aria-labelledby="customModal" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
-                        </div>
-                        <div class="modal-body">
-                            <form id="customForm" th:action="@{/resource/compPic}" method="post"
-                                  enctype="multipart/form-data">
-                                <input id="no" name="no" type="hidden" th:value="${no}">
-                                <div class="form-group row">
-                                    <label for="backPic" class="star col-sm-2 col-form-label">背景图</label>
-                                    <div class="col-sm-10">
-                                        <input type="file" name="backGround" id="backPic" multiple="multiple" required/>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="descInfo" class=" star col-sm-2 col-form-label">字体大小</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" name="size" id="size" placeholder="90" required/>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="descInfo" class=" star col-sm-2 col-form-label">描述</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="content" id="descInfo" required></textarea>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                            <button type="button" onclick="onAdd()" class="btn btn-primary">保存</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
         <!-- END content -->
 
@@ -100,16 +75,24 @@
 </div>
 <!-- END main -->
 
-<div  th:replace="common/commjs :: comm"></div>
+<div th:replace="common/commjs :: comm"></div>
 <script th:inline="javascript">
 
     /*<![CDATA[*/
     var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
+    laydate.render({
+        elem: '#search_beg' //指定元素
+    });
+    laydate.render({
+        elem: '#search_end' //指定元素
+    });
+
     bootbox.setDefaults("locale", "zh_CN");
 
+    var table;
     $(document).ready(function () {
-        $('#tb_1').DataTable({
+        table = $('#tb_1').DataTable({
             language: _language,
             ajax: {
                 url: basePath + "/resource/page",
@@ -151,21 +134,21 @@
                             if (row.enable == '0') {
                                 tip = '播放';
                             } else {
-                                tip = '禁止';
+                                tip = '停播';
                             }
                             var rtn =
                                 "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
                                 + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                                + " href='" + showpicUrl + row.id + "' >图片</a>";
+                                + " href='" + showpicUrl + row.id + "' >预览</a>";
 
                             return rtn
                         }
 
                 }
             ],
-            "paging":true, //打开分页设置
-            "iDisplayLength":5,
+            "paging": true, //打开分页设置
+            "iDisplayLength": 5,
         })
         ;
 
@@ -175,25 +158,20 @@
             time: 600
         });
 
-        $('#backPic').filer({
-            limit: 1,
-            maxSize: 10,
-            extensions: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP'],
-            changeInput: true,
-            showThumbs: true,
-            addMore: false
-        });
-
     });
 
     //新增合成图
-    function onAdd() {
-        var form = $("#customForm")[0];
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
-        $("#customForm").submit();
+    function onSearch() {
+        var fileName = $("#search_name").val();
+        var begDate = $("#search_beg").val();
+        var endDate = $("#search_end").val();
+        table.settings()[0].ajax.data = {
+            "fileName":fileName,
+            "begDate":begDate,
+            "endDate":endDate
+        };
+        table.ajax.reload();
+
     }
 
     //更改状态
@@ -217,16 +195,6 @@
                 );
             }
         });
-    }
-
-    //自定义口号
-    function loadAdd() {
-        $("#customForm")[0].reset();
-        $("#customModal").modal('show');
-        $("#customForm")[0].classList.remove('was-validated');//初始不校验
-
-        $('#backPic').trigger("filer.reset")
-
     }
 
     //删除资源

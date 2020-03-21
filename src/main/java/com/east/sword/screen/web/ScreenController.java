@@ -69,12 +69,6 @@ public class ScreenController extends BaseController<Screen> {
         return "play";
     }
 
-    @GetMapping("/inter-index")
-    public String loadInterIndex(Model model) {
-
-        return "inter";
-    }
-
     @ResponseBody
     @RequestMapping("/list")
     public List<Screen> screenList() {

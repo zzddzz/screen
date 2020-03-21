@@ -14,10 +14,6 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <br/>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <!-- end row -->
@@ -25,16 +21,45 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <div class="card mb-3">
+                            <div class="card-header">
+                                <div class="row">
+                                    <label class="col-form-label">大屏名称</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control">
+                                    </div>
+                                    <label class="col-form-label">状态</label>
+                                    <div class="col-sm-2">
+                                        <select class="form-control" required>
+                                            <option value="">请选择</option>
+                                            <option value="1">正常</option>
+                                            <option value="0">停播</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal_add_slide">
+                                            <i class="fa fa-search" aria-hidden="true"></i> 查询
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- end card-header -->
+
                             <div class="card-body">
+                                <div style="margin-left: 15px;">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModal">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> 新增插播
+                                    </button>
+                                </div>
                                 <table id="tb_1" class="table table-responsive-sm table-hover display">
                                     <thead>
                                     <tr>
                                         <th>编号</th>
-                                        <th>大屏名称</th>
-                                        <th>播放间隔</th>
-                                        <th>播放数量</th>
-                                        <th>亮度</th>
-                                        <th>取图方式</th>
+                                        <th>文件名</th>
+                                        <th>文件类型</th>
+                                        <th>创建时间</th>
+                                        <th>所属大屏</th>
+                                        <th>内容</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -48,72 +73,41 @@
                 </div>
 
                 <!-- Modal add -->
+                <!-- Modal add -->
                 <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
                      aria-labelledby="customModal" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel2">大屏信息</h5>
+                                <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
                             </div>
                             <div class="modal-body">
-                                <form id="customForm">
-                                    <input type="hidden" class="form-control" id="no" value="" required>
+                                <form id="customForm" th:action="@{/resource/compPic}" method="post"
+                                      enctype="multipart/form-data">
+                                    <input id="no" name="no" type="hidden" th:value="${no}">
                                     <div class="form-group row">
-                                        <label for="name" class="star col-sm-2 col-form-label">大屏名称</label>
+                                        <label for="backPic" class="star col-sm-2 col-form-label">背景图</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control is-valid" id="name" required>
+                                            <input type="file" name="backGround" id="backPic" multiple="multiple" required/>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="enable" class="star col-sm-2 col-form-label">是否可用</label>
+                                        <label for="descInfo" class=" star col-sm-2 col-form-label">字体大小</label>
                                         <div class="col-sm-10">
-                                            <select class="form-control" id="enable" required>
-                                                <option value="1">正常</option>
-                                                <option value="0">休眠</option>
-                                            </select>
+                                            <input class="form-control" name="size" id="size" placeholder="90" required/>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="uri" class="star col-sm-2 col-form-label">大屏URI</label>
+                                        <label for="descInfo" class=" star col-sm-2 col-form-label">描述</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="uri" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="descInfo" class="col-sm-2 col-form-label">描述</label>
-                                        <div class="col-sm-10">
-                                            <textarea class="form-control" id="descInfo"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="cron" class="star col-sm-2 col-form-label">播放间隔</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="cron" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="playPicNum" class="star col-sm-2 col-form-label">轮播数量</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="playPicNum" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="light" class="star col-sm-2 col-form-label">亮度</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="light">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="regexChar" class="star col-sm-2 col-form-label">匹配格式</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="regexChar" required>
+                                            <textarea class="form-control" name="content" id="descInfo" required></textarea>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                <button type="button" onclick="onEdit()" class="btn btn-primary">保存</button>
+                                <button type="button" onclick="onAdd()" class="btn btn-primary">保存</button>
                             </div>
                         </div>
                     </div>
@@ -121,13 +115,22 @@
             </div>
         </div>
         <!-- END content-page -->
-
+        <div th:replace="common/foot :: foot"></div>
     </div>
     <!-- END main -->
     <div th:replace="common/commjs :: comm"></div>
     <script th:inline="javascript">
 
         bootbox.setDefaults("locale", "zh_CN");
+
+        $('#backPic').filer({
+            limit: 1,
+            maxSize: 10,
+            extensions: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP'],
+            changeInput: true,
+            showThumbs: true,
+            addMore: false
+        });
 
         /*<![CDATA[*/
         var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
@@ -136,7 +139,13 @@
         $(document).ready(function () {
             dataTable = $('#tb_1').DataTable({
                 language: _language,
-                ajax: basePath + "/screen/page",
+                ajax:{
+                    "url":basePath + "/resource/page",
+                    "type":"POST",
+                    "data":{
+                        "srcType":"cut"
+                    }
+                },
                 serverSide: true,
                 pagination: true,
                 iDisplayLength: 5,
@@ -145,12 +154,12 @@
                 bFilter: false,
                 columns: [
 
-                    {"data": "no"},
-                    {"data": "name"},
-                    {"data": "cron"},
-                    {"data": "playPicNum"},
-                    {"data": "light"},
-                    {"data": "cron"},
+                    {"data": "id"},
+                    {"data": "fileName"},
+                    {"data": "type"},
+                    {"data": "createDate"},
+                    {"data": "noName"},
+                    {"data": "content"},
                     {
                         "data": "enable",
                         render: function (data) {
@@ -160,15 +169,20 @@
                     {
                         "data": null,
                         "render": function (data, type, row) {
-                            /*+ "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                            + " href='" + row.id + "' >图片</a>"
-                            + "<a type='button' hidden data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                            + " href='" + row.id + "' >图片</a>"*/
-                            var rtnStr =
-                                "<button type='button' onclick='onDelete(" + row.no + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
-                                + "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>编辑</button>&nbsp;&nbsp;"
-                                + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>详细信息</button>";
-                            return rtnStr;
+                            var tip = '';
+                            var showpicUrl = basePath + "/resource/showPic?id=";
+                            if (row.enable == '0') {
+                                tip = '播放';
+                            } else {
+                                tip = '停播';
+                            }
+                            var rtn =
+                                "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
+                                + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                                + " href='" + showpicUrl + row.id + "' >预览</a>";
+
+                            return rtn
                         }
 
                     }
@@ -183,77 +197,56 @@
 
         });
 
-        //加载大屏资源
-        function loadResource(no) {
-            window.location.href = basePath + "/resource/index?no=" + no;
-        }
-
-        function loadAdd() {
-            $("#customForm")[0].reset();
-            $("#customModal").modal('show');
-            $("#customForm")[0].classList.remove('was-validated');//初始不校验
-        }
-
-        function loadPlayPic() {
-            $('#fb').append('<a name="la" href="./11.png"><img src="./11.png"/></a>');
-            $('#fb').append('<a name="la" href="./22.png"><img src="./22.png"/></a>');
-            $('#fb a').fancybox({
-                'titlePosition': 'inside'
-            }).open($("#fb a"));
-        }
-
-        function loadEdit(no) {
-            $.post(
-                basePath + "/screen/queryById",
-                {"no": no},
-                function (response) {
-                    $("#no").val(response.no);
-                    $("#name").val(response.name);
-                    $("#enable").val(response.enable);
-                    $("#descInfo").val(response.descInfo);
-                    $("#uri").val(response.uri);
-                    $("#regexChar").val(response.regexChar);
-                    $("#playPicNum").val(response.playPicNum);
-                    $("#cron").val(response.cron);
-                    $("#customModal").modal('show');
-                }
-            );
-        }
-
-        function onEdit() {
+        //新增合成图
+        function onAdd() {
             var form = $("#customForm")[0];
             if (!form.checkValidity()) {
                 form.classList.add('was-validated');
                 return;
             }
-
-            $.post(
-                basePath + "/screen/resave",
-                {
-                    "no": $("#no").val(),
-                    "name": $("#name").val(),
-                    "enable": $("#enable").val(),
-                    "descInfo": $("#descInfo").val(),
-                    "uri": $("#uri").val(),
-                    "regexChar": $("#regexChar").val(),
-                    "playPicNum": $("#playPicNum").val(),
-                    "cron": $("#cron").val()
-                },
-                function (response) {
-                    if (response == 'success') {
-                        window.location.reload();
-                    }
-
-                }
-            );
+            $("#customForm").submit();
         }
 
-        function onDelete(no) {
-            bootbox.confirm("确认删除?", function (result) {
+        //更改状态
+        function onEdit(id, enable) {
+            var tip = enable == '0' ? "确认播放图片?" : "确认停止播放?";
+            bootbox.confirm(tip, function (result) {
                 if (result) {
                     $.post(
-                        basePath + "/screen/delete",
-                        {"no": no},
+                        basePath + "/resource/change",
+                        {"resourceId": id, "enable": enable == '0' ? '1' : '0'},
+                        function (response) {
+                            if (response != 'success' && response != 'fail') {
+                                bootbox.alert('大屏最多播放' + response + "张图片！");
+                            } else if (response == 'success') {
+                                window.location.reload();
+                            } else {
+                                bootbox.alert("变更异常");
+                            }
+
+                        }
+                    );
+                }
+            });
+        }
+
+        //自定义口号
+        function loadAdd() {
+            $("#customForm")[0].reset();
+            $("#customModal").modal('show');
+            $("#customForm")[0].classList.remove('was-validated');//初始不校验
+
+            $('#backPic').trigger("filer.reset")
+
+        }
+
+        //删除资源
+        function onDel(id) {
+            bootbox.confirm('确认删除?', function (result) {
+                if (result) {
+                    $.post(
+                        basePath + "/resource/delete",
+                        {"id": id},
                         function (response) {
                             if (response == 'success') {
                                 window.location.reload();
@@ -265,7 +258,6 @@
                     );
                 }
             });
-
         }
 
     </script>

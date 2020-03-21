@@ -18,12 +18,12 @@ public class PageHelper<T> {
 
     private Integer draw;
 
-    private Integer currentPapge;
+    private Integer currentPage;
 
     public Page<T> getPage() {
-        currentPapge = start / length + 1;
+        currentPage = start / length + 1;
         Page<T> page = new Page<>();
-        page.setCurrent(currentPapge);
+        page.setCurrent(currentPage);
         page.setSize(length);
         return page;
     }

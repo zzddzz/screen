@@ -1,6 +1,7 @@
 package com.east.sword.screen.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.mapper.ResourceMapper;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * resource service
@@ -37,5 +39,10 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     @Override
     public int getNumOfResource(String originName, String resourceDateTime) {
         return baseMapper.getNumOfResource(originName,resourceDateTime);
+    }
+
+    @Override
+    public List<Resource> selectResourcePage(Page page, Resource resource) {
+        return baseMapper.selectResourcePage(page,resource);
     }
 }

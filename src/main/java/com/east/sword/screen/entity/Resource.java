@@ -28,6 +28,9 @@ public class Resource extends Model<Resource> {
     public static final String TYPE_PIC = "pic";
     public static final String TYPE_FONT = "font";
 
+    public static final String TYPE_SYNC = "sync";
+    public static final String TYPE_CUT = "cut";
+
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -48,6 +51,9 @@ public class Resource extends Model<Resource> {
     private Integer weight;
     private Integer no;
 
+    @TableField(exist = false)
+    private String noName;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField("createDate")
     private Date createDate;
@@ -63,6 +69,18 @@ public class Resource extends Model<Resource> {
 
     @TableField("delFlag")
     private String delFlag;
+
+    @TableField("srcType")
+    private String srcType;
+
+    @TableField("content")
+    private String content;
+
+    @TableField(exist = false)
+    private String begDate;
+
+    @TableField(exist = false)
+    private String endDate;
 
 
     @Override

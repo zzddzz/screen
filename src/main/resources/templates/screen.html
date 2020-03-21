@@ -47,14 +47,19 @@
                 <div class="row" style="margin-top: -10px;">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <div class="card mb-3">
-                            <div class="card-header">
+                            <!--<div class="card-header">
                                 <a href="#" onclick="loadAdd()" data-toggle="modal"
                                    class="submitBtn btn btn-info btn-sm inline">
                                     <i class="fa fa-check-circle-o"></i> 新增
                                 </a>
-                            </div>
+                            </div>-->
                             <div class="card-body">
-                                <table id="tb_1" class="table table-responsive-sm table-hover display">
+                                <div style="margin-left: 15px;">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="loadAdd()">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> 新增大屏
+                                    </button>
+                                </div>
+                                <table id="tb_1" class="table table-responsive-xl table-hover">
                                     <thead>
                                     <tr>
                                         <th>编号</th>

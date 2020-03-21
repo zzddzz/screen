@@ -1,9 +1,11 @@
 package com.east.sword.screen.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.east.sword.screen.entity.Resource;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * resource service
@@ -18,4 +20,6 @@ public interface IResourceService extends IService<Resource> {
     Date getMaxDateOfResource(int no);
 
     int getNumOfResource(String originName,String resourceDateTime);
+
+    List<Resource> selectResourcePage(Page page,Resource resource);
 }
