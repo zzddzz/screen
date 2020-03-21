@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -48,8 +49,19 @@ public class Screen extends Model<Screen> {
     @TableField("enable")
     private String enable;
 
+    @TableField("light")
+    private Integer light;
+
     @TableField(exist = false)
     private List<Integer> resourceIdList;
+
+    public String getScheduleCron() {
+        if (StringUtils.isNotBlank(cron) && Integer.parseInt(cron) < 60) {
+            return StringUtils.join(cron,"/* * * * * ?");
+        } else {//默认20秒播放一次
+            return "20/* * * * * ?";
+        }
+    }
 
     @Override
     protected Serializable pkVal() {

@@ -92,7 +92,7 @@ public class ScanJob {
                             String.valueOf(screen.getNo()),
                             new TriggerTask(
                                     () -> msgService.sendMsg(screen),
-                                    new CronTrigger(screen.getCron())
+                                    new CronTrigger(screen.getScheduleCron())
                             ),
                             screen.getCron()
                     );
@@ -104,7 +104,7 @@ public class ScanJob {
                             String.valueOf(screen.getNo()),
                             new TriggerTask(
                                     () -> msgService.sendMsg(screen),
-                                    new CronTrigger(screen.getCron())
+                                    new CronTrigger(screen.getScheduleCron())
                             ),
                             screen.getCron()
                     );

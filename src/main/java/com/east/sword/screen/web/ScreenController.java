@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -53,8 +54,25 @@ public class ScreenController extends BaseController<Screen> {
     private HttpClient httpClient;
 
     @GetMapping("/index")
-    public String loadScreenIndex() {
+    public String loadScreenIndex(Model model) {
+        List<Screen> screenList = screenService.selectList(entityWrapper);
+        model.addAttribute("total",screenList.size());
+        int enable = screenList.stream().filter(meta->Screen.ENABLE.equals(meta.getEnable())).collect(Collectors.toList()).size();
+        model.addAttribute("enable",enable);
+        model.addAttribute("unable",screenList.size() - enable);
         return "screen";
+    }
+
+    @GetMapping("/play-index")
+    public String loadPlayIndex(Model model) {
+
+        return "play";
+    }
+
+    @GetMapping("/inter-index")
+    public String loadInterIndex(Model model) {
+
+        return "inter";
     }
 
     @ResponseBody

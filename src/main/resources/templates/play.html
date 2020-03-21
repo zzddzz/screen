@@ -13,32 +13,10 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-xl-12">
-                    </div>
-                </div>
-                <!-- end row -->
-
-                <div class="row" style="margin-top: 3px;">
-                    <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
-                        <div class="card-box noradius noborder bg-default">
-                            <i class="fa fa-file-text-o float-right text-white"></i>
-                            <h6 class="text-white text-uppercase m-b-20">大屏总计</h6>
-                            <h1 class="m-b-20 text-white counter" th:text="${total}"></span></h1>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
-                        <div class="card-box noradius noborder bg-info">
-                            <i class="fa fa-user-o float-right text-white"></i>
-                            <h6 class="text-white text-uppercase m-b-20">在播大屏</h6>
-                            <h1 class="m-b-20 text-white counter" th:text="${enable}"></h1>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
-                        <div class="card-box noradius noborder bg-warning">
-                            <i class="fa fa-bell-o float-right text-white"></i>
-                            <h6 class="text-white text-uppercase m-b-20">停播大屏</h6>
-                            <h1 class="m-b-20 text-white counter" th:text="${unable}"></h1>
+                        <br/>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,25 +25,17 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <div class="card mb-3">
-                            <div class="card-header">
-                                <a href="#" onclick="loadAdd()" data-toggle="modal"
-                                   class="submitBtn btn btn-info btn-sm inline">
-                                    <i class="fa fa-check-circle-o"></i> 新增
-                                </a>
-                            </div>
                             <div class="card-body">
                                 <table id="tb_1" class="table table-responsive-sm table-hover display">
                                     <thead>
                                     <tr>
                                         <th>编号</th>
                                         <th>大屏名称</th>
-                                        <th>大屏URI</th>
-                                        <th>描述</th>
                                         <th>播放间隔</th>
-                                        <th>轮播数量</th>
+                                        <th>播放数量</th>
                                         <th>亮度</th>
-                                        <th>匹配格式</th>
-                                        <th>是否可用</th>
+                                        <th>取图方式</th>
+                                        <th>状态</th>
                                         <th>操作</th>
                                     </tr>
                                     </thead>
@@ -128,9 +98,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="light" class="col-sm-2 col-form-label">亮度</label>
+                                        <label for="light" class="star col-sm-2 col-form-label">亮度</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="light" >
+                                            <input type="text" class="form-control" id="light">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -154,9 +124,9 @@
 
     </div>
     <!-- END main -->
-    <div  th:replace="common/commjs :: comm"></div>
+    <div th:replace="common/commjs :: comm"></div>
     <script th:inline="javascript">
-        
+
         bootbox.setDefaults("locale", "zh_CN");
 
         /*<![CDATA[*/
@@ -174,14 +144,13 @@
                 bLengthChange: false,
                 bFilter: false,
                 columns: [
+
                     {"data": "no"},
                     {"data": "name"},
-                    {"data": "uri"},
-                    {"data": "descInfo"},
                     {"data": "cron"},
                     {"data": "playPicNum"},
                     {"data": "light"},
-                    {"data": "regexChar"},
+                    {"data": "cron"},
                     {
                         "data": "enable",
                         render: function (data) {

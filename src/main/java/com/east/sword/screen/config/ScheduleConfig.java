@@ -62,7 +62,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
                     String.valueOf(screen.getNo()),
                     new TriggerTask(
                             () -> sendMsgService.sendMsg(screen),
-                            new CronTrigger(screen.getCron())
+                            new CronTrigger(screen.getScheduleCron())
                     ),
                     screen.getCron()
             );
