@@ -1,8 +1,10 @@
 package com.east.sword.screen.util.socket;
 
+import com.east.sword.screen.vo.GoldMon;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.io.File;
+import java.util.List;
 
 /**
  * @CreateDate 10:43 2020/3/18.
@@ -11,44 +13,24 @@ import java.io.IOException;
 @Slf4j
 public class SocketTest {
 
-    public static void main(String[] args) throws IOException {
-        /*String host = "37.168.190.172";
+    public static void main(String[] args) throws Exception {
+        String host = "37.168.190.172";
         int port = 60001;
 
-        //与服务端建立连接
-        Socket socket = new Socket(host, port);
-        socket.setOOBInline(true);
 
-        //建立连接后获取输出流
-        DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-        DataInputStream inputStream = new DataInputStream(socket.getInputStream());
 
-        //byte[] msg = {0x02,0x00,0x00,0x39,0x37,0xf9,0xb9,0x03};
-        String msgHex = "02 00 00 30 36 53 00 03";
-        //byte[] msg = {0x02,0x00,0x00,0x39,0x37,0x03};
+        //String msgHex = "02 00 00 39 37 f9 12 03";
+        //0200003030303030373030303130303030365c433036343038
+        //0200003030303030373030303130303030365c433036343038
+        File file = new File("d:/play1.lst");
+        List<String> frameBody = GoldMon.getFrameFileBody(file);
 
-        byte[] msg = hexStrToBinaryStr(msgHex);
+        //System.out.println(frameBody.size());
+        String msgHex = GoldMon.getSendMessageStr(GoldMon.FRAME_UPLOAD_FILE,frameBody.get(0));
+        byte[] msgByte = hexStrToBinaryStr(msgHex);
+        String msg = SocketSender.getInstance().sendMessage(host,port,msgByte);
         System.out.println(msg);
-        outputStream.write(msg);
-        String content = "";
-        while (true){
-            byte[] buff = new byte[1024];
-            inputStream.read(buff);
-            String buffer = new String(buff, "utf-8");
-            content += buffer;
-            log.info("info: {}", buff);
-            File file = new File("D:/json.json");
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(content);
-            fileWriter.flush();
-        }*/
-
-        String msgHex = "02 00 00 30 36 53 00 03";
-        byte[] msg = hexStrToBinaryStr(msgHex);
-        System.out.println(msg);
-
-        byte[] response = {2, 0, 0, 49, 48, 48, -63, 83, 3};
-        System.out.println(bytesToHex(response));
+       // byte[] response = {2, 0, 0, 49, 48, 48, -63, 83, 3};
     }
 
     public static byte[] hexStrToBinaryStr(String hexString) {

@@ -1,17 +1,86 @@
-package com.east.sword.screen.vo;
+package com.east.sword.screen.util;
 
-
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 金晓命令格式
- *
- * @CreateDate 10:52 2020/3/18.
+ * @CreateDate 14:06 2020/3/23.
  * @Author ZZD
  */
-@Slf4j
-public class JxParam {
+public class HexHelp {
 
+    /**
+     * 二进制转16进制
+     * @param bytes
+     * @return
+     */
+    public static String bytesToHex(byte[] bytes) {
+        StringBuffer sb = new StringBuffer();
+        for(int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(bytes[i] & 0xFF);
+            if(hex.length() < 2){
+                sb.append(0);
+            }
+            sb.append(hex);
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * 字符串转16进制
+     * @param str
+     * @return
+     */
+    public static String strToHex(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            sb.append(Integer.toString(c, 16)).append(StringUtils.SPACE);
+        }
+        return sb.toString().substring(0,sb.toString().length() - 1);
+    }
+
+    /**
+     * 16字符串进制转byte[]
+     * @param hexString
+     * @return
+     */
+    public static byte[] hexStringToBytes(String hexString) {
+        if (hexString == null || hexString.equals("")) {
+            return null;
+        }
+        hexString = hexString.toUpperCase();
+        int length = hexString.length() / 2;
+        char[] hexChars = hexString.toCharArray();
+        byte[] d = new byte[length];
+        for (int i = 0; i < length; i++) {
+            int pos = i * 2;
+            d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+        }
+        return d;
+    }
+
+    private static byte charToByte(char c) {
+        return (byte) "0123456789ABCDEF".indexOf(c);
+    }
+
+    /**
+     * 获取高低位(先高后低)
+     * @param src
+     * @return
+     */
+    public static String getHighLow(int src) {
+        String big = Integer.toHexString(src / 256);
+        String little = Integer.toHexString(src % 256);
+
+        if (big.length() < 2) {
+            big = "0" + big;
+        }
+        if (little.length() < 2) {
+            little = "0" + little;
+        }
+        return StringUtils.join(big,StringUtils.SPACE,little);
+    }
 
     static int[] fcstab = {
             0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -49,6 +118,11 @@ public class JxParam {
     };
 
 
+    /**
+     * CRC16 算法
+     * @param data_arr
+     * @return
+     */
     public static char calCRC(byte[] data_arr) {
         char crc16 = 0;
         int i;
@@ -61,51 +135,6 @@ public class JxParam {
             crc16 ^= (char) (((crc16 & 0xFF) << 4) << 1);
         }
         return crc16;
-    }
-
-    public static int getCRC(byte[] src) {
-        int CRC = 0xFFFF;
-        int num = 0xA001;
-        int inum = 0;
-        for(int j = 0; j < src.length; j ++) {
-            inum = src[j];
-            CRC = (CRC >> 8) & 0x00FF;
-            CRC ^= inum;
-            for(int k = 0; k < 8; k++) {
-                int flag = CRC % 2;
-                CRC = CRC >> 1;
-
-                if(flag == 1) {
-                    CRC = CRC ^ num;
-                }
-            }
-        }
-        return CRC;
-    }
-
-    public static void main(String[] args) {
-        String frameAddress = "0x000x00";//默认地址
-        String frameType = "0x390x37";//取当前显示内容命令
-
-        //获取CRC
-        byte[] aa = {0x00, 0x00, 0x39, 0x37};
-
-        //byte[] aa = {0x7E,0x00,0x05,0x60,0x31,0x32,0x33};
-
-        int crc = calCRC(aa);
-
-        System.out.println(crc);
-
-        //System.out.println(getCRC(aa));
-        System.out.println(crc/256);
-        System.out.println(crc%256);
-
-        System.out.println("高字节" + Integer.toHexString(crc/256));
-        System.out.println("低字节" + Integer.toHexString(crc%256));
-
-        int big = (crc & 0xFF00) >> 8;
-        int little = crc & 0xFF;
-        System.out.println("big" + big + "litter" + little);
     }
 
 
