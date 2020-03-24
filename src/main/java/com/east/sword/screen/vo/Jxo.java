@@ -19,7 +19,7 @@ import java.util.List;
  * @Author ZZD
  */
 @Slf4j
-public class GoldMon {
+public class Jxo {
 
     public static final String FRAME_HEADER = "02";//帧头
     public static final String FRAME_ADDRESS = "00 00";//帧地址
@@ -70,7 +70,7 @@ public class GoldMon {
      * @return
      */
     public static String getFrameCrc(byte[]... byteList) {
-        /*int lengthByte = 0;
+        int lengthByte = 0;
         for (int i = 0; i < byteList.length; i++) {
             lengthByte += (byteList[i] == null ? 0 : byteList[i].length);
         }
@@ -85,17 +85,10 @@ public class GoldMon {
             countLength += b.length;
         }
         int crc = HexHelp.calCRC(allByte);
-        String crcHighLow = HexHelp.getHighLow(crc);
+        String crcHighLow = HexHelp.getHighLow(crc,2);
 
         //转义特殊字符
         crcHighLow = getTranInfo(crcHighLow);
-        return crcHighLow;*/
-
-        int crc = HexHelp.calCRC(byteList[0]);
-        String crcHighLow = HexHelp.getHighLow(crc);
-
-        //转义特殊字符
-        //crcHighLow = getTranInfo(crcHighLow);
         return crcHighLow;
     }
 
@@ -148,11 +141,9 @@ public class GoldMon {
          * 对文件内容分段组帧(文件名 + 分割符 + 指针偏移 + 内容)
          * 指针偏移按照高低位 先高后低
          */
-
         for (int i = 0; i < metaBody.size(); i++) {
-            String pointer = Integer.toHexString(i * 2048);
-            //String pointerHighLow = HexHelp.getHighLow(Integer.parseInt(pointer));
-            String pointerHighLow = "00 00 00 00";
+            int pointer = i * 2048;
+            String pointerHighLow = HexHelp.getHighLow(pointer,4);
             String bodyHex = StringUtils.join(metaBody.get(i),StringUtils.SPACE);
 
             String fileFrameMeta = StringUtils.join(
@@ -176,9 +167,8 @@ public class GoldMon {
      * @param frameBody
      * @return
      */
-    public static String getSendMessageStr(String frameType, String frameBody) {
-
-        byte[] fileBodyByte = HexHelp.hexStringToBytes(frameBody);
+    public static String getNeedMsgFormat(String frameType, String frameBody) {
+        byte[] fileBodyByte = HexHelp.hexStrToBinary(frameBody);
         String crc16;
         if (null == fileBodyByte) {
             crc16 = getFrameCrc(frameInfo.get(FRAME_ADDRESS), frameInfo.get(frameType));
@@ -203,19 +193,6 @@ public class GoldMon {
         sendMessage = sendMessage.replaceAll("  ", " ");
         System.out.println("发送文字："+ sendMessage);
         return sendMessage;
-    }
-
-
-    public static void main(String[] args) throws Exception {
-
-
-        //获取CRC
-        byte[] aa = {0x00, 0x00, 0x30, 0x36};
-        System.out.println(getFrameCrc(aa));
-
-        //String msgHex = "02 00 00 30 36 52 00 03";
-
-
     }
 
 

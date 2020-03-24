@@ -40,15 +40,16 @@ public class SocketSender {
 
         outputStream.write(msg);
 
-        String content = "";
+        StringBuffer content = new StringBuffer();
+        byte[] cacheByte = new byte[1024*5];//最长返回值限制
         while (true){
-            byte[] buff = new byte[3072];
-            inputStream.read(buff);
-            content = HexHelp.bytesToHex(buff);
-            content = content.substring(0,50);
+            inputStream.read(cacheByte);
+            String metaChar = HexHelp.bytesToHex(cacheByte);
+            content.append(metaChar);
             break;
         }
-        return content;
+        String response = content.toString();
+        return response.substring(0,response.indexOf("030000")+2);
     }
 
 
