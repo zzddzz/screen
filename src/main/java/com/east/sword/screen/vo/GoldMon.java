@@ -33,7 +33,6 @@ public class GoldMon {
     public static final String FRAME_LIGHT_INFO = "30 36";//亮度信息
 
     public static HashMap<String, byte[]> frameInfo = new HashMap();
-
     static {
         frameInfo.put(FRAME_HEADER, new byte[]{0x02});
         frameInfo.put(FRAME_ADDRESS, new byte[]{0x00, 0x00});
@@ -71,7 +70,7 @@ public class GoldMon {
      * @return
      */
     public static String getFrameCrc(byte[]... byteList) {
-        int lengthByte = 0;
+        /*int lengthByte = 0;
         for (int i = 0; i < byteList.length; i++) {
             lengthByte += (byteList[i] == null ? 0 : byteList[i].length);
         }
@@ -86,58 +85,36 @@ public class GoldMon {
             countLength += b.length;
         }
         int crc = HexHelp.calCRC(allByte);
-        /*int crc = HexHelp.calCRC(byteList[0]);*/
-        String crcHighLow = HexHelp.getHighLow(crc, 2);
+        String crcHighLow = HexHelp.getHighLow(crc);
 
         //转义特殊字符
         crcHighLow = getTranInfo(crcHighLow);
-        return crcHighLow;
+        return crcHighLow;*/
 
+        int crc = HexHelp.calCRC(byteList[0]);
+        String crcHighLow = HexHelp.getHighLow(crc);
+
+        //转义特殊字符
+        //crcHighLow = getTranInfo(crcHighLow);
+        return crcHighLow;
     }
 
     /**
      * 获取文件的16进制内容分片
      *
-     * @param fileName     文件名称
-     * @param fileMetaBody 原生文件分片内容
-     * @param point        指针
+     * @param filePath
      * @return
      * @throws Exception
      */
-    public static String getFrameFileBody(String fileName, String fileMetaBody, int index) throws Exception {
+    public static List<String> getFrameFileBody(File file) throws Exception {
+
+        List<String> fileFrame = new ArrayList<>();
 
         //文件名
+        String fileName = file.getName();
         String fileNameHex = HexHelp.strToHex(fileName);
+
         String splitHex = "2B";
-
-        /**
-         * 对文件内容分段组帧(文件名 + 分割符 + 指针偏移 + 内容)
-         * 指针偏移按照高低位 先高后低
-         */
-        String pointer = Integer.toHexString(index * 2048);
-        String pointerHighLow = HexHelp.getHighLow(Integer.parseInt(pointer), 2);
-
-        System.out.println("文件名：" + fileNameHex);
-        System.out.println("文件指针偏移：" + pointerHighLow);
-        System.out.println("文件内容：" + fileMetaBody);
-
-        String fileFrameMeta = StringUtils.join(
-                fileNameHex, StringUtils.SPACE,
-                splitHex, StringUtils.SPACE,
-                pointerHighLow, StringUtils.SPACE,
-                fileMetaBody
-        );
-        return fileFrameMeta;
-}
-
-    /**
-     * 获取原生的文件分片内容
-     *
-     * @param file
-     * @return
-     * @throws Exception
-     */
-    public static List<String> getFrameFileBodyOrigin(File file) throws Exception {
 
         //文件流默认是10进制byte ,转换为16进制表示
         InputStream inputStream = new FileInputStream(file);
@@ -155,20 +132,38 @@ public class GoldMon {
          * 上载文件超过2048,需要把文件分割2048字节若干段,
          * 正好是2048整数倍,最后也需要发送文件内容为0的字节
          */
-        List<String> metaBody = new ArrayList<>();
+        List<List<String>> metaBody = new ArrayList<>();
         for (int i = 0; i < hexList.size(); i += 2048) {
             if (i != 0 && i % 2048 == 0) {
                 List<String> meta = hexList.subList(i, 2048 + i);
-                String metaBodyStr = StringUtils.join(meta, StringUtils.SPACE);
-                metaBody.add(metaBodyStr);
+                metaBody.add(meta);
             }
         }
         if (metaBody.size() * 2048 <= hexList.size()) {
             List<String> finalMeta = hexList.subList(metaBody.size() * 2048, hexList.size());
-            String metaBodyStr = StringUtils.join(finalMeta, StringUtils.SPACE);
-            metaBody.add(metaBodyStr);
+            metaBody.add(finalMeta);
         }
-        return metaBody;
+
+        /**
+         * 对文件内容分段组帧(文件名 + 分割符 + 指针偏移 + 内容)
+         * 指针偏移按照高低位 先高后低
+         */
+
+        for (int i = 0; i < metaBody.size(); i++) {
+            String pointer = Integer.toHexString(i * 2048);
+            //String pointerHighLow = HexHelp.getHighLow(Integer.parseInt(pointer));
+            String pointerHighLow = "00 00 00 00";
+            String bodyHex = StringUtils.join(metaBody.get(i),StringUtils.SPACE);
+
+            String fileFrameMeta = StringUtils.join(
+                    fileNameHex, StringUtils.SPACE,
+                    splitHex, StringUtils.SPACE,
+                    pointerHighLow, StringUtils.SPACE,
+                    bodyHex
+            );
+            fileFrame.add(fileFrameMeta);
+        }
+        return fileFrame;
     }
 
 
@@ -178,31 +173,24 @@ public class GoldMon {
      *
      * @param frameAddress
      * @param frameType
-     * @param frameBody    原生的文件body 分片信息
+     * @param frameBody
      * @return
      */
-    public static String getSendMessageStr(String fileName, String frameType, String frameBody,int index) throws Exception {
+    public static String getSendMessageStr(String frameType, String frameBody) {
 
         byte[] fileBodyByte = HexHelp.hexStringToBytes(frameBody);
         String crc16;
         if (null == fileBodyByte) {
             crc16 = getFrameCrc(frameInfo.get(FRAME_ADDRESS), frameInfo.get(frameType));
         } else {
-            crc16 = getFrameCrc(frameInfo.get(FRAME_ADDRESS), frameInfo.get(frameType), null);
+            crc16 = getFrameCrc(frameInfo.get(FRAME_ADDRESS), frameInfo.get(frameType), fileBodyByte);
         }
 
-        System.out.println("帧校验：" + crc16);
 
-
-        /**
-         * 1 帧数据进行包装 上载文件的格式：文件名 + 分隔符 + 文件指针偏移 + 文件内容
-         * 2 发送时body需要转义
-         */
+        //发送时body需要转义
         if (null != frameBody) {
-            frameBody = getFrameFileBody(fileName,frameBody,index);
             frameBody = getTranInfo(frameBody);
         }
-        System.out.println("帧数据：" + frameBody);
         String sendMessage = StringUtils.join(
                 FRAME_HEADER, StringUtils.SPACE,
                 FRAME_ADDRESS, StringUtils.SPACE,
@@ -213,6 +201,7 @@ public class GoldMon {
         );
 
         sendMessage = sendMessage.replaceAll("  ", " ");
+        System.out.println("发送文字："+ sendMessage);
         return sendMessage;
     }
 
