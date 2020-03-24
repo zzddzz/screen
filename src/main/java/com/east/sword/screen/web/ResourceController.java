@@ -136,9 +136,9 @@ public class ResourceController extends BaseController {
                         return String.valueOf(screen.getPlayPicNum());
                     }
                 }
-                msgService.putResource(screen.getUri(), resource);
+                msgService.putResource(screen, resource);
             } else {//下架资源
-                msgService.putDownResource(screen.getUri(), resource.getVsnName());
+                msgService.putDownResource(screen, resource.getVsnName());
             }
 
             resource.setEnable(enable);
@@ -159,7 +159,7 @@ public class ResourceController extends BaseController {
 
             //删除大屏资源
             Screen screen = screenService.selectById(resource.getNo());
-            msgService.delResource(screen.getUri(), resource.getVsnName());
+            msgService.delResource(screen, resource.getVsnName());
             return SUCCESS;
         } catch (Exception e) {
             log.error("delete resource error : {}", e);

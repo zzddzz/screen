@@ -13,7 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,8 +125,8 @@ public class KltMsgServiceImpl implements IMsgService {
      * @param vsnName
      */
     @Override
-    public void putDownResource(String uri, String vsnName) {
-        String delUrl = kltRoute.delRountPath(uri, vsnName);
+    public void putDownResource(Screen screen, String vsnName) {
+        String delUrl = kltRoute.delRountPath(screen.getUri(), vsnName);
         httpClient.httpDelete(delUrl);
 
         EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
@@ -139,8 +142,8 @@ public class KltMsgServiceImpl implements IMsgService {
      * @param vsnName
      */
     @Override
-    public void delResource(String uri, String vsnName) {
-        String delUrl = kltRoute.delRountPath(uri, vsnName);
+    public void delResource(Screen screen, String vsnName) {
+        String delUrl = kltRoute.delRountPath(screen.getUri(), vsnName);
         httpClient.httpDelete(delUrl);
 
         EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
@@ -157,20 +160,45 @@ public class KltMsgServiceImpl implements IMsgService {
      * @param resource
      */
     @Override
-    public void putResource(String uri, Resource resource) {
-        String uploadUrl = kltRoute.uploadRountPath(uri,resource.getVsnName());
+    public void putResource(Screen screen, Resource resource) {
+        String uploadUrl = kltRoute.uploadRountPath(screen.getUri(),resource.getVsnName());
         httpClient.httpPostMedia(uploadUrl, resource);
     }
 
     /**
-     * 查询资源状态
-     * @param uri
+     * 休眠
+     * @param screen
      */
-    public int searchStatus(String uri) {
-        String searchStatus = kltRoute.powerStatusPath(uri);
-        String result = httpClient.httpGet(searchStatus);
-        JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
-        return jsonObject.get("powerstatus").getAsInt();
+    @Override
+    public void sleep(Screen screen) {
+        String sleepUrl = kltRoute.powerManagePath(screen.getUri());
+        MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
+        valueMap.set("command","sleep");
+        httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
+    }
+
+    /**
+     * 唤醒
+     * @param screen
+     */
+    @Override
+    public void wakeUp(Screen screen) {
+        String sleepUrl = kltRoute.powerManagePath(screen.getUri());
+        MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
+        valueMap.set("command","wakeup");
+        httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
+    }
+
+    /**
+     * 重启
+     * @param screen
+     */
+    @Override
+    public void reboot(Screen screen) {
+        String sleepUrl = kltRoute.powerManagePath(screen.getUri());
+        MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
+        valueMap.set("command","reboot");
+        httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
     }
 }
 

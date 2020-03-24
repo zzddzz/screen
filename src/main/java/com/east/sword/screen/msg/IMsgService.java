@@ -30,14 +30,14 @@ public interface IMsgService {
      * @param uri
      * @param vsnName
      */
-    void putDownResource(String uri,String vsnName);
+    void putDownResource(Screen screen,String vsnName);
 
     /**
      * 删除资源信息
      * @param uri
      * @param vsnName
      */
-    void delResource(String uri,String vsnName);
+    void delResource(Screen screen,String vsnName);
 
     /**
      * 上传大屏资源
@@ -45,7 +45,13 @@ public interface IMsgService {
      * @param resource
      * @return
      */
-    void putResource(String uri, Resource resource);
+    void putResource(Screen screen, Resource resource);
+
+    void sleep(Screen screen);
+
+    void wakeUp(Screen screen);
+
+    void reboot(Screen screen);
 
 
 

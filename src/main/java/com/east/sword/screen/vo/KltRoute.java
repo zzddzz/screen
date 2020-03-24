@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class KltRoute {
 
-    
-
     @Value("${klt.delete}")
     private String delRoute;
 
@@ -25,10 +23,7 @@ public class KltRoute {
     @Value("${klt.list}")
     private String listRoute;
 
-    @Value("klt.power.status")
-    private String powerStatus;
-
-    @Value("klt.power.manage")
+    @Value("${klt.power.manage}")
     private String powerManage;
 
     public String delRountPath(String uri,String vsnName) {
@@ -48,11 +43,6 @@ public class KltRoute {
 
     public String listRountPath(String uri) {
         String path = uri + listRoute ;
-        return path;
-    }
-
-    public String powerStatusPath(String uri) {
-        String path = uri + powerStatus;
         return path;
     }
 

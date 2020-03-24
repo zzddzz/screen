@@ -13,6 +13,7 @@ import com.east.sword.screen.vo.KltRoute;
 import com.east.sword.screen.vo.VsnPlay;
 import com.east.sword.screen.web.dto.PageHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -57,7 +58,7 @@ public class ScreenController extends BaseController<Screen> {
     public String loadScreenIndex(Model model) {
         List<Screen> screenList = screenService.selectList(entityWrapper);
         model.addAttribute("total",screenList.size());
-        int enable = screenList.stream().filter(meta->Screen.ENABLE.equals(meta.getEnable())).collect(Collectors.toList()).size();
+        int enable = screenList.stream().filter(meta->Screen.STATUS_ENABLE.equals(meta.getEnable())).collect(Collectors.toList()).size();
         model.addAttribute("enable",enable);
         model.addAttribute("unable",screenList.size() - enable);
         return "screen";
@@ -84,11 +85,20 @@ public class ScreenController extends BaseController<Screen> {
 
     @ResponseBody
     @RequestMapping("/page")
-    public Map screenPageList(PageHelper<Screen> pageHelper) {
+    public Map screenPageList(PageHelper<Screen> pageHelper,Screen screen) {
         try {
             Map data = new TreeMap();
-            Page<Screen> page = screenService.selectPage(pageHelper.getPage());
-            data.put("data", page.getRecords());
+            EntityWrapper entityWrapper = new EntityWrapper();
+            if (StringUtils.isNotBlank(screen.getEnable())) {
+                entityWrapper.eq("enable",screen.getEnable());
+            }
+            if (StringUtils.isNotBlank(screen.getName())) {
+                entityWrapper.like("name",screen.getName());
+            }
+            Page<Screen> page = screenService.selectPage(pageHelper.getPage(),entityWrapper);
+            List<Screen> records = page.getRecords();
+            records.stream().forEach(meta->meta.setType(Screen.TYPE_INFO.get(meta.getType())));
+            data.put("data", records);
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
             return data;
@@ -159,8 +169,35 @@ public class ScreenController extends BaseController<Screen> {
         }
     }
 
+    @ResponseBody
+    @RequestMapping("/changeStatus")
+    public String changeStatus(int no,String status) {
+        try {
+            Screen screen = screenService.selectById(no);
+            if (Screen.STATUS_ENABLE.equals(status)) {
+                msgService.wakeUp(screen);
+                screen.setEnable(Screen.STATUS_ENABLE);
+                screenService.updateById(screen);
+            }
+            if (Screen.STATUS_UNABLE.equals(status)) {
+                msgService.sleep(screen);
+                screen.setEnable(Screen.STATUS_UNABLE);
+                screenService.updateById(screen);
+            }
+            if (Screen.STATUS_REBOOT.equals(status)) {
+                msgService.reboot(screen);
+                screen.setEnable(Screen.STATUS_ENABLE);
+                screenService.updateById(screen);
+            }
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("screen changeStatus error:{}", e);
+            return FAIL;
+        }
 
-    //查看大屏在播图片
+    }
+
+
 
 
 }

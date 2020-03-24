@@ -14,10 +14,6 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <br/>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <!-- end row -->
@@ -25,13 +21,41 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <div class="card mb-3">
+                            <div class="card-header">
+                                <div class="row">
+                                    <label class="col-form-label">大屏名称</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="search_name" class="form-control">
+                                    </div>
+                                    <label class="col-form-label">状态</label>
+                                    <div class="col-sm-2">
+                                        <select class="form-control select2" id="search_type">
+                                            <option value="">请选择</option>
+                                            <option value="1">正常</option>
+                                            <option value="0">休眠</option>
+                                        </select>
+                                    </div>
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm" onclick="onSearch()">
+                                            <i class="fa fa-search" aria-hidden="true"></i> 查询
+                                        </button>
+                                    </div>&nbsp;&nbsp;
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm"
+                                                onclick="onRest()">
+                                            <i class="fa fa-hourglass-1" aria-hidden="true"></i> 重置
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
                             <div class="card-body">
                                 <table id="tb_1" class="table table-responsive-sm table-hover display">
                                     <thead>
                                     <tr>
                                         <th>编号</th>
                                         <th>大屏名称</th>
-                                        <th>播放间隔</th>
+                                        <th>播放间隔(秒)</th>
                                         <th>播放数量</th>
                                         <th>亮度</th>
                                         <th>取图方式</th>
@@ -53,7 +77,7 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel2">大屏信息</h5>
+                                <h5 class="modal-title" id="exampleModalLabel2">播放管理</h5>
                             </div>
                             <div class="modal-body">
                                 <form id="customForm">
@@ -61,7 +85,7 @@
                                     <div class="form-group row">
                                         <label for="name" class="star col-sm-2 col-form-label">大屏名称</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control is-valid" id="name" required>
+                                            <input type="text" class="form-control is-valid" id="name" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -94,7 +118,7 @@
             </div>
         </div>
         <!-- END content-page -->
-
+        <div th:replace="common/foot :: foot"></div>
     </div>
     <!-- END main -->
     <div th:replace="common/commjs :: comm"></div>
@@ -111,11 +135,15 @@
         /*<![CDATA[*/
         var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
-        var dataTable;
+        var table;
         $(document).ready(function () {
-            dataTable = $('#tb_1').DataTable({
+            table = $('#tb_1').DataTable({
                 language: _language,
-                ajax: basePath + "/screen/page",
+                ajax: {
+                    url: basePath + "/screen/page",
+                    type: "POST",
+                    async: false
+                },
                 serverSide: true,
                 pagination: true,
                 iDisplayLength: 5,
@@ -133,20 +161,22 @@
                     {
                         "data": "enable",
                         render: function (data) {
-                            return data == '0' ? "<font color='red'>停播</font>" : "<font color='green'>正常</font>";
+                            return data == '0' ? "<font color='red'>休眠</font>" : "<font color='green'>正常</font>";
                         }
                     },
                     {
                         "data": null,
                         "render": function (data, type, row) {
-                            /*+ "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                            + " href='" + row.id + "' >图片</a>"
-                            + "<a type='button' hidden data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                            + " href='" + row.id + "' >图片</a>"*/
+                            var chageInfo;
+                            if (data.enable == '1') {
+                                chageInfo = "<button type='button' onclick='onChangeStatus(" + row.no + ",0)' class='btn btn-outline-primary btn-sm'>休眠</button>&nbsp;&nbsp;";
+                            } else {
+                                chageInfo = "<button type='button' onclick='onChangeStatus(" + row.no + ",1)' class='btn btn-outline-primary btn-sm'>唤醒</button>&nbsp;&nbsp;";
+                            }
                             var rtnStr =
                                 "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>调整参数</button>&nbsp;&nbsp;"
-                                + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>休眠</button>&nbsp;&nbsp;"
-                                + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>重启</button>";
+                                + chageInfo
+                                + "<button type='button' onclick='onChangeStatus(" + row.no + ",-1)' class='btn btn-outline-primary btn-sm'>重启</button>";
                             return rtnStr;
                         }
 
@@ -162,23 +192,54 @@
 
         });
 
+        //表单查询
+        function onSearch() {
+            var name = $("#search_name").val();
+            var enable = $("#search_type").val();
+            table.settings()[0].ajax.data = {
+                "name":name,
+                "enable":enable
+            };
+            table.ajax.reload();
+        }
+
+        function onRest() {
+            window.location.reload();
+        }
+
+        //更改大屏状态
+        function onChangeStatus(no,status) {
+            var tips;
+            if (status == 0) {
+                tips = '确认让大屏休眠?';
+            }
+            if (status == 1) {
+                tips = '确认让大屏唤醒？'
+            }
+            if (status == -1) {
+                tips = '确认重启大屏？'
+            }
+            bootbox.confirm(tips, function (result) {
+                if (result) {
+                    $.post(
+                        basePath + "/screen/changeStatus",
+                        {"no": no, "status": status},
+                        function (response) {
+                            if (response == 'success') {
+                                window.location.reload();
+                            } else {
+                                bootbox.alert("变更异常");
+                            }
+
+                        }
+                    );
+                }
+            });
+        }
+
         //加载大屏资源
         function loadResource(no) {
             window.location.href = basePath + "/resource/index?no=" + no;
-        }
-
-        function loadAdd() {
-            $("#customForm")[0].reset();
-            $("#customModal").modal('show');
-            $("#customForm")[0].classList.remove('was-validated');//初始不校验
-        }
-
-        function loadPlayPic() {
-            $('#fb').append('<a name="la" href="./11.png"><img src="./11.png"/></a>');
-            $('#fb').append('<a name="la" href="./22.png"><img src="./22.png"/></a>');
-            $('#fb a').fancybox({
-                'titlePosition': 'inside'
-            }).open($("#fb a"));
         }
 
         function loadEdit(no) {
@@ -188,9 +249,12 @@
                 function (response) {
                     $("#no").val(response.no);
                     $("#name").val(response.name);
-                    $("#enable").val(response.enable);
                     $("#playPicNum").val(response.playPicNum);
                     $("#cron").val(response.cron);
+                    let my_range = $("#light").data("ionRangeSlider");
+                    my_range.update({
+                        from: response.light
+                    });
                     $("#customModal").modal('show');
                 }
             );
@@ -202,22 +266,20 @@
                 form.classList.add('was-validated');
                 return;
             }
-
             $.post(
                 basePath + "/screen/resave",
                 {
                     "no": $("#no").val(),
-                    "name": $("#name").val(),
-                    "enable": $("#enable").val(),
-                    "descInfo": $("#descInfo").val(),
-                    "uri": $("#uri").val(),
-                    "regexChar": $("#regexChar").val(),
+                    "cron": $("#cron").val(),
                     "playPicNum": $("#playPicNum").val(),
-                    "cron": $("#cron").val()
+                    "light": $("#light").val()
                 },
                 function (response) {
                     if (response == 'success') {
-                        window.location.reload();
+                        $("#customModal").modal('hide');
+                        dataTable.ajax.reload();
+                    } else {
+                        bootbox.alert('操作异常');
                     }
 
                 }

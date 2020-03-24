@@ -37,7 +37,7 @@
                                     </div>&nbsp;&nbsp;
                                     <div class="" style="padding-top: 4px;">
                                         <button class="btn btn-info btn-sm"
-                                                onclick="history.back()">
+                                                onclick="javascript:window.location.href = '/screen/index' ">
                                             <i class="fa fa-reply" aria-hidden="true"></i> 返回
                                         </button>
                                     </div>
@@ -72,6 +72,7 @@
 
     </div>
     <!-- END content-page -->
+    <div th:replace="common/foot :: foot"></div>
 </div>
 <!-- END main -->
 
@@ -160,7 +161,7 @@
 
     });
 
-    //新增合成图
+    //表单查询
     function onSearch() {
         var fileName = $("#search_name").val();
         var begDate = $("#search_beg").val();

@@ -47,12 +47,6 @@
                 <div class="row" style="margin-top: -10px;">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <div class="card mb-3">
-                            <!--<div class="card-header">
-                                <a href="#" onclick="loadAdd()" data-toggle="modal"
-                                   class="submitBtn btn btn-info btn-sm inline">
-                                    <i class="fa fa-check-circle-o"></i> 新增
-                                </a>
-                            </div>-->
                             <div class="card-body">
                                 <div style="margin-left: 15px;">
                                     <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="loadAdd()">
@@ -64,12 +58,14 @@
                                     <tr>
                                         <th>编号</th>
                                         <th>大屏名称</th>
-                                        <th>大屏URI</th>
-                                        <th>描述</th>
-                                        <th>播放间隔</th>
-                                        <th>轮播数量</th>
+                                        <th>类型</th>
+                                        <th>IP地址</th>
+                                        <th>端口号</th>
                                         <th>匹配格式</th>
                                         <th>是否可用</th>
+                                        <th>播放间隔(秒)</th>
+                                        <th>轮播数量</th>
+                                        <th>描述</th>
                                         <th>操作</th>
                                     </tr>
                                     </thead>
@@ -97,6 +93,26 @@
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control is-valid" id="name" required>
                                         </div>
+                                        <label for="type" class="star col-sm-2 col-form-label">大屏类型</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" id="type" required>
+                                                <option value="">请选择</option>
+                                                <option value="klt">卡莱特</option>
+                                                <option value="jx">金晓</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="host" class="star col-sm-2 col-form-label">IP地址</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="host" required>
+                                        </div>
+                                        <label for="port" class="star col-sm-2 col-form-label">端口号</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="port" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="enable" class="star col-sm-2 col-form-label">是否可用</label>
                                         <div class="col-sm-4">
                                             <select class="form-control" id="enable" required>
@@ -104,35 +120,25 @@
                                                 <option value="0">休眠</option>
                                             </select>
                                         </div>
+                                        <label for="regexChar" class="star col-sm-2 col-form-label">匹配格式</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="regexChar" required>
+                                        </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="uri" class="star col-sm-2 col-form-label">大屏URI</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="uri" required>
+                                        <label for="playPicNum" class="star col-sm-2 col-form-label">轮播数量</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="playPicNum" required>
+                                        </div>
+                                        <label for="cron" class="star col-sm-2 col-form-label">播放间隔</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" placeholder="秒" id="cron" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="descInfo" class="col-sm-2 col-form-label">描述</label>
                                         <div class="col-sm-10">
                                             <textarea class="form-control" id="descInfo"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="cron" class="star col-sm-2 col-form-label">播放间隔</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" placeholder="秒" id="cron" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="playPicNum" class="star col-sm-2 col-form-label">轮播数量</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="playPicNum" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="regexChar" class="star col-sm-2 col-form-label">匹配格式</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="regexChar" required>
                                         </div>
                                     </div>
                                 </form>
@@ -147,12 +153,12 @@
             </div>
         </div>
         <!-- END content-page -->
-
+        <div th:replace="common/foot :: foot"></div>
     </div>
     <!-- END main -->
-    <div  th:replace="common/commjs :: comm"></div>
+    <div th:replace="common/commjs :: comm"></div>
     <script th:inline="javascript">
-        
+
         bootbox.setDefaults("locale", "zh_CN");
 
         /*<![CDATA[*/
@@ -172,24 +178,22 @@
                 columns: [
                     {"data": "no"},
                     {"data": "name"},
-                    {"data": "uri"},
-                    {"data": "descInfo"},
-                    {"data": "cron"},
-                    {"data": "playPicNum"},
+                    {"data": "type"},
+                    {"data": "host"},
+                    {"data": "port"},
                     {"data": "regexChar"},
                     {
                         "data": "enable",
                         render: function (data) {
-                            return data == '0' ? "<font color='red'>停播</font>" : "<font color='green'>正常</font>";
+                            return data == '0' ? "<font color='red'>休眠</font>" : "<font color='green'>正常</font>";
                         }
                     },
+                    {"data": "playPicNum"},
+                    {"data": "cron"},
+                    {"data": "descInfo"},
                     {
                         "data": null,
                         "render": function (data, type, row) {
-                            /*+ "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                            + " href='" + row.id + "' >图片</a>"
-                            + "<a type='button' hidden data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
-                            + " href='" + row.id + "' >图片</a>"*/
                             var rtnStr =
                                 "<button type='button' onclick='onDelete(" + row.no + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>编辑</button>&nbsp;&nbsp;"
@@ -237,10 +241,12 @@
                     $("#name").val(response.name);
                     $("#enable").val(response.enable);
                     $("#descInfo").val(response.descInfo);
-                    $("#uri").val(response.uri);
+                    $("#host").val(response.host);
                     $("#regexChar").val(response.regexChar);
                     $("#playPicNum").val(response.playPicNum);
                     $("#cron").val(response.cron);
+                    $("#port").val(response.port);
+                    $("#type").val(response.type);
                     $("#customModal").modal('show');
                 }
             );
@@ -260,7 +266,9 @@
                     "name": $("#name").val(),
                     "enable": $("#enable").val(),
                     "descInfo": $("#descInfo").val(),
-                    "uri": $("#uri").val(),
+                    "host": $("#host").val(),
+                    "port": $("#port").val(),
+                    "type": $("#type").val(),
                     "regexChar": $("#regexChar").val(),
                     "playPicNum": $("#playPicNum").val(),
                     "cron": $("#cron").val()

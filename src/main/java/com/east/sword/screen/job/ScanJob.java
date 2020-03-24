@@ -184,7 +184,7 @@ public class ScanJob {
                             //大屏返回的vsn列表按照时间正序排列
                             List<VsnPlay> needDelVsnList = vsnPlayList.subList(0, vsnPlayList.size() - screen.getPlayPicNum());
                             needDelVsnList.forEach(vsnPlay -> {
-                                msgService.putDownResource(screen.getUri(), vsnPlay.getName());
+                                msgService.putDownResource(screen, vsnPlay.getName());
                                 log.info("FTP扫描上传后删除过期资源,url:{}", screen.getUri() + vsnPlay.getName());
                             });
                         }
@@ -207,7 +207,7 @@ public class ScanJob {
     public void synResourceToScreen() {
         try {
             EntityWrapper<Screen> screenQuary = new EntityWrapper();
-            screenQuary.eq("enable", Screen.ENABLE);
+            screenQuary.eq("enable", Screen.STATUS_ENABLE);
             List<Screen> screenList = screenService.selectList(screenQuary);
 
             for (Screen screen : screenList) {
@@ -240,7 +240,7 @@ public class ScanJob {
                     if (vsnNameList.contains(legalResource.getVsnName())) {
                         return;
                     } else {//上传资源
-                        msgService.putResource(screen.getUri(), legalResource);
+                        msgService.putResource(screen, legalResource);
                         log.info("定时上传显示资源 screenNo:{} url:{}", screen.getNo(), screen.getUri() + legalResource.getVsnName());
                     }
                 });
@@ -248,7 +248,7 @@ public class ScanJob {
                 //删除过期的资源(只针对FTP 图片)
                 vsnPlayList.forEach(vsnPlay -> {
                     if (!legalNameList.contains(vsnPlay.getName())) {
-                        msgService.putDownResource(screen.getUri(), vsnPlay.getName());
+                        msgService.putDownResource(screen, vsnPlay.getName());
                         log.info("定时删除过期资源 screenNo:{} url:{}", screen.getNo(), screen.getUri() + vsnPlay.getName());
                     }
                 });

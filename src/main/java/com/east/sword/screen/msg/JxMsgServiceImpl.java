@@ -28,17 +28,32 @@ public class JxMsgServiceImpl implements IMsgService {
     }
 
     @Override
-    public void putDownResource(String uri, String vsnName) {
+    public void putDownResource(Screen screen, String vsnName) {
 
     }
 
     @Override
-    public void delResource(String uri, String vsnName) {
+    public void delResource(Screen screen, String vsnName) {
 
     }
 
     @Override
-    public void putResource(String uri, Resource resource) {
+    public void putResource(Screen screen, Resource resource) {
+
+    }
+
+    @Override
+    public void sleep(Screen screen) {
+
+    }
+
+    @Override
+    public void wakeUp(Screen screen) {
+
+    }
+
+    @Override
+    public void reboot(Screen screen) {
 
     }
 }
