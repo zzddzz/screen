@@ -11,7 +11,7 @@
         <div class="content">
             <div class="container-fluid">
                 <!-- end row -->
-
+                <input type="hidden" id="no" th:value="${no}" />
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <br/>
@@ -41,7 +41,6 @@
                                             <i class="fa fa-reply" aria-hidden="true"></i> 返回
                                         </button>
                                     </div>
-
                                 </div>
                             </div>
                             <div class="card-body">
@@ -52,7 +51,7 @@
                                         <th>原始文件</th>
                                         <th>FTP日期</th>
                                         <th>同步日期</th>
-                                        <th>大屏FILE</th>
+                                        <th>同步文件名</th>
                                         <th>类型</th>
                                         <th width="60">状态</th>
                                         <th width="160">操作</th>
@@ -90,6 +89,7 @@
     });
 
     bootbox.setDefaults("locale", "zh_CN");
+    var no = $("#no").val();
 
     var table;
     $(document).ready(function () {
@@ -98,6 +98,7 @@
             ajax: {
                 url: basePath + "/resource/page",
                 type: "POST",
+                data:{"no":no},
                 async: false
             },
             serverSide: true,
@@ -122,7 +123,7 @@
                     render:
 
                         function (data) {
-                            return data == '0' ? "<font " + " color='red'>禁播</font>" : "<font " + " color='green'>正常</font>";
+                            return data == '0' ? "<font " + " color='red'>停播</font>" : "<font " + " color='green'>在播</font>";
                         }
                 }
                 ,
@@ -169,7 +170,8 @@
         table.settings()[0].ajax.data = {
             "fileName":fileName,
             "begDate":begDate,
-            "endDate":endDate
+            "endDate":endDate,
+            "no":no
         };
         table.ajax.reload();
 
@@ -185,7 +187,7 @@
                     {"resourceId": id, "enable": enable == '0' ? '1' : '0'},
                     function (response) {
                         if (response != 'success' && response != 'fail') {
-                            bootbox.alert('大屏最多播放' + response + "张图片！");
+                            bootbox.alert('诱导屏最多播放' + response + "张图片！");
                         } else if (response == 'success') {
                             window.location.reload();
                         } else {

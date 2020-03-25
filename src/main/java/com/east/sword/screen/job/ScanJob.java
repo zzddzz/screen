@@ -132,7 +132,8 @@ public class ScanJob {
     }
 
     /**
-     * FTP WEB服务 大屏播放列表 资源同步
+     * FTP WEB服务 大屏播放列表 资源同步(仅用于卡莱特大屏同步FTP资源)
+     *
      * 1 拉取FTP 中的文件遍历
      * 2 生成VSN pic 文件到服务器
      * 3 插入数据库播放资源
@@ -142,6 +143,7 @@ public class ScanJob {
         try {
             log.info("syncFtpFile...{}", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             EntityWrapper entityWrapper = new EntityWrapper();
+            entityWrapper.eq("type",Screen.TYPE_KLT);
             List<Screen> screenList = screenService.selectList(entityWrapper);
 
             //遍历Ftp文件
@@ -184,7 +186,9 @@ public class ScanJob {
                             //大屏返回的vsn列表按照时间正序排列
                             List<VsnPlay> needDelVsnList = vsnPlayList.subList(0, vsnPlayList.size() - screen.getPlayPicNum());
                             needDelVsnList.forEach(vsnPlay -> {
-                                msgService.putDownResource(screen, vsnPlay.getName());
+                                Resource resourceData = new Resource();
+                                resourceData.setVsnName(vsnPlay.getName());
+                                msgService.putDownResource(screen, resourceData);
                                 log.info("FTP扫描上传后删除过期资源,url:{}", screen.getUri() + vsnPlay.getName());
                             });
                         }
@@ -198,7 +202,7 @@ public class ScanJob {
     }
 
     /**
-     * 同步本地资源和大屏资源
+     * 同步本地资源和大屏资源(仅同步卡莱特数据)
      * 1 获取本地待播放资源
      * 2 获取大屏缓存资源
      * 3 对比资源,保持大屏待播放和本地待播放资源一致
@@ -208,6 +212,7 @@ public class ScanJob {
         try {
             EntityWrapper<Screen> screenQuary = new EntityWrapper();
             screenQuary.eq("enable", Screen.STATUS_ENABLE);
+            screenQuary.eq("type",Screen.TYPE_KLT);
             List<Screen> screenList = screenService.selectList(screenQuary);
 
             for (Screen screen : screenList) {
@@ -248,7 +253,9 @@ public class ScanJob {
                 //删除过期的资源(只针对FTP 图片)
                 vsnPlayList.forEach(vsnPlay -> {
                     if (!legalNameList.contains(vsnPlay.getName())) {
-                        msgService.putDownResource(screen, vsnPlay.getName());
+                        Resource resourceData = new Resource();
+                        resourceData.setVsnName(vsnPlay.getName());
+                        msgService.putDownResource(screen, resourceData);
                         log.info("定时删除过期资源 screenNo:{} url:{}", screen.getNo(), screen.getUri() + vsnPlay.getName());
                     }
                 });

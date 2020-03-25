@@ -23,7 +23,7 @@
                         <div class="card mb-3">
                             <div class="card-header">
                                 <div class="row">
-                                    <label class="col-form-label">大屏名称</label>
+                                    <label class="col-form-label">诱导屏</label>
                                     <div class="col-sm-2">
                                         <input type="text" id="search_name" class="form-control">
                                     </div>
@@ -83,7 +83,7 @@
                                 <form id="customForm">
                                     <input type="hidden" class="form-control" id="no" value="" required>
                                     <div class="form-group row">
-                                        <label for="name" class="star col-sm-2 col-form-label">大屏名称</label>
+                                        <label for="name" class="star col-sm-2 col-form-label">诱导屏名称</label>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control is-valid" id="name" readonly>
                                         </div>
@@ -207,17 +207,17 @@
             window.location.reload();
         }
 
-        //更改大屏状态
+        //更改诱导屏状态
         function onChangeStatus(no,status) {
             var tips;
             if (status == 0) {
-                tips = '确认让大屏休眠?';
+                tips = '确认让诱导屏休眠?';
             }
             if (status == 1) {
-                tips = '确认让大屏唤醒？'
+                tips = '确认让诱导屏唤醒？'
             }
             if (status == -1) {
-                tips = '确认重启大屏？'
+                tips = '确认重启诱导屏？'
             }
             bootbox.confirm(tips, function (result) {
                 if (result) {
@@ -235,11 +235,6 @@
                     );
                 }
             });
-        }
-
-        //加载大屏资源
-        function loadResource(no) {
-            window.location.href = basePath + "/resource/index?no=" + no;
         }
 
         function loadEdit(no) {

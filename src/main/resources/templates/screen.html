@@ -21,7 +21,7 @@
                     <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
                         <div class="card-box noradius noborder bg-default">
                             <i class="fa fa-file-text-o float-right text-white"></i>
-                            <h6 class="text-white text-uppercase m-b-20">大屏总计</h6>
+                            <h6 class="text-white text-uppercase m-b-20">总计数量</h6>
                             <h1 class="m-b-20 text-white counter" th:text="${total}"></span></h1>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                     <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
                         <div class="card-box noradius noborder bg-info">
                             <i class="fa fa-user-o float-right text-white"></i>
-                            <h6 class="text-white text-uppercase m-b-20">在播大屏</h6>
+                            <h6 class="text-white text-uppercase m-b-20">在播屏</h6>
                             <h1 class="m-b-20 text-white counter" th:text="${enable}"></h1>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                     <div class="col-xs-12 col-md-6 col-lg-6 col-xl-4">
                         <div class="card-box noradius noborder bg-warning">
                             <i class="fa fa-bell-o float-right text-white"></i>
-                            <h6 class="text-white text-uppercase m-b-20">停播大屏</h6>
+                            <h6 class="text-white text-uppercase m-b-20">停播屏</h6>
                             <h1 class="m-b-20 text-white counter" th:text="${unable}"></h1>
                         </div>
                     </div>
@@ -50,19 +50,19 @@
                             <div class="card-body">
                                 <div style="margin-left: 15px;">
                                     <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="loadAdd()">
-                                        <i class="fa fa-plus" aria-hidden="true"></i> 新增大屏
+                                        <i class="fa fa-plus" aria-hidden="true"></i> 新增诱导屏
                                     </button>
                                 </div>
                                 <table id="tb_1" class="table table-responsive-xl table-hover">
                                     <thead>
                                     <tr>
                                         <th>编号</th>
-                                        <th>大屏名称</th>
+                                        <th>诱导屏名称</th>
                                         <th>类型</th>
                                         <th>IP地址</th>
                                         <th>端口号</th>
                                         <th>匹配格式</th>
-                                        <th>是否可用</th>
+                                        <th>状态</th>
                                         <th>播放间隔(秒)</th>
                                         <th>轮播数量</th>
                                         <th>描述</th>
@@ -83,17 +83,17 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel2">大屏信息</h5>
+                                <h5 class="modal-title" id="exampleModalLabel2">诱导屏信息</h5>
                             </div>
                             <div class="modal-body">
                                 <form id="customForm">
                                     <input type="hidden" class="form-control" id="no" value="" required>
                                     <div class="form-group row">
-                                        <label for="name" class="star col-sm-2 col-form-label">大屏名称</label>
+                                        <label for="name" class="star col-sm-2 col-form-label">诱导屏名称</label>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control is-valid" id="name" required>
                                         </div>
-                                        <label for="type" class="star col-sm-2 col-form-label">大屏类型</label>
+                                        <label for="type" class="star col-sm-2 col-form-label">诱导屏类型</label>
                                         <div class="col-sm-4">
                                             <select class="form-control" id="type" required>
                                                 <option value="">请选择</option>
@@ -213,7 +213,7 @@
 
         });
 
-        //加载大屏资源
+        //加载诱导屏资源
         function loadResource(no) {
             window.location.href = basePath + "/resource/index?no=" + no;
         }

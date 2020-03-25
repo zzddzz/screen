@@ -62,7 +62,7 @@ public class ResourceController extends BaseController {
     @Autowired
     private ConstantConfig constantConfig;
 
-    @Qualifier("kltMsgService")
+    @Qualifier("routerMsgService")
     @Autowired
     private IMsgService msgService;
 
@@ -85,6 +85,10 @@ public class ResourceController extends BaseController {
      */
     @GetMapping("/inter-index")
     public String loadInterIndex(Model model) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("enable",Screen.STATUS_ENABLE);
+        List<Screen> screenList = screenService.selectList(entityWrapper);
+        model.addAttribute("screenList",screenList);
         return "inter";
     }
 
@@ -138,7 +142,7 @@ public class ResourceController extends BaseController {
                 }
                 msgService.putResource(screen, resource);
             } else {//下架资源
-                msgService.putDownResource(screen, resource.getVsnName());
+                msgService.putDownResource(screen, resource);
             }
 
             resource.setEnable(enable);
@@ -159,7 +163,7 @@ public class ResourceController extends BaseController {
 
             //删除大屏资源
             Screen screen = screenService.selectById(resource.getNo());
-            msgService.delResource(screen, resource.getVsnName());
+            msgService.delResource(screen, resource);
             return SUCCESS;
         } catch (Exception e) {
             log.error("delete resource error : {}", e);
@@ -193,7 +197,7 @@ public class ResourceController extends BaseController {
                                         RedirectAttributes redirectAttributes) {
         RedirectView redirectTarget = new RedirectView();
         redirectTarget.setContextRelative(true);
-        redirectTarget.setUrl("index");
+        redirectTarget.setUrl("inter-index");
 
         try {
             String originName = backGround.getOriginalFilename();
@@ -207,7 +211,7 @@ public class ResourceController extends BaseController {
             Resource resource = new Resource();
             resource.setEnable(Resource.UNABLE);//默认不可用
             resource.setDelFlag(Resource.UNDEL);
-            resource.setType(Resource.TYPE_FONT);
+            resource.setType(Resource.TYPE_PIC);
             resource.setFileName(fileName);
             resource.setVsnName(vsnName);
             resource.setResourceDateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
@@ -215,6 +219,7 @@ public class ResourceController extends BaseController {
             resource.setFilePath(constantConfig.fileCache);
             resource.setCreateDate(new Date());
             resource.setNo(no);
+            resource.setSrcType(Resource.TYPE_CUT);
 
             resourceService.insert(resource);
 

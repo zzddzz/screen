@@ -23,21 +23,27 @@
                         <div class="card mb-3">
                             <div class="card-header">
                                 <div class="row">
-                                    <label class="col-form-label">大屏名称</label>
+                                    <label class="col-form-label">诱导屏</label>
                                     <div class="col-sm-2">
                                         <input type="text" class="form-control">
                                     </div>
-                                    <label class="col-form-label">状态</label>
+                                    <label class="col-form-label">&nbsp;&nbsp;开始时间</label>
                                     <div class="col-sm-2">
-                                        <select class="form-control" required>
-                                            <option value="">请选择</option>
-                                            <option value="1">正常</option>
-                                            <option value="0">停播</option>
-                                        </select>
+                                        <input type="text" id="search_beg" class="form-control lay" placeholder="" >
                                     </div>
-                                    <div class="col-sm-1" style="padding-top: 4px;">
-                                        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal_add_slide">
+                                    <label class="col-form-label">&nbsp;&nbsp;结束时间</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="search_end" class="form-control lay" placeholder="" >
+                                    </div>
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm" onclick="onSearch()">
                                             <i class="fa fa-search" aria-hidden="true"></i> 查询
+                                        </button>
+                                    </div>&nbsp;&nbsp;
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm"
+                                                onclick="onRest() ">
+                                            <i class="fa fa-hourglass-1" aria-hidden="true"></i> 重置
                                         </button>
                                     </div>
 
@@ -48,7 +54,10 @@
                             <div class="card-body">
                                 <div style="margin-left: 15px;">
                                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModal">
-                                        <i class="fa fa-plus" aria-hidden="true"></i> 新增插播
+                                        <i class="fa fa-picture-o" aria-hidden="true"></i> 插播图片
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModal">
+                                        <i class="fa fa-font" aria-hidden="true"></i> 插播文字
                                     </button>
                                 </div>
                                 <table id="tb_1" class="table table-responsive-sm table-hover display">
@@ -73,8 +82,7 @@
                 </div>
 
                 <!-- Modal add -->
-                <!-- Modal add -->
-                <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+                <div class="modal fade" id="customModal" role="dialog"
                      aria-labelledby="customModal" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -84,7 +92,16 @@
                             <div class="modal-body">
                                 <form id="customForm" th:action="@{/resource/compPic}" method="post"
                                       enctype="multipart/form-data">
-                                    <input id="no" name="no" type="hidden" th:value="${no}">
+
+                                    <div class="form-group row">
+                                        <label for="no" class="star col-sm-2 col-form-label">诱导屏</label>
+                                        <div class="col-sm-10">
+                                            <select class="select2 form-control" name="no" id="no"  style="width: 400px" required>
+                                                <option value="">请选择</option>
+                                                <option th:each="screen : ${screenList}" th:value="${screen.no}" th:text="${screen.name}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label for="backPic" class="star col-sm-2 col-form-label">背景图</label>
                                         <div class="col-sm-10">
@@ -122,6 +139,17 @@
     <script th:inline="javascript">
 
         bootbox.setDefaults("locale", "zh_CN");
+
+        laydate.render({
+            elem: '#search_beg' //指定元素
+        });
+        laydate.render({
+            elem: '#search_end' //指定元素
+        });
+
+        $(document).ready(function() {
+            $('.select2').select2();
+        });
 
         $('#backPic').filer({
             limit: 1,
@@ -196,6 +224,10 @@
             });
 
         });
+
+        function onRest() {
+            window.location.reload();
+        }
 
         //新增合成图
         function onAdd() {

@@ -44,7 +44,7 @@ public class ScreenController extends BaseController<Screen> {
     @Autowired
     private IResourceService resourceService;
 
-    @Qualifier("kltMsgService")
+    @Qualifier("routerMsgService")
     @Autowired
     private IMsgService msgService;
 

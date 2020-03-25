@@ -125,13 +125,12 @@ public class KltMsgServiceImpl implements IMsgService {
      * @param vsnName
      */
     @Override
-    public void putDownResource(Screen screen, String vsnName) {
-        String delUrl = kltRoute.delRountPath(screen.getUri(), vsnName);
+    public void putDownResource(Screen screen, Resource resource) {
+        String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
         EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("vsnName",vsnName);
-        Resource resource = new Resource();
+        entityWrapper.eq("vsnName",resource.getVsnName());
         resource.setEnable(Resource.UNABLE);
         resourceService.update(resource,entityWrapper);
     }
@@ -142,13 +141,12 @@ public class KltMsgServiceImpl implements IMsgService {
      * @param vsnName
      */
     @Override
-    public void delResource(Screen screen, String vsnName) {
-        String delUrl = kltRoute.delRountPath(screen.getUri(), vsnName);
+    public void delResource(Screen screen, Resource resource) {
+        String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
         EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("vsnName",vsnName);
-        Resource resource = new Resource();
+        entityWrapper.eq("vsnName",resource.getVsnName());
         resource.setEnable(Resource.UNABLE);
         resource.setDelFlag(Resource.ISDEL);
         resourceService.update(resource,entityWrapper);
@@ -199,6 +197,11 @@ public class KltMsgServiceImpl implements IMsgService {
         MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
         valueMap.set("command","reboot");
         httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
+    }
+
+    @Override
+    public void changeLight(Screen screen, Resource resource) {
+
     }
 }
 
