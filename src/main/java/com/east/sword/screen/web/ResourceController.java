@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,13 +33,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.*;
+import java.util.*;
 
 /**
  * Resource controller
@@ -240,6 +236,78 @@ public class ResourceController extends BaseController {
         }
         return redirectTarget;
     }
+
+    /**
+     * 生成文字播放信息
+     * 根据类型判断,金晓的直接生成Resource  卡莱特的需要生成vsn 文件
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/saveFont")
+    public String saveResourcePic(@RequestParam("content") String content,
+                                        @RequestParam("no") Integer no,
+                                        @RequestParam("size") Integer size) {
+        try {
+            Screen screen = screenService.selectById(no);
+            Resource resource = new Resource();
+            resource.setEnable(Resource.UNABLE);//默认不可用
+            resource.setDelFlag(Resource.UNDEL);
+            resource.setType(Resource.TYPE_FONT);
+            resource.setResourceDateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            resource.setFilePath(constantConfig.fileCache);
+            resource.setCreateDate(new Date());
+            resource.setNo(no);
+            resource.setSrcType(Resource.TYPE_CUT);
+            resource.setContent(content);
+
+
+            //卡莱特生成VSN
+            if (Screen.TYPE_KLT.equals(screen.getType())) {
+                String fileName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS")+".vsn";
+                resource.setOriginName(fileName);
+                resource.setVsnName(fileName);
+                resource.setFileName(fileName);
+
+                File vsnFontFile = new File(constantConfig.fileCache + File.separator + fileName);
+                if (!vsnFontFile.exists()) {
+                    vsnFontFile.createNewFile();
+                }
+                File srcFile = ResourceUtils.getFile("classpath:klt_font.json");
+
+                String setContent = getFileInfo(srcFile);
+                setContent = setContent.replace("@font@",content);
+                FileWriter fw = new FileWriter(vsnFontFile);
+                fw.write(setContent);
+                fw.close();
+            }
+            if (Screen.TYPE_JX.equals(screen.getType())) {
+                String fileName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS")+".lst";
+                resource.setOriginName(fileName);
+                resource.setVsnName(fileName);
+                resource.setFileName(fileName);
+            }
+            resourceService.insert(resource);
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("saveFont error :{}",e);
+            return FAIL;
+        }
+    }
+
+    public String getFileInfo (File file) throws Exception {
+        BufferedReader reader = null;
+        StringBuffer sbf = new StringBuffer();
+        reader = new BufferedReader(new FileReader(file));
+        String tempStr;
+        while ((tempStr = reader.readLine()) != null) {
+            sbf.append(tempStr);
+        }
+        reader.close();
+        return sbf.toString();
+    }
+
 
 
 }

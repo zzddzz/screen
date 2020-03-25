@@ -1,0 +1,38 @@
+{
+  "Programs": {
+    "Program": {
+      "Pages": [{
+        "Regions":[
+          {
+            "Rect": {
+              "X": "0",
+              "Y": "0",
+              "Width": "128",
+              "Height": "64"
+            },
+            "Items": [
+              {
+                "Type": "5",
+                "BackColor": "#0x00000000",
+                "Alpha": "1.000000",
+                "BeGlaring": "0",
+                "MultiPicInfo": {
+                  "OnePicDuration": "2000"
+                },
+                "TextColor": "0xFFFFFFFF",
+                "LogFont": {
+                  "lfHeight": "22",
+                  "lfWeight": "0",
+                  "lfItalic": "0",
+                  "lfUnderline": "0",
+                  "lfStrikeOut": "0",
+                  "lfFaceName": "System"
+                },
+                "Text": "@font@"
+              }]
+          }
+        ]
+      }]
+    }
+  }
+}

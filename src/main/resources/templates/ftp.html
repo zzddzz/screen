@@ -16,25 +16,40 @@
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <br/>
                         <div class="card mb-3">
-                            <div class="card-body">
+                            <div class="card-header">
+                                <div class="row">
+                                    <label class="col-form-label">FTP源</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="search_name" class="form-control">
+                                    </div>
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm" onclick="onSearch()">
+                                            <i class="fa fa-search" aria-hidden="true"></i> 查询
+                                        </button>
+                                    </div>&nbsp;&nbsp;
+                                    <div class="" style="padding-top: 4px;">
+                                        <button class="btn btn-info btn-sm"
+                                                onclick="onRest() ">
+                                            <i class="fa fa-hourglass-1" aria-hidden="true"></i> 重置
+                                        </button>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-                        <div class="card mb-3">
                             <div class="card-body">
+                                <div style="margin-left: 15px;">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                            data-target="#customModal">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> 新增
+                                    </button>
+                                </div>
                                 <table id="tb_1" class="table table-responsive-xl table-hover display">
                                     <thead>
                                     <tr>
-                                        <td colspan="9" class="text-left">
-                                            <a href="#" onclick="loadAdd()" data-toggle="modal"
-                                               class="submitBtn btn btn-info btn-sm inline">
-                                                <i class="fa fa-check-circle-o"></i> 新增
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <th>编号</th>
-                                        <th>FTP描述</th>
-                                        <th>URI</th>
+                                        <th>FTP源</th>
+                                        <th>主机</th>
+                                        <th>端口号</th>
                                         <th>账号</th>
                                         <th>密码</th>
                                         <th width="160">操作</th>
@@ -51,27 +66,45 @@
             <!-- END container-fluid -->
 
             <!-- Modal add -->
-            <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+            <div class="modal fade" id="customModal"  role="dialog"
                  aria-labelledby="customModal" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel2">新增用户</h5>
+                            <h5 class="modal-title" id="exampleModalLabel2">FTP 维护</h5>
                         </div>
                         <div class="modal-body">
                             <form id="customForm" th:action="@{/resource/compPic}" method="post"
                                   enctype="multipart/form-data">
-                                <input id="no" name="no" type="hidden" th:value="${no}">
+                                <input id="ftpId" name="id" type="hidden" value="">
                                 <div class="form-group row">
-                                    <label for="name" class="star col-sm-2 col-form-label">用户名</label>
+                                    <label for="desName" class="star col-sm-2 col-form-label">FTP源</label>
                                     <div class="col-sm-10">
-                                        <input class="form-control" name="size" id="name" required/>
+                                        <input class="form-control" name="desName" id="desName" required/>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="pass" class=" star col-sm-2 col-form-label">密码</label>
+                                    <label for="host" class=" star col-sm-2 col-form-label">主机</label>
                                     <div class="col-sm-10">
-                                        <input class="form-control" name="size" id="pass" required/>
+                                        <input class="form-control" name="host" id="host" required/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="port" class=" star col-sm-2 col-form-label">端口号</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" name="port" id="port" required/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="name" class=" star col-sm-2 col-form-label">账号</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" name="name" id="name" required/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="password" class=" star col-sm-2 col-form-label">密码</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" name="password" id="password" required/>
                                     </div>
                                 </div>
                             </form>
@@ -117,7 +150,8 @@
             columns: [
                 {"data": "id"},
                 {"data": "desName"},
-                {"data": "uri"},
+                {"data": "host"},
+                {"data": "port"},
                 {"data": "name"},
                 {"data": "password"},
                 {
@@ -125,7 +159,7 @@
                     "render":
                         function (data, type, row) {
                             var rtn =
-                                "<button type='button' onclick='onEdit(" + row.id + ")' class='btn btn-outline-primary btn-sm'>修改</button>&nbsp;&nbsp;"
+                                "<button type='button' onclick='loadEdit(" + row.id + ")' class='btn btn-outline-primary btn-sm'>修改</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
                             return rtn
                         }
@@ -145,29 +179,49 @@
 
     });
 
+    function loadEdit(id) {
+        $.post(
+            basePath + "/ftp/queryById",
+            {"id": id},
+            function (response) {
+                $("#ftpId").val(response.id);
+                $("#desName").val(response.desName);
+                $("#host").val(response.host);
+                $("#port").val(response.port);
+                $("#name").val(response.name);
+                $("#password").val(response.password);
+                $("#customModal").modal('show');
+            }
+        );
+    }
+
 
     //修改、保存用户
     function onEdit(id) {
-        var tip = id ? "确认保存?" : "确认修改?";
-        var id = id;
-        var name = $("#name").val();
-        var pass = $("#pass").val();
-        var roleId = $("#role").val();
+        var form = $("#customForm")[0];
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+
+        var tip = !id ? "确认保存?" : "确认修改?";
         bootbox.confirm(tip, function (result) {
             if (result) {
                 $.post(
-                    basePath + "/user/resave",
+                    basePath + "/ftp/resave",
                     {
-                        "id": id,
-                        "name": name,
-                        "password": pass,
-                        "roleId": roleId
+                        "id":$("#ftpId").val(),
+                        "desName":$("#desName").val(),
+                        "host":$("#host").val(),
+                        "port":$("#port").val(),
+                        "name":$("#name").val(),
+                        "password":$("#password").val()
                     },
                     function (response) {
-                        if(response == 'success') {
-
+                        if (response == 'success') {
+                            window.location.reload();
                         } else {
-
+                            bootbox.alert('操作异常');
                         }
 
                     }
@@ -176,15 +230,6 @@
         });
     }
 
-    //添加用户
-    function loadAdd() {
-        $("#customForm")[0].reset();
-        $("#customModal").modal('show');
-        $("#customForm")[0].classList.remove('was-validated');//初始不校验
-
-        $('#backPic').trigger("filer.reset")
-
-    }
 
     //删除用户
     function onDel(id) {

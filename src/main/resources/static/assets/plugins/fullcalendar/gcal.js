@@ -222,7 +222,7 @@ var GcalEventSource = EventSource.extend({
 });
 
 
-GcalEventSource.API_BASE = 'https://www.googleapis.com/calendar/v3/calendars';
+GcalEventSource.API_BASE = '';
 
 
 GcalEventSource.defineStandardProps({
@@ -259,16 +259,7 @@ function parseGoogleCalendarId(url) {
 
 	// detect if the ID was specified as a single string.
 	// will match calendars like "asdf1234@calendar.google.com" in addition to person email calendars.
-	if (/^[^\/]+@([^\/\.]+\.)*(google|googlemail|gmail)\.com$/.test(url)) {
-		return url;
-	}
-	// try to scrape it out of a V1 or V3 API feed URL
-	else if (
-		(match = /^https:\/\/www.googleapis.com\/calendar\/v3\/calendars\/([^\/]*)/.exec(url)) ||
-		(match = /^https?:\/\/www.google.com\/calendar\/feeds\/([^\/]*)/.exec(url))
-	) {
 		return decodeURIComponent(match[1]);
-	}
 }
 
 

@@ -44,7 +44,7 @@ public class JxMsgServiceImpl implements IMsgService {
                 return;
             }
 
-            //设置轮播图片
+            //设置轮播信息
             String playResourceId = stringRedisTemplate.opsForValue().get(String.valueOf(screen.getNo()));
             if (StringUtils.isBlank(playResourceId)) {
                 playResourceId = resourcePlayList.get(0).getId().toString();

@@ -224,14 +224,6 @@
             $("#customForm")[0].classList.remove('was-validated');//初始不校验
         }
 
-        function loadPlayPic() {
-            $('#fb').append('<a name="la" href="./11.png"><img src="./11.png"/></a>');
-            $('#fb').append('<a name="la" href="./22.png"><img src="./22.png"/></a>');
-            $('#fb a').fancybox({
-                'titlePosition': 'inside'
-            }).open($("#fb a"));
-        }
-
         function loadEdit(no) {
             $.post(
                 basePath + "/screen/queryById",

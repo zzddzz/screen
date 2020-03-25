@@ -25,7 +25,7 @@
                                 <div class="row">
                                     <label class="col-form-label">诱导屏</label>
                                     <div class="col-sm-2">
-                                        <input type="text" class="form-control">
+                                        <input type="text" id="search_name" class="form-control">
                                     </div>
                                     <label class="col-form-label">&nbsp;&nbsp;开始时间</label>
                                     <div class="col-sm-2">
@@ -53,10 +53,10 @@
 
                             <div class="card-body">
                                 <div style="margin-left: 15px;">
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModal">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModalPic">
                                         <i class="fa fa-picture-o" aria-hidden="true"></i> 插播图片
                                     </button>
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModal">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModalFont">
                                         <i class="fa fa-font" aria-hidden="true"></i> 插播文字
                                     </button>
                                 </div>
@@ -81,13 +81,13 @@
                     </div>
                 </div>
 
-                <!-- Modal add -->
-                <div class="modal fade" id="customModal" role="dialog"
+                <!-- Modal add A-->
+                <div class="modal fade" id="customModalPic" role="dialog"
                      aria-labelledby="customModal" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel2">自定义图片</h5>
+                                <h5 class="modal-title" id="exampleModalLabel2">插播图片</h5>
                             </div>
                             <div class="modal-body">
                                 <form id="customForm" th:action="@{/resource/compPic}" method="post"
@@ -129,6 +129,49 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal add B-->
+                <div class="modal fade" id="customModalFont" role="dialog"
+                     aria-labelledby="customModal" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">插播文字</h5>
+                            </div>
+                            <div class="modal-body">
+                                <form id="customFormFont" th:action="@{/resource/compFont}" method="post"
+                                      enctype="multipart/form-data">
+
+                                    <div class="form-group row">
+                                        <label for="noFont" class="star col-sm-2 col-form-label">诱导屏</label>
+                                        <div class="col-sm-10">
+                                            <select class="select2 form-control" name="no" id="noFont"  style="width: 400px" required>
+                                                <option value="">请选择</option>
+                                                <option th:each="screen : ${screenList}" th:value="${screen.no}" th:text="${screen.name}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="descInfo" class=" star col-sm-2 col-form-label">字体大小</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" name="size" id="sizeFont" placeholder="90" required/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="descInfoFont" class=" star col-sm-2 col-form-label">文字信息</label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" name="content" id="descInfoFont" required></textarea>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                <button type="button" onclick="onAddFont()" class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- END content-page -->
@@ -163,9 +206,9 @@
         /*<![CDATA[*/
         var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
-        var dataTable;
+        var table;
         $(document).ready(function () {
-            dataTable = $('#tb_1').DataTable({
+            table = $('#tb_1').DataTable({
                 language: _language,
                 ajax:{
                     "url":basePath + "/resource/page",
@@ -237,6 +280,48 @@
                 return;
             }
             $("#customForm").submit();
+        }
+
+        //新增文字
+        function onAddFont() {
+            var form = $("#customFormFont")[0];
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+            var no = $("#noFont").val();
+            var content = $("#descInfoFont").val();
+            var size = $("#sizeFont").val();
+            $.post(
+                basePath + "/resource/saveFont",
+                {
+                    "content":content,
+                    "no":no,
+                    "size":size
+                },
+                function (result) {
+                    if (result == 'success') {
+                        window.location.reload();
+                    } else {
+                        bootbox.alert('新增异常');
+                    }
+                }
+            );
+        }
+
+        //表单查询
+        function onSearch() {
+            var noName = $("#search_name").val();
+            var begDate = $("#search_beg").val();
+            var endDate = $("#search_end").val();
+            table.settings()[0].ajax.data = {
+                "srcType":"cut",
+                "noName":noName,
+                "begDate":begDate,
+                "endDate":endDate,
+            };
+            table.ajax.reload();
+
         }
 
         //更改状态

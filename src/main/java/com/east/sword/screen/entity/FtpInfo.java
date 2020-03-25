@@ -24,7 +24,8 @@ public class FtpInfo extends Model<FtpInfo> {
     private Integer id;
     @TableField("des_name")
     private String desName;
-    private String uri;
+    private String host;
+    private Integer port;
     private String name;
     private String password;
 
@@ -38,7 +39,6 @@ public class FtpInfo extends Model<FtpInfo> {
         return "FtpInfo{" +
         ", id=" + id +
         ", desName=" + desName +
-        ", uri=" + uri +
         ", name=" + name +
         ", password=" + password +
         "}";
