@@ -1,6 +1,5 @@
 package com.east.sword.screen.web;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -10,8 +9,6 @@ import com.google.gson.GsonBuilder;
  * @Author ZZD
  */
 public class BaseController<T> {
-
-    public EntityWrapper<T> entityWrapper = new EntityWrapper<>();
 
     public static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 

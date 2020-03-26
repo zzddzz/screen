@@ -1,11 +1,13 @@
 package com.east.sword.screen.web;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.east.sword.screen.entity.FtpInfo;
 import com.east.sword.screen.service.IFtpInfoService;
 import com.east.sword.screen.web.dto.PageHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,10 +40,14 @@ public class FtpInfoController extends BaseController{
 
     @ResponseBody
     @RequestMapping("/page")
-    public Map screenPageList(PageHelper<FtpInfo> pageHelper) {
+    public Map screenPageList(PageHelper<FtpInfo> pageHelper,FtpInfo ftpInfo) {
         try {
             Map data = new TreeMap();
-            Page<FtpInfo> page = ftpInfoService.selectPage(pageHelper.getPage());
+            EntityWrapper entityWrapper = new EntityWrapper();
+            if (StringUtils.isNotBlank(ftpInfo.getDesName())) {
+                entityWrapper.like("des_name",ftpInfo.getDesName());
+            }
+            Page<FtpInfo> page = ftpInfoService.selectPage(pageHelper.getPage(),entityWrapper);
             data.put("data",page.getRecords());
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
@@ -71,6 +77,18 @@ public class FtpInfoController extends BaseController{
             return SUCCESS;
         } catch (Exception e) {
             log.error("resave ftpinfo error :{}",e);
+            return FAIL;
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("/delete")
+    public String delete(int id) {
+        try {
+            ftpInfoService.deleteById(id);
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("delete ftpinfo error :{}",e);
             return FAIL;
         }
     }

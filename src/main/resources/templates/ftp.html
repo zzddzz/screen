@@ -38,8 +38,7 @@
                             </div>
                             <div class="card-body">
                                 <div style="margin-left: 15px;">
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                            data-target="#customModal">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="loadAdd()">
                                         <i class="fa fa-plus" aria-hidden="true"></i> 新增
                                     </button>
                                 </div>
@@ -66,7 +65,7 @@
             <!-- END container-fluid -->
 
             <!-- Modal add -->
-            <div class="modal fade" id="customModal"  role="dialog"
+            <div class="modal fade" id="customModal" role="dialog"
                  aria-labelledby="customModal" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -134,8 +133,9 @@
 
     bootbox.setDefaults("locale", "zh_CN");
 
+    var table;
     $(document).ready(function () {
-        $('#tb_1').DataTable({
+        table = $('#tb_1').DataTable({
             language: _language,
             ajax: {
                 url: basePath + "/ftp/page",
@@ -179,6 +179,16 @@
 
     });
 
+    function loadAdd() {
+        $("#ftpId").val('');
+        $("#desName").val('');
+        $("#host").val('');
+        $("#port").val('');
+        $("#name").val('');
+        $("#password").val('');
+        $("#customModal").modal('show');
+    }
+
     function loadEdit(id) {
         $.post(
             basePath + "/ftp/queryById",
@@ -197,46 +207,52 @@
 
 
     //修改、保存用户
-    function onEdit(id) {
+    function onEdit() {
         var form = $("#customForm")[0];
         if (!form.checkValidity()) {
             form.classList.add('was-validated');
             return;
         }
+        $.post(
+            basePath + "/ftp/resave",
+            {
+                "id": $("#ftpId").val(),
+                "desName": $("#desName").val(),
+                "host": $("#host").val(),
+                "port": $("#port").val(),
+                "name": $("#name").val(),
+                "password": $("#password").val()
+            },
+            function (response) {
+                if (response == 'success') {
+                    window.location.reload();
+                } else {
+                    bootbox.alert('操作异常');
+                }
 
-        var tip = !id ? "确认保存?" : "确认修改?";
-        bootbox.confirm(tip, function (result) {
-            if (result) {
-                $.post(
-                    basePath + "/ftp/resave",
-                    {
-                        "id":$("#ftpId").val(),
-                        "desName":$("#desName").val(),
-                        "host":$("#host").val(),
-                        "port":$("#port").val(),
-                        "name":$("#name").val(),
-                        "password":$("#password").val()
-                    },
-                    function (response) {
-                        if (response == 'success') {
-                            window.location.reload();
-                        } else {
-                            bootbox.alert('操作异常');
-                        }
-
-                    }
-                );
             }
-        });
+        );
     }
 
+    function onRest() {
+        window.location.reload();
+    }
+
+    //表单查询
+    function onSearch() {
+        var name = $("#search_name").val();
+        table.settings()[0].ajax.data = {
+            "desName":name
+        };
+        table.ajax.reload();
+    }
 
     //删除用户
     function onDel(id) {
         bootbox.confirm('确认删除?', function (result) {
             if (result) {
                 $.post(
-                    basePath + "/resource/delete",
+                    basePath + "/ftp/delete",
                     {"id": id},
                     function (response) {
                         if (response == 'success') {

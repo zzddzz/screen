@@ -56,6 +56,7 @@ public class ScreenController extends BaseController<Screen> {
 
     @GetMapping("/index")
     public String loadScreenIndex(Model model) {
+        EntityWrapper entityWrapper = new EntityWrapper();
         List<Screen> screenList = screenService.selectList(entityWrapper);
         model.addAttribute("total",screenList.size());
         int enable = screenList.stream().filter(meta->Screen.STATUS_ENABLE.equals(meta.getEnable())).collect(Collectors.toList()).size();
@@ -74,6 +75,7 @@ public class ScreenController extends BaseController<Screen> {
     @RequestMapping("/list")
     public List<Screen> screenList() {
         try {
+            EntityWrapper entityWrapper = new EntityWrapper();
             List<Screen> screenList = screenService.selectList(entityWrapper);
             return screenList;
         } catch (Exception e) {
