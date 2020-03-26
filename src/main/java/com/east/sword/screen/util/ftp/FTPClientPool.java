@@ -27,7 +27,7 @@ public class FTPClientPool implements ObjectPool<FTPClient> {
 
     public FTPClientPool(int poolSize, FTPClientFactory factory) throws Exception {
         this.factory = factory;
-        this.blockingQueue = new ArrayBlockingQueue<FTPClient>(poolSize);
+        this.blockingQueue = new ArrayBlockingQueue<>(poolSize);
         initPool(poolSize);
     }
 

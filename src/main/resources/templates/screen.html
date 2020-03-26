@@ -161,6 +161,10 @@
 
         bootbox.setDefaults("locale", "zh_CN");
 
+        $(document).ready(function() {
+            $('.select2').select2();
+        });
+
         /*<![CDATA[*/
         var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
@@ -238,7 +242,7 @@
                     $("#playPicNum").val(response.playPicNum);
                     $("#second").val(response.second);
                     $("#port").val(response.port);
-                    $("#type").val(response.type);
+                    $("#type").val(response.type).trigger('change');;
                     $("#customModal").modal('show');
                 }
             );

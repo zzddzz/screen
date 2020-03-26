@@ -31,8 +31,6 @@ public class FTPUtils {
     public static FTPClient ftpClient;
 
 
-    private static FTPUtils ftpUtils;
-
     @Autowired
     private FTPProperties ftpProperties;
 
@@ -44,7 +42,6 @@ public class FTPUtils {
     @PostConstruct
     public boolean init() {
         FTPClientFactory factory = new FTPClientFactory(ftpProperties);
-        ftpUtils = this;
         try {
             ftpClientPool = new FTPClientPool(factory);
         } catch (Exception e) {

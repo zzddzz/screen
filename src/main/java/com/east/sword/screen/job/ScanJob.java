@@ -5,8 +5,10 @@ import com.east.sword.screen.config.ConstantConfig;
 import com.east.sword.screen.config.ScheduleConfig;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
+import com.east.sword.screen.entity.ScreenFtp;
 import com.east.sword.screen.msg.IMsgService;
 import com.east.sword.screen.service.IResourceService;
+import com.east.sword.screen.service.IScreenFtpService;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.FileUtil;
 import com.east.sword.screen.util.ftp.FTPUtils;
@@ -66,6 +68,9 @@ public class ScanJob {
 
     @Autowired
     private IResourceService resourceService;
+
+    @Autowired
+    private IScreenFtpService screenFtpService;
 
     @Qualifier("routerMsgService")
     @Autowired()
@@ -142,10 +147,26 @@ public class ScanJob {
     //@Scheduled(cron = "*/10 * * * * ?")
     public void syncFtpFile() {
         try {
-            log.info("syncFtpFile...{}", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            log.info("syncFtpFile...");
             EntityWrapper entityWrapper = new EntityWrapper();
             entityWrapper.eq("type",Screen.TYPE_KLT);
             List<Screen> screenList = screenService.selectList(entityWrapper);
+
+            for (Screen screen : screenList) {
+                EntityWrapper entityWrapperFtpInfo = new EntityWrapper();
+                entityWrapperFtpInfo.eq("screen_id",screen.getNo());
+                List<ScreenFtp> screenFtpList = screenFtpService.selectList(entityWrapperFtpInfo);
+                for (ScreenFtp screenFtp : screenFtpList) {
+
+                    //判断设置的FTP 同步时间是否可以触发.
+                    String now = DateFormatUtils.format(new Date(),"HH:mm:ss");
+                    if (compTime(now , screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(),now)) {
+
+                        //todo 处理FTP的同步文件.
+                    }
+
+                }
+            }
 
             //遍历Ftp文件
             FTPFile[] files = ftpUtils.getFiles(".");
@@ -325,6 +346,31 @@ public class ScanJob {
             }
         }
         return false;
+    }
+
+    /**
+     * 判断两个HH:mm:ss的大小
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public static boolean compTime(String s1,String s2){
+        try {
+            if (s1.indexOf(":")<0||s1.indexOf(":")<0) {
+                System.out.println("格式不正确");
+            }else{
+                String[]array1 = s1.split(":");
+                int total1 = Integer.valueOf(array1[0])*3600+Integer.valueOf(array1[1])*60+Integer.valueOf(array1[2]);
+                String[]array2 = s2.split(":");
+                int total2 = Integer.valueOf(array2[0])*3600+Integer.valueOf(array2[1])*60+Integer.valueOf(array2[2]);
+                return total1-total2>0?true:false;
+            }
+        } catch (NumberFormatException e) {
+            // TODO Auto-generated catch block
+            return true;
+        }
+        return false;
+
     }
 
 
