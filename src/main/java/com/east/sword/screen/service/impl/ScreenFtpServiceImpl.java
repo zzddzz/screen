@@ -6,6 +6,8 @@ import com.east.sword.screen.service.IScreenFtpService;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -17,4 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ScreenFtpServiceImpl extends ServiceImpl<ScreenFtpMapper, ScreenFtp> implements IScreenFtpService {
 
+    @Override
+    public List<ScreenFtp> selectListOfScren(int no) {
+        return baseMapper.selectListOfScren(no);
+    }
 }

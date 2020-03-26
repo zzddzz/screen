@@ -4,7 +4,9 @@ package com.east.sword.screen.web;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.east.sword.screen.entity.FtpInfo;
+import com.east.sword.screen.entity.ScreenFtp;
 import com.east.sword.screen.service.IFtpInfoService;
+import com.east.sword.screen.service.IScreenFtpService;
 import com.east.sword.screen.web.dto.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -32,6 +35,9 @@ public class FtpInfoController extends BaseController{
 
     @Autowired
     private IFtpInfoService ftpInfoService;
+
+    @Autowired
+    private IScreenFtpService screenFtpService;
 
     @GetMapping("/index")
     public String index() {
@@ -92,6 +98,59 @@ public class FtpInfoController extends BaseController{
             return FAIL;
         }
     }
+
+    @ResponseBody
+    @RequestMapping("/save-screen-config")
+    public String saveScreenConfig(ScreenFtp screenFtp){
+        try {
+            EntityWrapper entityWrapper = new EntityWrapper();
+            entityWrapper.eq("screen_id",screenFtp.getScreenId());
+            entityWrapper.eq("ftp_id",screenFtp.getFtpId());
+            ScreenFtp dbSreenFtp = screenFtpService.selectOne(entityWrapper);
+            if (null == dbSreenFtp) {
+                screenFtpService.insertOrUpdate(screenFtp);
+            } else {
+                screenFtp.setId(dbSreenFtp.getId());
+                screenFtpService.updateById(screenFtp);
+            }
+
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("saveScreenConfig error :{}",e);
+            return FAIL;
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("/get-screen-ftp-info")
+    public List<ScreenFtp> getScreenFtpInfo(int no){
+        try {
+            EntityWrapper entityWrapper = new EntityWrapper();
+            entityWrapper.eq("screen_id",no);
+            List<ScreenFtp> screenFtpList = screenFtpService.selectListOfScren(no);
+            return screenFtpList;
+        } catch (Exception e) {
+            log.error("getScreenFtpInfo error :{}",e);
+            return null;
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("/del-screen-ftp")
+    public String delScreenFtp(int id){
+        try {
+            screenFtpService.deleteById(id);
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("getScreenFtpInfo error :{}",e);
+            return FAIL;
+        }
+    }
+
+
+
+
 
 }
 

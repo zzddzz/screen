@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.east.sword.screen.mapper.ScreenFtpMapper">
 
+    <select id="selectListOfScren" resultType="com.east.sword.screen.entity.ScreenFtp">
+        SELECT
+        t1.id AS id,
+        t1.screen_id AS screenId,
+        t1.ftp_id AS ftpId,
+        t2.des_name AS ftpName,
+        t1.begTime,
+        t1.endTime
+        from screen_ftp t1 INNER JOIN ftp_info t2 on t1.ftp_id = t2.id;
+    </select>
+
 </mapper>

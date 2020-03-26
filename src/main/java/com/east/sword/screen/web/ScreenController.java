@@ -3,9 +3,11 @@ package com.east.sword.screen.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.east.sword.screen.entity.FtpInfo;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
 import com.east.sword.screen.msg.IMsgService;
+import com.east.sword.screen.service.IFtpInfoService;
 import com.east.sword.screen.service.IResourceService;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.http.HttpClient;
@@ -52,6 +54,9 @@ public class ScreenController extends BaseController<Screen> {
     private KltRoute kltRoute;
 
     @Autowired
+    private IFtpInfoService ftpInfoService;
+
+    @Autowired
     private HttpClient httpClient;
 
     @GetMapping("/index")
@@ -67,7 +72,9 @@ public class ScreenController extends BaseController<Screen> {
 
     @GetMapping("/play-index")
     public String loadPlayIndex(Model model) {
-
+        EntityWrapper entityWrapper = new EntityWrapper();
+        List<FtpInfo> ftpInfoList = ftpInfoService.selectList(entityWrapper);
+        model.addAttribute("ftpInfoList",ftpInfoList);
         return "play";
     }
 

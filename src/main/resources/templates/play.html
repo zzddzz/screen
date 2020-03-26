@@ -60,7 +60,7 @@
                                         <th>亮度</th>
                                         <th>取图方式</th>
                                         <th>状态</th>
-                                        <th>操作</th>
+                                        <th width="250px">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -72,7 +72,7 @@
                 </div>
 
                 <!-- Modal add -->
-                <div class="modal fade" id="customModal" tabindex="-1" role="dialog"
+                <div class="modal fade" id="customModal" role="dialog"
                      aria-labelledby="customModal" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -115,6 +115,62 @@
                         </div>
                     </div>
                 </div>
+
+
+                <!-- FTP Modal add -->
+                <div class="modal fade" id="ftpSetModal" role="dialog"
+                     aria-labelledby="ftpSetModal" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel1">FTP源</h5>
+                            </div>
+                            <div class="modal-body">
+                                <form id="ftpForm">
+                                    <input type="hidden" class="form-control" id="screenNo" value="" >
+                                    <div class="form-group row">
+                                        <label for="ftpId" class="star  col-form-label">&nbsp;&nbsp;FTP 源</label>
+                                        <div class="col-sm-3">
+                                            <select class="form-control select2" id="ftpId" style="width: 180px" required>
+                                                <option value="">请选择</option>
+                                                <option th:each="ftp:${ftpInfoList}" th:value="${ftp.id}" th:text="${ftp.desName}"></option>
+                                            </select>
+                                        </div>
+                                        <label for="begTime" class="star  col-form-label">&nbsp;&nbsp;开始时间</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" id="begTime" placeholder="HH:mm:ss" required>
+                                        </div>
+                                        <label for="endTime" class="star col-form-label">&nbsp;&nbsp;结束时间</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" id="endTime" placeholder="HH:mm:ss" required>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <span><a href="#" onclick="onAddFtp()" class="btn btn-primary btn-sm" style="margin-top: 3px;">
+                                                <i class="fa fa-plus" aria-hidden="true"></i> 新增</a></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <table class="table table-responsive-xl table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">FTP 源</th>
+                                                <th scope="col">开始时间</th>
+                                                <th scope="col">结束时间</th>
+                                                <th scope="col">操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="ftpTbody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- END content-page -->
@@ -130,6 +186,20 @@
             min: 0,
             max: 100,
             from: 45
+        });
+
+        //时间选择器
+        laydate.render({
+            elem: '#begTime'
+            ,type: 'time'
+        });
+        laydate.render({
+            elem: '#endTime'
+            ,type: 'time'
+        });
+
+        $(document).ready(function() {
+            $('.select2').select2();
         });
 
         /*<![CDATA[*/
@@ -175,6 +245,7 @@
                             }
                             var rtnStr =
                                 "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>调整参数</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='loadFtp(" + row.no + ")' class='btn btn-outline-primary btn-sm'>FTP源</button>&nbsp;&nbsp;"
                                 + chageInfo
                                 + "<button type='button' onclick='onChangeStatus(" + row.no + ",-1)' class='btn btn-outline-primary btn-sm'>重启</button>";
                             return rtnStr;
@@ -191,6 +262,93 @@
             });
 
         });
+
+        //加载ftp 新增modal
+        function loadFtp(no) {
+            $("#screenNo").val(no);
+            loadFtpScreenInfo(no);
+            $("#ftpSetModal").modal('show');
+        }
+
+        //删除按钮
+        function delIcon(id,no) {
+            var delIcon = "<a href='#' onclick='onDelFtp("+ id + "," + no + ")' " +
+                "class='btn btn-danger btn-sm' data-placement='top' " +
+                "data-toggle='tooltip' data-title='Delete'>" +
+                "<i class='fa fa-trash-o' aria-hidden='true'></i></a>";
+            return delIcon;
+        }
+
+        //加载ftp 配置信息
+        function loadFtpScreenInfo(no) {
+            var tbody = '';
+            $.post(
+                basePath + "/ftp/get-screen-ftp-info",
+                {'no':no},
+                function (result) {
+                    result.forEach(meta=>{
+                        tbody += '<tr>';
+                        tbody += '<td>' + meta.ftpName + '</td>';
+                        tbody += '<td>' + meta.begTime + '</td>';
+                        tbody += '<td>' + meta.endTime + '</td>';
+                        tbody += '<td>' + delIcon(meta.id,meta.screenId) + '</td>';
+                        tbody += '</tr>';
+                    });
+                    $("#ftpTbody").html(tbody);
+                }
+
+            );
+        }
+
+        //新增FTP信息
+        function onAddFtp() {
+            var form = $("#ftpForm")[0];
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+            var no = $("#screenNo").val();
+            var ftpId = $("#ftpId").val();
+            var begTime = $("#begTime").val();
+            var endTime = $("#endTime").val();
+            $.post(
+                basePath + "/ftp/save-screen-config",
+                {
+                    "screenId": no,
+                    "ftpId": ftpId,
+                    "begTime": begTime,
+                    "endTime": endTime,
+                },
+                function (response){
+                    if (response == 'success') {
+                        loadFtpScreenInfo(no);
+                    } else {
+                        bootbox.alert('操作异常');
+                    }
+                }
+
+            );
+        }
+        
+        //删除ftp 信息
+        function onDelFtp(id,no) {
+            bootbox.confirm('确认删除 FTP 源', function (result) {
+                if (result) {
+                    $.post(
+                        basePath + "/ftp/del-screen-ftp",
+                        {"id":id},
+                        function (response) {
+                            if (response == 'success') {
+                                loadFtpScreenInfo(no);
+                            } else {
+                                bootbox.alert("操作异常");
+                            }
+
+                        }
+                    );
+                }
+            });
+        }
 
         //表单查询
         function onSearch() {
