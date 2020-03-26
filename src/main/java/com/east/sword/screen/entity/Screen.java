@@ -83,8 +83,16 @@ public class Screen extends Model<Screen> {
     private List<Integer> resourceIdList;
 
     public String getScheduleCron() {
-        if (StringUtils.isNotBlank(cron) && Integer.parseInt(cron) < 60) {
-            return StringUtils.join(cron,"/* * * * * ?");
+        if (StringUtils.isNotBlank(cron) ) {
+            int totalSecond =  Integer.parseInt(cron) ;
+            if (totalSecond < 60) {
+                return StringUtils.join(cron,"/* * * * * ?");
+            } else {
+                int minute = Integer.parseInt(cron)/60;
+                int secode = Integer.parseInt(cron)%60;
+
+                return StringUtils.join(secode," ",minute,"/* * * * ?");
+            }
         } else {//默认20秒播放一次
             return "20/* * * * * ?";
         }

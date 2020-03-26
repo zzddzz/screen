@@ -123,8 +123,8 @@ public class ResourceController extends BaseController {
             //上传大屏,判断大屏资源是否占满
             if (Resource.UNABLE.equals(resource.getEnable())) {//上传大屏资源
 
-                //只有FTP同步的图片校验大屏设置的图片数量,自定义的不设置限制
-                if (Resource.TYPE_PIC.equals(resource.getType())) {
+                //只有FTP同步的图片-->校验大屏设置的图片数量限制,自定义的不限制
+                if (Resource.TYPE_SYNC.equals(resource.getSrcType())) {
                     // 判断大屏播放数量是否占满
                     EntityWrapper entityWrapper = new EntityWrapper();
                     entityWrapper.eq("enable", "1");

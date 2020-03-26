@@ -183,7 +183,7 @@
             if (result) {
                 $.post(
                     basePath + "/resource/change",
-                    {"resourceId": id, "enable": enable == '0' ? '1' : '0'},
+                    {"resourceId": id, "enable": enable},
                     function (response) {
                         if (response != 'success' && response != 'fail') {
                             bootbox.alert('诱导屏最多播放' + response + "张图片！");
