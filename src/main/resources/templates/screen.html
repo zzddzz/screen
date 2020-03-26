@@ -130,9 +130,9 @@
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" id="playPicNum" required>
                                         </div>
-                                        <label for="cron" class="star col-sm-2 col-form-label">播放间隔</label>
+                                        <label for="second" class="star col-sm-2 col-form-label">播放间隔</label>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control" placeholder="秒" id="cron" required>
+                                            <input type="text" class="form-control" placeholder="秒" id="second" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -188,7 +188,7 @@
                             return data == '0' ? "<font color='red'>休眠</font>" : "<font color='green'>正常</font>";
                         }
                     },
-                    {"data": "cron"},
+                    {"data": "second"},
                     {"data": "playPicNum"},
                     {"data": "descInfo"},
                     {
@@ -236,7 +236,7 @@
                     $("#host").val(response.host);
                     $("#regexChar").val(response.regexChar);
                     $("#playPicNum").val(response.playPicNum);
-                    $("#cron").val(response.cron);
+                    $("#second").val(response.second);
                     $("#port").val(response.port);
                     $("#type").val(response.type);
                     $("#customModal").modal('show');
@@ -263,7 +263,7 @@
                     "type": $("#type").val(),
                     "regexChar": $("#regexChar").val(),
                     "playPicNum": $("#playPicNum").val(),
-                    "cron": $("#cron").val()
+                    "second": $("#second").val()
                 },
                 function (response) {
                     if (response == 'success') {

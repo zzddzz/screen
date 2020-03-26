@@ -51,6 +51,17 @@ public class JxMsgServiceImpl implements IMsgService {
             }
             Resource resource = resourceService.selectById(playResourceId);
             socketRouterService.sendMessage(resource, screen);
+
+            //设置下一次金晓屏播放信息
+            int nextPlayResouceIndex = 0;
+            for (int i =0 ;i < resourcePlayList.size();i++){
+                Resource temp = resourcePlayList.get(i);
+                if (temp.getId().toString().equals(playResourceId)) {
+                     nextPlayResouceIndex = (i + 1) < resourcePlayList.size() ? (i + 1) : 0;
+                }
+            }
+            Resource nextPlayResource = resourcePlayList.get(nextPlayResouceIndex);
+            stringRedisTemplate.opsForValue().set(String.valueOf(screen.getNo()),nextPlayResource.getId().toString());
         } catch (Exception e) {
             log.error("发送金晓Socket 请求异常 : {}", e);
         }

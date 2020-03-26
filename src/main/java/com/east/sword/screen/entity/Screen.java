@@ -46,8 +46,8 @@ public class Screen extends Model<Screen> {
     @TableField("descInfo")
     private String descInfo;
 
-    @TableField("cron")
-    private String cron;
+    @TableField("second")
+    private Integer second;
 
     @TableField("uri")
     private String uri;
@@ -83,15 +83,15 @@ public class Screen extends Model<Screen> {
     private List<Integer> resourceIdList;
 
     public String getScheduleCron() {
-        if (StringUtils.isNotBlank(cron) ) {
-            int totalSecond =  Integer.parseInt(cron) ;
-            if (totalSecond < 60) {
-                return StringUtils.join(cron,"/* * * * * ?");
+        if (null != second ) {
+            if (second < 60) {
+                String cron = StringUtils.join("*/",second," * * * * ?");
+                return cron;
             } else {
-                int minute = Integer.parseInt(cron)/60;
-                int secode = Integer.parseInt(cron)%60;
+                int minute = second/60;
+                int secode = second%60;
 
-                return StringUtils.join(secode," ",minute,"/* * * * ?");
+                return StringUtils.join(secode," */",minute," * * * ?");
             }
         } else {//默认20秒播放一次
             return "20/* * * * * ?";
@@ -119,7 +119,6 @@ public class Screen extends Model<Screen> {
                 ", no=" + no +
                 ", name=" + name +
                 ", descInfo=" + descInfo +
-                ", cron=" + cron +
                 ", uri=" + uri +
                 ", remoteFtpPath=" + remoteFtpPath +
                 "}";

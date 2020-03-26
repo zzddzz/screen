@@ -67,7 +67,7 @@ public class ScanJob {
     @Autowired
     private IResourceService resourceService;
 
-    @Qualifier("kltMsgService")
+    @Qualifier("routerMsgService")
     @Autowired()
     private IMsgService msgService;
 
@@ -87,14 +87,14 @@ public class ScanJob {
                 String cacheCron = scheduleConfig.getTaskCron(String.valueOf(screen.getNo()));
 
                 //更新screen cron
-                if (!screen.getCron().equals(cacheCron)) {
+                if (!screen.getScheduleCron().equals(cacheCron)) {
                     scheduleConfig.resetTriggerTask(
                             String.valueOf(screen.getNo()),
                             new TriggerTask(
                                     () -> msgService.sendMsg(screen),
                                     new CronTrigger(screen.getScheduleCron())
                             ),
-                            screen.getCron()
+                            screen.getScheduleCron()
                     );
                 }
 
@@ -106,7 +106,7 @@ public class ScanJob {
                                     () -> msgService.sendMsg(screen),
                                     new CronTrigger(screen.getScheduleCron())
                             ),
-                            screen.getCron()
+                            screen.getScheduleCron()
                     );
                 }
 
@@ -139,7 +139,7 @@ public class ScanJob {
      * 4 生成VSN pic 文件存储到服务器
      * 5 插入数据库同步播放资源
      */
-    @Scheduled(cron = "*/10 * * * * ?")
+    //@Scheduled(cron = "*/10 * * * * ?")
     public void syncFtpFile() {
         try {
             log.info("syncFtpFile...{}", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
@@ -208,7 +208,7 @@ public class ScanJob {
      * 2 获取大屏缓存资源
      * 3 对比资源,保持大屏待播放和本地待播放资源一致
      */
-    @Scheduled(cron = "*/10 * * * * ?")
+    //@Scheduled(cron = "*/10 * * * * ?")
     public void synResourceToScreen() {
         try {
             EntityWrapper<Screen> screenQuary = new EntityWrapper();
@@ -327,34 +327,6 @@ public class ScanJob {
         return false;
     }
 
-
-    /**
-     * 生成图片
-     *
-     * @throws Exception
-     */
-    //@Scheduled(cron = "*/10 * * * * ?")
-    public void sendMessageToScreen() throws Exception {
-        try {
-            log.info("scanPic...");
-
-            String text = "测试文字测试文字" +
-                    "\r\n测试测试文字测试文字测试";
-            System.out.println(text);
-
-            //WaterMarkUtils.createWaterMark(constantConfig.backGroundPic, "F:/target.png", text);
-            /*FTPFile[] files = ftpUtils.getFiles(".");
-            for (FTPFile file : files) {
-                log.info("file name : {}",file.getName());
-
-                ftpUtils.downFile(file.getName(),"f:/"+file.getName());
-
-            }*/
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
 }

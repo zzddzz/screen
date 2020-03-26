@@ -58,7 +58,7 @@
                                         <th>播放间隔(秒)</th>
                                         <th>播放数量</th>
                                         <th>亮度</th>
-                                        <th>取图方式</th>
+                                        <th>FTP 源</th>
                                         <th>状态</th>
                                         <th width="250px">操作</th>
                                     </tr>
@@ -89,9 +89,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="cron" class="star col-sm-2 col-form-label">播放间隔</label>
+                                        <label for="second" class="star col-sm-2 col-form-label">播放间隔</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="cron" required>
+                                            <input type="text" class="form-control" id="second" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -224,10 +224,10 @@
 
                     {"data": "no"},
                     {"data": "name"},
-                    {"data": "cron"},
+                    {"data": "second"},
                     {"data": "playPicNum"},
                     {"data": "light"},
-                    {"data": "cron"},
+                    {"data": "second"},
                     {
                         "data": "enable",
                         render: function (data) {
@@ -286,14 +286,15 @@
                 basePath + "/ftp/get-screen-ftp-info",
                 {'no':no},
                 function (result) {
-                    result.forEach(meta=>{
+                    for (var i =0;i<result.length();i++) {
+                        var meta = result[i];
                         tbody += '<tr>';
                         tbody += '<td>' + meta.ftpName + '</td>';
                         tbody += '<td>' + meta.begTime + '</td>';
                         tbody += '<td>' + meta.endTime + '</td>';
                         tbody += '<td>' + delIcon(meta.id,meta.screenId) + '</td>';
                         tbody += '</tr>';
-                    });
+                    }
                     $("#ftpTbody").html(tbody);
                 }
 
@@ -403,7 +404,7 @@
                     $("#no").val(response.no);
                     $("#name").val(response.name);
                     $("#playPicNum").val(response.playPicNum);
-                    $("#cron").val(response.cron);
+                    $("#second").val(response.second);
                     let my_range = $("#light").data("ionRangeSlider");
                     my_range.update({
                         from: response.light
@@ -423,7 +424,7 @@
                 basePath + "/screen/resave",
                 {
                     "no": $("#no").val(),
-                    "cron": $("#cron").val(),
+                    "second": $("#second").val(),
                     "playPicNum": $("#playPicNum").val(),
                     "light": $("#light").val()
                 },

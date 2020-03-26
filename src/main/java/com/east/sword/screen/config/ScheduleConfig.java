@@ -40,7 +40,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
     @Autowired
     private IScreenService screenService;
 
-    @Qualifier("kltMsgService")
+    @Qualifier("routerMsgService")
     @Autowired
     private IMsgService sendMsgService;
 
@@ -53,7 +53,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
         this.taskRegistrar = taskRegistrar;
 
         EntityWrapper<Screen> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("enable", "1");
+        entityWrapper.eq("enable", Screen.STATUS_ENABLE);
         List<Screen> screenList = screenService.selectList(entityWrapper);
 
         //初始化定时任务
@@ -64,7 +64,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
                             () -> sendMsgService.sendMsg(screen),
                             new CronTrigger(screen.getScheduleCron())
                     ),
-                    screen.getCron()
+                    screen.getScheduleCron()
             );
         }
     }
