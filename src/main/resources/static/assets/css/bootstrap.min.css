@@ -2513,7 +2513,7 @@ select.form-control:focus::-ms-value {
     -ms-user-select: none;
     user-select: none;
     border: 1px solid transparent;
-    padding: .375rem .75rem;
+    padding: .275rem .60rem;
     font-size: 1rem;
     line-height: 1.5;
     border-radius: .25rem;
@@ -4693,7 +4693,7 @@ tbody.collapse.show {
     display: -ms-flexbox;
     display: flex;
     padding-left: 0;
-    padding-right:30px;
+    padding-right:0px;
     list-style: none;
     border-radius: .25rem
 }
