@@ -161,20 +161,21 @@ public class FtpClientProxy {
      * @param order -1 倒序,其他正序排列
      * @return
      */
-    public List<FTPFile> getPicFiles(String dir, Integer searchSize, Integer order) throws Exception {
+    public List<FTPFile> getPicFiles(String dir, Integer searchSize, Integer order,String regexChar) throws Exception {
         List<FTPFile> rtnResult;
         FTPFile[] files = ftpClient.listFiles(dir);
-        List<FTPFile> ftpFiles = Arrays.stream(files).sorted(Comparator.comparing(meta -> meta.getTimestamp().getTime())).collect(Collectors.toList());
+        List<FTPFile> ftpFiles = Arrays.stream(files).filter(meta-> FileUtil.isPic(meta) && FileUtil.validatePicOfScreen(meta.getName(), regexChar))
+                .collect(Collectors.toList());
+        ftpFiles = ftpFiles.stream().sorted(Comparator.comparing(meta -> meta.getTimestamp().getTime())).collect(Collectors.toList());
         if (order == -1) {
             rtnResult = Lists.reverse(ftpFiles);
         } else {
             rtnResult = ftpFiles;
         }
         if (null != searchSize) {
-            rtnResult = rtnResult.subList(0, searchSize);
+            rtnResult = rtnResult.subList(0, searchSize > rtnResult.size() ? rtnResult.size() : searchSize);
         }
-        List filterResult = rtnResult.stream().filter(meta-> FileUtil.isPic(meta)).collect(Collectors.toList());
-        return filterResult;
+        return rtnResult;
     }
 
     /**

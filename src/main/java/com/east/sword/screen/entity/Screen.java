@@ -102,8 +102,8 @@ public class Screen extends Model<Screen> {
      * 获取HTTP -URI
      * @return
      */
-    public String getUri(Screen screen) {
-        String uri = StringUtils.join("http://",screen.getHost(),":",screen.getPort());
+    public String getUri() {
+        String uri = StringUtils.join("http://",this.getHost(),":",this.getPort());
         return uri;
     }
 

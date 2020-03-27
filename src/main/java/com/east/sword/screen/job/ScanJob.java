@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,17 +153,15 @@ public class ScanJob {
 
                 //判断设置的FTP 同步时间是否符合触发标准.
                 String now = DateFormatUtils.format(new Date(), "HH:mm:ss");
-                if (!compTime(now, screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(), now)) {
-                    continue;
-                }
+                if (!compTime(now, screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(), now)) continue;
 
                 //遍历Ftp文件
-                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", 2, -1);
+                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", 2, -1,screen.getRegexChar());
                 for (FTPFile file : files) {
 
                     //转换FTP资源对象
                     Resource resource = this.convertFtpFileToResource(screen, file);
-                    if (null != resource) continue;
+                    if (null == resource) continue;
 
                     //判断资源是否存在
                     int resourceExistNum = resourceService.getNumOfResource(resource.getOriginName(), resource.getResourceDateTime());
@@ -210,7 +207,7 @@ public class ScanJob {
      * 2 获取大屏缓存资源
      * 3 对比资源,保持大屏待播放和本地待播放资源一致
      */
-    @Scheduled(cron = "10 */10 * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void synResourceToScreen() {
         try {
             EntityWrapper<Screen> screenQuary = new EntityWrapper();
@@ -284,7 +281,7 @@ public class ScanJob {
         String originFileName = ftpFile.getName();
 
         //符合文件匹配规则,获取Resource
-        if (validatePicOfScreen(originFileName, screen.getRegexChar())) {
+        if (FileUtil.validatePicOfScreen(originFileName, screen.getRegexChar())) {
 
             resource = new Resource();
             //新文件名 大屏编号 + 日期 + 权重
@@ -311,25 +308,6 @@ public class ScanJob {
         return resource;
     }
 
-    /**
-     * 判断图片是否符合大屏规则
-     *
-     * @param originFileName
-     * @param regexChar
-     * @return
-     */
-    public boolean validatePicOfScreen(String originFileName, String regexChar) {
-        if (StringUtils.isBlank(regexChar)) {
-            return false;
-        }
-        String[] regexArray = regexChar.split(",");
-        for (String regex : regexArray) {
-            if (originFileName.indexOf(regex) != -1) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * 判断两个HH:mm:ss的大小

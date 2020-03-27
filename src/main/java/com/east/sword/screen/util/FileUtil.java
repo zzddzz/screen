@@ -2,6 +2,7 @@ package com.east.sword.screen.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,6 +65,26 @@ public class FileUtil {
             ins.close();
         }
         return toFile;
+    }
+
+    /**
+     * 判断图片是否符合预设规则
+     *
+     * @param originFileName
+     * @param regexChar
+     * @return
+     */
+    public static boolean validatePicOfScreen(String originFileName, String regexChar) {
+        if (StringUtils.isBlank(regexChar)) {
+            return false;
+        }
+        String[] regexArray = regexChar.split(",");
+        for (String regex : regexArray) {
+            if (originFileName.indexOf(regex) != -1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //获取流文件

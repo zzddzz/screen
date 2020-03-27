@@ -58,7 +58,7 @@ public class FTPRouter {
      */
     public FtpClientProxy getFTPClient(String unicode) throws Exception{
         FTPClient ftpClient = concurrentHashMap.get(unicode);
-        if (!ftpClient.sendNoOp()) {
+        if (null == ftpClient || !ftpClient.sendNoOp()) {
 
             //FTP 假死 重新加载一遍
             init();

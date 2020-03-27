@@ -63,7 +63,7 @@ public class JxMsgServiceImpl implements IMsgService {
             Resource nextPlayResource = resourcePlayList.get(nextPlayResouceIndex);
             stringRedisTemplate.opsForValue().set(String.valueOf(screen.getNo()),nextPlayResource.getId().toString());
         } catch (Exception e) {
-            log.error("发送金晓Socket 请求异常 : {}", e);
+            log.error("发送金晓Socket 请求异常 : {}", e.getMessage());
         }
     }
 
