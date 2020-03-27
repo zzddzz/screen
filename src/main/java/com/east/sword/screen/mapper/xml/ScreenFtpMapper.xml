@@ -13,4 +13,21 @@
         from screen_ftp t1 INNER JOIN ftp_info t2 on t1.ftp_id = t2.id;
     </select>
 
+    <select id="selectInfoAllList" resultType="com.east.sword.screen.entity.ScreenFtp">
+      SELECT
+        t1.id AS id,
+        t1.screen_id AS screenId,
+        t1.ftp_id AS ftpId,
+        t2.des_name AS ftpName,
+        t1.begTime,
+        t1.endTime,
+        t2.host,
+        t2.port,
+        t2.name,
+        t2.password
+        from screen_ftp t1 INNER JOIN ftp_info t2 on t1.ftp_id = t2.id;
+
+    </select>
+
+
 </mapper>

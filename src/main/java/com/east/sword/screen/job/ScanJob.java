@@ -11,7 +11,7 @@ import com.east.sword.screen.service.IResourceService;
 import com.east.sword.screen.service.IScreenFtpService;
 import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.FileUtil;
-import com.east.sword.screen.util.ftp.FTPUtils;
+import com.east.sword.screen.util.ftp.FTPRouter;
 import com.east.sword.screen.util.http.HttpClient;
 import com.east.sword.screen.vo.KltRoute;
 import com.east.sword.screen.vo.VsnJson;
@@ -52,7 +52,7 @@ public class ScanJob {
     private ScheduleConfig scheduleConfig;
 
     @Autowired
-    private FTPUtils ftpUtils;
+    private FTPRouter ftpRouter;
 
     @Autowired
     private KltRoute kltRoute;
@@ -138,103 +138,84 @@ public class ScanJob {
 
     /**
      * FTP WEB服务 大屏播放列表 资源同步(仅用于卡莱特大屏同步FTP资源)
-     * 1 遍历状态正常的诱导屏
-     * 2 判断诱导屏的关联同步FTP 是否符合同步时间要求
-     * 3 拉取FTP 中的文件遍历,对比数据库中的同步信息
-     * 4 生成VSN pic 文件存储到服务器
-     * 5 插入数据库同步播放资源
+     * 1 遍历ftp-srceen 关系,取出可以遍历的FTP源
+     * 2 对FTP源进行遍历,按照符合规定的screen 规则（ftp 文件倒序,取最新的几张图片）,取出对应的图片数量
+     * 3 生成VSN pic 文件存储到服务器
+     * 4 插入数据库同步播放资源
      */
-    //@Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "*/10 * * * * ?")
     public void syncFtpFile() {
         try {
-            log.info("syncFtpFile...");
-            EntityWrapper entityWrapper = new EntityWrapper();
-            entityWrapper.eq("type",Screen.TYPE_KLT);
-            List<Screen> screenList = screenService.selectList(entityWrapper);
+            log.info("Begin SyncFtpFile JOB...");
+            List<ScreenFtp> screenFtpList = screenFtpService.selectInfoAllList();
+            for (ScreenFtp screenFtp : screenFtpList) {
 
-            for (Screen screen : screenList) {
-                EntityWrapper entityWrapperFtpInfo = new EntityWrapper();
-                entityWrapperFtpInfo.eq("screen_id",screen.getNo());
-                List<ScreenFtp> screenFtpList = screenFtpService.selectList(entityWrapperFtpInfo);
-                for (ScreenFtp screenFtp : screenFtpList) {
+                Screen screen = screenService.selectById(screenFtp.getScreenId());
 
-                    //判断设置的FTP 同步时间是否可以触发.
-                    String now = DateFormatUtils.format(new Date(),"HH:mm:ss");
-                    if (compTime(now , screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(),now)) {
-
-                        //todo 处理FTP的同步文件.
-                    }
-
-                }
-            }
-
-            //遍历Ftp文件
-            FTPFile[] files = ftpUtils.getFiles(".");
-            for (FTPFile file : files) {
-                if (!FileUtil.isPic(file)) {
+                //判断设置的FTP 同步时间是否符合触发标准.
+                String now = DateFormatUtils.format(new Date(), "HH:mm:ss");
+                if (!compTime(now, screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(), now)) {
                     continue;
                 }
 
-                //转换FTP资源对象
-                Resource resource = new Resource();
-                resource = this.convertFileName(screenList, file, resource);
+                //遍历Ftp文件
+                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", 2, -1);
+                for (FTPFile file : files) {
 
-                //转存pic,vsn, save data
-                if (StringUtils.isNotBlank(resource.getFileName())) {
+                    //转换FTP资源对象
+                    Resource resource = this.convertFtpFileToResource(screen, file);
+                    if (null != resource) continue;
 
-                    //不存在的数据,插入&生成文件 BMP/VSN
+                    //判断资源是否存在
                     int resourceExistNum = resourceService.getNumOfResource(resource.getOriginName(), resource.getResourceDateTime());
-                    if (resourceExistNum == 0) {
+                    if (resourceExistNum > 0) continue;
 
-                        ftpUtils.downFile(resource.getOriginName(), resource.getFilePath() + resource.getFileName());
+                    //生成pic,vsn文件, save Resource 数据
+                    ftpRouter.getFTPClient(screenFtp.getUnicode()).downFile(resource.getOriginName(),
+                            resource.getFilePath() + resource.getFileName());
+                    String picFilePath = resource.getFilePath() + resource.getFileName();
+                    JsonObject vsnJson = VsnJson.getVsn(VsnJson.VSN_PIC, resource.getVsnName(), resource.getFileName(), picFilePath);
+                    String content = gson.toJson(vsnJson);
+                    FileUtil.createFile(resource.getFilePath(), resource.getVsnName(), content);
+                    resourceService.insert(resource);
 
-                        //生成vsn 文件
-                        String picFilePath = resource.getFilePath() + resource.getFileName();
-                        JsonObject vsnJson = VsnJson.getVsn(VsnJson.VSN_PIC, resource.getVsnName(), resource.getFileName(), picFilePath);
-                        String content = gson.toJson(vsnJson);
-                        FileUtil.createFile(resource.getFilePath(), resource.getVsnName(), content);
+                    //触发上传新资源
+                    String sendUrl = kltRoute.uploadRountPath(screen.getUri(), resource.getVsnName());
+                    String response = httpClient.httpPostMedia(sendUrl, resource);
+                    log.info("FTP最新同步文件上传大屏...:{}", response);
 
-                        resourceService.insert(resource);
-
-                        //更新大屏资源,判断大屏的限制的播放条数,1可直接上传,2 删除超过数量限制的过期资源,上传新资源
-                        Screen screen = screenService.selectById(resource.getNo());
-                        String sendUrl = kltRoute.uploadRountPath(screen.getUri(), resource.getVsnName());
-                        String response = httpClient.httpPostMedia(sendUrl, resource);
-                        log.info("FTP扫描上传大屏...:{}", response);
-
-                        List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
-                        if (vsnPlayList.size() > screen.getPlayPicNum()) {//删除过期资源
-
-                            //大屏返回的vsn列表按照时间正序排列
-                            List<VsnPlay> needDelVsnList = vsnPlayList.subList(0, vsnPlayList.size() - screen.getPlayPicNum());
-                            needDelVsnList.forEach(vsnPlay -> {
-                                Resource resourceData = new Resource();
-                                resourceData.setVsnName(vsnPlay.getName());
-                                msgService.putDownResource(screen, resourceData);
-                                log.info("FTP扫描上传后删除过期资源,url:{}", screen.getUri() + vsnPlay.getName());
-                            });
-                        }
+                    //删除超过播放限制的资源,接口返回的vsn列表按照时间正序排列
+                    List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
+                    if (vsnPlayList.size() > screen.getPlayPicNum()) {
+                        List<VsnPlay> needDelVsnList = vsnPlayList.subList(0, vsnPlayList.size() - screen.getPlayPicNum());
+                        needDelVsnList.forEach(vsnPlay -> {
+                            Resource resourceData = new Resource();
+                            resourceData.setVsnName(vsnPlay.getName());
+                            msgService.putDownResource(screen, resourceData);
+                            log.info("FTP同步文件更新后超过最大播放限制,删除过期资源,url:{}", screen.getUri() + vsnPlay.getName());
+                        });
                     }
                 }
-
             }
         } catch (Exception e) {
             log.error("同步FTP文件异常:{}", e);
         }
     }
 
+
     /**
+     * 守护定时
      * 同步本地资源和大屏资源(仅同步卡莱特数据)
      * 1 获取本地待播放资源
      * 2 获取大屏缓存资源
      * 3 对比资源,保持大屏待播放和本地待播放资源一致
      */
-    //@Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "10 */10 * * * ?")
     public void synResourceToScreen() {
         try {
             EntityWrapper<Screen> screenQuary = new EntityWrapper();
             screenQuary.eq("enable", Screen.STATUS_ENABLE);
-            screenQuary.eq("type",Screen.TYPE_KLT);
+            screenQuary.eq("type", Screen.TYPE_KLT);
             List<Screen> screenList = screenService.selectList(screenQuary);
 
             for (Screen screen : screenList) {
@@ -291,51 +272,53 @@ public class ScanJob {
     }
 
     /**
-     * 转换文件名
+     * FTP 文件转换后的Resource
      *
      * @param screenList
      * @param originFileName
      * @return
      */
-    public Resource convertFileName(List<Screen> screenList, FTPFile ftpFile, Resource resource) {
+    public Resource convertFtpFileToResource(Screen screen, FTPFile ftpFile) {
+        Resource resource = null;
         String todayStamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
         String originFileName = ftpFile.getName();
 
-        for (Screen screen : screenList) {
+        //符合文件匹配规则,获取Resource
+        if (validatePicOfScreen(originFileName, screen.getRegexChar())) {
 
-            //根据匹配规则,获取新文件名
-            if (validatePicOfScreen(originFileName,screen.getRegexChar())) {
+            resource = new Resource();
+            //新文件名 大屏编号 + 日期 + 权重
+            String prifixName = screen.getNo() + "_" + todayStamp;
+            String picType = originFileName.substring(originFileName.lastIndexOf("."), originFileName.length());
+            String newFileName = prifixName + picType;
+            resource.setNo(screen.getNo());
+            resource.setCreateDate(new Date());
+            resource.setFileName(newFileName);
+            resource.setFilePath(constantConfig.fileCache);
+            resource.setOriginName(originFileName);
+            resource.setVsnName(prifixName + ".vsn");
+            resource.setType(Resource.TYPE_PIC);//图片类
+            resource.setEnable(Resource.ENABLE);//默认设置可用
+            resource.setDelFlag(Resource.UNDEL);//默认没有删除
 
-                //新文件名 大屏编号 + 日期 + 权重
-                String prifixName = screen.getNo() + "_" + todayStamp;
-                String picSuffixName = originFileName.substring(originFileName.lastIndexOf("."), originFileName.length());
-                String newFileName = prifixName + picSuffixName;
-                resource.setNo(screen.getNo());
-                resource.setCreateDate(new Date());
-                resource.setFileName(newFileName);
-                resource.setFilePath(constantConfig.fileCache);
-                resource.setOriginName(originFileName);
-                resource.setVsnName(prifixName + ".vsn");
-                resource.setEnable(Resource.ENABLE);//默认设置可用
-                resource.setDelFlag(Resource.UNDEL);//默认没有删除
-                resource.setType(Resource.TYPE_PIC);//默认设置为违法、路况、停车图类,固定播放张数
 
-                //ftpFile.getTimestamp().getTimeZone().getOffset(0); utc 时间加上时差
-                Date date = new Date(ftpFile.getTimestamp().getTimeInMillis());
-                String ftpResourceDate = DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
-                resource.setResourceDateTime(ftpResourceDate);
-            }
+            //设置FTP中文件上传时间
+            //ftpFile.getTimestamp().getTimeZone().getOffset(0); utc 时间加上时差
+            Date date = new Date(ftpFile.getTimestamp().getTimeInMillis());
+            String ftpResourceDate = DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
+            resource.setResourceDateTime(ftpResourceDate);
         }
         return resource;
     }
 
     /**
      * 判断图片是否符合大屏规则
+     *
      * @param originFileName
      * @param regexChar
      * @return
      */
-    public boolean validatePicOfScreen(String originFileName,String regexChar) {
+    public boolean validatePicOfScreen(String originFileName, String regexChar) {
         if (StringUtils.isBlank(regexChar)) {
             return false;
         }
@@ -350,20 +333,21 @@ public class ScanJob {
 
     /**
      * 判断两个HH:mm:ss的大小
+     *
      * @param s1
      * @param s2
      * @return
      */
-    public static boolean compTime(String s1,String s2){
+    public static boolean compTime(String s1, String s2) {
         try {
-            if (s1.indexOf(":")<0||s1.indexOf(":")<0) {
+            if (s1.indexOf(":") < 0 || s1.indexOf(":") < 0) {
                 System.out.println("格式不正确");
-            }else{
-                String[]array1 = s1.split(":");
-                int total1 = Integer.valueOf(array1[0])*3600+Integer.valueOf(array1[1])*60+Integer.valueOf(array1[2]);
-                String[]array2 = s2.split(":");
-                int total2 = Integer.valueOf(array2[0])*3600+Integer.valueOf(array2[1])*60+Integer.valueOf(array2[2]);
-                return total1-total2>0?true:false;
+            } else {
+                String[] array1 = s1.split(":");
+                int total1 = Integer.valueOf(array1[0]) * 3600 + Integer.valueOf(array1[1]) * 60 + Integer.valueOf(array1[2]);
+                String[] array2 = s2.split(":");
+                int total2 = Integer.valueOf(array2[0]) * 3600 + Integer.valueOf(array2[1]) * 60 + Integer.valueOf(array2[2]);
+                return total1 - total2 > 0 ? true : false;
             }
         } catch (NumberFormatException e) {
             // TODO Auto-generated catch block
@@ -372,7 +356,6 @@ public class ScanJob {
         return false;
 
     }
-
 
 
 }

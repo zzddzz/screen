@@ -37,6 +37,8 @@ public class FtpInfo extends Model<FtpInfo> {
         return this.id;
     }
 
+
+
     @Override
     public String toString() {
         return "FtpInfo{" +

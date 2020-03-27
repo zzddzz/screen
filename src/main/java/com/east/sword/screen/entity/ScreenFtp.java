@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -32,14 +34,29 @@ public class ScreenFtp extends Model<ScreenFtp> {
     @TableField("ftp_id")
     private Integer ftpId;
 
-    @TableField(exist = false)
-    private String ftpName;
-
     @TableField("begTime")
     private String begTime;
 
     @TableField("endTime")
     private String endTime;
+
+    @TableField(exist = false)
+    private String ftpName;
+    @TableField(exist = false)
+    private String host;
+    @TableField(exist = false)
+    private Integer port;
+    @TableField(exist = false)
+    private String name;
+    @TableField(exist = false)
+    private String password;
+
+    @TableField(exist = false)
+    private String unicode;
+
+    public String getUnicode() {
+        return DigestUtils.md5Hex(StringUtils.join(host,port,name,password));
+    }
 
 
     @Override

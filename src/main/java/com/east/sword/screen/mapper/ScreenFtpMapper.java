@@ -18,4 +18,6 @@ public interface ScreenFtpMapper extends BaseMapper<ScreenFtp> {
 
     List<ScreenFtp> selectListOfScren(@Param("no") int no);
 
+    List<ScreenFtp> selectInfoAllList();
+
 }

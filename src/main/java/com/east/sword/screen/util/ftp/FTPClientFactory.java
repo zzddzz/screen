@@ -3,14 +3,13 @@ package com.east.sword.screen.util.ftp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.pool.PoolableObjectFactory;
 
 /**
  * @CreateDate 23:56 2020/2/17.
  * @Author ZZD
  */
 @Slf4j
-public class FTPClientFactory implements PoolableObjectFactory<FTPClient> {
+public class FTPClientFactory {
 
     private FTPProperties ftpProperties;
 
@@ -18,7 +17,6 @@ public class FTPClientFactory implements PoolableObjectFactory<FTPClient> {
         this.ftpProperties = ftpProperties;
     }
 
-    @Override
     public FTPClient makeObject() throws Exception {
         FTPClient ftpClient = new FTPClient();
         ftpClient.setControlEncoding(ftpProperties.getEncoding());
@@ -44,42 +42,5 @@ public class FTPClientFactory implements PoolableObjectFactory<FTPClient> {
         return ftpClient;
     }
 
-    @Override
-    public void destroyObject(FTPClient ftpClient) throws Exception {
-        try {
-            if(ftpClient != null && ftpClient.isConnected()) {
-                ftpClient.logout();
-            }
-        } catch (Exception e) {
-            log.error("ftp client logout failed...{}", e);
-            throw e;
-        } finally {
-            if(ftpClient != null) {
-                ftpClient.disconnect();
-            }
-        }
 
-    }
-
-    @Override
-    public boolean validateObject(FTPClient ftpClient) {
-        try {
-            return ftpClient.sendNoOp();
-        } catch (Exception e) {
-            log.error("Failed to validate client: {}");
-        }
-        return false;
-    }
-
-    @Override
-    public void activateObject(FTPClient obj) throws Exception {
-        //Do nothing
-
-    }
-
-    @Override
-    public void passivateObject(FTPClient obj) throws Exception {
-        //Do nothing
-
-    }
 }

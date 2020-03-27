@@ -1,8 +1,10 @@
 package com.east.sword.screen.util.ftp;
 
+import com.east.sword.screen.entity.FtpInfo;
 import lombok.Data;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,20 +15,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class FTPProperties {
 
-    @Value("${ftp.userName}")
     private String username;
 
-    @Value("${ftp.password}")
     private String password;
 
-    @Value("${ftp.host}")
     private String host;
 
-    @Value("${ftp.port}")
     private Integer port;
 
-    @Value("${ftp.baseurl}")
-    private String baseUrl;
+    private String baseUrl = "./";//默认当前根目录
 
     private Integer passiveMode = FTP.BINARY_FILE_TYPE;
 
@@ -41,4 +38,18 @@ public class FTPProperties {
     private boolean renameUploaded;
 
     private int retryTime;
+
+    private String unicode;
+
+    public FTPProperties(){}
+
+    public FTPProperties(FtpInfo ftpInfo) {
+        this.host = ftpInfo.getHost();
+        this.port = ftpInfo.getPort();
+        this.username = ftpInfo.getName();
+        this.password = ftpInfo.getPassword();
+        this.unicode = DigestUtils.md5Hex(StringUtils.join(host,port,username,password));
+    }
+
+
 }
