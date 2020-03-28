@@ -121,13 +121,13 @@ public class ResourceController extends BaseController {
 
 
             //上传大屏,判断大屏资源是否占满
-            if (Resource.UNABLE.equals(resource.getEnable())) {//上传大屏资源
+            if (Resource.STATUS_UNABLE.equals(resource.getStatus())) {//上传大屏资源
 
                 //只有FTP同步的图片-->校验大屏设置的图片数量限制,自定义的不限制
-                if (Resource.TYPE_SYNC.equals(resource.getSrcType())) {
+                if (Resource.SRC_SYNC.equals(resource.getSrcType())) {
                     // 判断大屏播放数量是否占满
                     EntityWrapper entityWrapper = new EntityWrapper();
-                    entityWrapper.eq("enable", "1");
+                    entityWrapper.eq("status", Resource.STATUS_ENABLE);
                     entityWrapper.eq("no", resource.getNo());
                     entityWrapper.eq("type",Resource.TYPE_PIC);
                     int enableSize = resourceService.selectList(entityWrapper).size();
@@ -141,7 +141,7 @@ public class ResourceController extends BaseController {
                 msgService.putDownResource(screen, resource);
             }
 
-            resource.setEnable(enable);
+            resource.setStatus(enable);
             resourceService.updateById(resource);
             return SUCCESS;
         } catch (Exception e) {
@@ -205,8 +205,7 @@ public class ResourceController extends BaseController {
             String vsnName = prifixName + ".vsn";
 
             Resource resource = new Resource();
-            resource.setEnable(Resource.UNABLE);//默认不可用
-            resource.setDelFlag(Resource.UNDEL);
+            resource.setStatus(Resource.STATUS_UNABLE);//默认不可用
             resource.setType(Resource.TYPE_PIC);
             resource.setFileName(fileName);
             resource.setVsnName(vsnName);
@@ -215,7 +214,7 @@ public class ResourceController extends BaseController {
             resource.setFilePath(constantConfig.fileCache);
             resource.setCreateDate(new Date());
             resource.setNo(no);
-            resource.setSrcType(Resource.TYPE_CUT);
+            resource.setSrcType(Resource.SRC_CUT);
 
             resourceService.insert(resource);
 
@@ -251,14 +250,13 @@ public class ResourceController extends BaseController {
         try {
             Screen screen = screenService.selectById(no);
             Resource resource = new Resource();
-            resource.setEnable(Resource.UNABLE);//默认不可用
-            resource.setDelFlag(Resource.UNDEL);
+            resource.setStatus(Resource.STATUS_UNABLE);//默认不可用
             resource.setType(Resource.TYPE_FONT);
             resource.setResourceDateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             resource.setFilePath(constantConfig.fileCache);
             resource.setCreateDate(new Date());
             resource.setNo(no);
-            resource.setSrcType(Resource.TYPE_CUT);
+            resource.setSrcType(Resource.SRC_CUT);
             resource.setContent(content);
 
 

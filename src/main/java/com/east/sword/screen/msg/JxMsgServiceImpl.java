@@ -38,7 +38,7 @@ public class JxMsgServiceImpl implements IMsgService {
         try {
             EntityWrapper entityWrapper = new EntityWrapper();
             entityWrapper.eq("no", screen.getNo());
-            entityWrapper.eq("enable", Resource.ENABLE);
+            entityWrapper.eq("enable", Resource.STATUS_ENABLE);
             List<Resource> resourcePlayList = resourceService.selectList(entityWrapper);
             if (null == resourcePlayList || resourcePlayList.isEmpty()) {
                 return;
@@ -74,19 +74,19 @@ public class JxMsgServiceImpl implements IMsgService {
 
     @Override
     public void putDownResource(Screen screen, Resource resource) {
-        resource.setEnable(Resource.UNABLE);
+        resource.setStatus(Resource.STATUS_UNABLE);
         resourceService.updateById(resource);
     }
 
     @Override
     public void delResource(Screen screen, Resource resource) {
-        resource.setEnable(Resource.ISDEL);
+        resource.setStatus(Resource.STATUS_ISDEL);
         resourceService.updateById(resource);
     }
 
     @Override
     public void putResource(Screen screen, Resource resource) {
-        resource.setEnable(Resource.ENABLE);
+        resource.setStatus(Resource.STATUS_ENABLE);
         resourceService.updateById(resource);
     }
 
@@ -106,7 +106,7 @@ public class JxMsgServiceImpl implements IMsgService {
     }
 
     @Override
-    public void changeLight(Screen screen, Resource resource) {
+    public void changeLight(Screen screen) {
 
     }
 }

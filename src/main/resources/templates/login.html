@@ -4,9 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link th:href="@{/login/newBlue.css}" rel="stylesheet" id="lhgdialoglink">
 
-    <title>智能交通诱导屏管理系统</title>
+    <title>智能交通诱导屏综合管理系统</title>
     <meta http-equiv="X-UA-Compatible" content="IE=8">
-    </script>
     <script type="text/javascript" th:src="@{/login/jquery-1.7.2.min.js}"></script>
     <script type="text/javascript" th:src="@{/login/jquery.cookie.js}"></script>
     <script type="text/javascript" th:src="@{/login/jquery.form.js}"></script>
@@ -209,7 +208,7 @@
     <div class="login-wraper">
         <div class="login-logo">
             <img th:src="@{/login/logo.png}">
-            <span>智能交通诱导屏管理系统</span>
+            <span>智能交通诱导屏综合管理系统</span>
         </div>
         <input type="hidden" id="loginAdminEncrypt" value="1">
         <input type="hidden" id="encryptP" value="">
@@ -306,6 +305,12 @@
 </div>
 
 <script type="text/javascript">
+
+    window.onload = function () {
+        if (window.parent.window != window) {
+            window.top.location = "/";
+        }
+    }
 
     $(function () {
         $(".J_form-input input").each(function () {

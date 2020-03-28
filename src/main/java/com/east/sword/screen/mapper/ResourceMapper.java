@@ -18,7 +18,7 @@ public interface ResourceMapper extends BaseMapper<Resource> {
 
     Date getMaxDateOfResource(@Param("no") int no);
 
-    int getNumOfResource(@Param("originName") String originName, @Param("resourceDateTime") String resourceDateTime);
+    int getNumOfResource(@Param("unicode") String unicode);
 
     List<Resource> selectResourcePage(Page page,Resource resource);
 }

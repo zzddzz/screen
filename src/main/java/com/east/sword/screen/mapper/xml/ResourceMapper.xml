@@ -7,13 +7,12 @@
     </select>
 
     <select id="getNumOfResource" resultType="int">
-        SELECT count(1) FROM resource WHERE originName = #{originName}
-        AND resourceDateTime = #{resourceDateTime}
+        SELECT count(1) FROM resource WHERE unicode = #{unicode} AND status != '-1'
     </select>
 
     <select id="selectResourcePage" resultType="com.east.sword.screen.entity.Resource">
         SELECT t1.*,t2.name AS noName FROM resource t1 INNER  JOIN screen t2 ON t1.no = t2.no
-        WHERE 1 = 1
+        WHERE status != '-1'
         <if test="no != null and no != ''">
             AND t1.no = #{no}
         </if>

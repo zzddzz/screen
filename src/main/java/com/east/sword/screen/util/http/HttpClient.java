@@ -3,8 +3,6 @@ package com.east.sword.screen.util.http;
 import com.east.sword.screen.entity.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,8 +23,6 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class HttpClient {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public static MediaType TYPE_FORM = MediaType.APPLICATION_FORM_URLENCODED;
     public static MediaType TYPE_JSON = MediaType.APPLICATION_JSON;
 
@@ -40,18 +36,14 @@ public class HttpClient {
      * @param multiValueMap
      * @return
      */
-    public String httpPost(String url, MediaType mediaType, MultiValueMap multiValueMap) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(mediaType);
-            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(multiValueMap, headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            return response.getBody();
-        } catch (Exception e) {
-            logger.error("request url error {} ,detail{}", url, e);
-            return StringUtils.EMPTY;
-        }
+    public String httpPostJson(String url, String jsonCommond) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity request = new HttpEntity<>(jsonCommond, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+        return response.getBody();
     }
+
 
     /**
      * post 上传文件

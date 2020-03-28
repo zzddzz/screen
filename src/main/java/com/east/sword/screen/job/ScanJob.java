@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +165,7 @@ public class ScanJob {
                     if (null == resource) continue;
 
                     //判断资源是否存在
-                    int resourceExistNum = resourceService.getNumOfResource(resource.getOriginName(), resource.getResourceDateTime());
+                    int resourceExistNum = resourceService.getNumOfResource(resource.getUnicode());
                     if (resourceExistNum > 0) continue;
 
                     //生成pic,vsn文件, save Resource 数据
@@ -220,8 +221,7 @@ public class ScanJob {
                 //查询合法的播放资源,以资源按照创建时间倒序,取出合法的数量
                 EntityWrapper<Resource> entityWrapper = new EntityWrapper();
                 entityWrapper.eq("no", screen.getNo());
-                entityWrapper.eq("enable", Resource.ENABLE);
-                entityWrapper.eq("delFlag", Resource.UNDEL);
+                entityWrapper.eq("status", Resource.STATUS_ENABLE);
                 entityWrapper.orderBy("createDate", false);//倒序
                 List<Resource> resourceList = resourceService.selectList(entityWrapper);
 
@@ -279,6 +279,7 @@ public class ScanJob {
         Resource resource = null;
         String todayStamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
         String originFileName = ftpFile.getName();
+        String unicode = DigestUtils.md5Hex(originFileName + ftpFile.getSize() + screen.getHost());
 
         //符合文件匹配规则,获取Resource
         if (FileUtil.validatePicOfScreen(originFileName, screen.getRegexChar())) {
@@ -295,8 +296,8 @@ public class ScanJob {
             resource.setOriginName(originFileName);
             resource.setVsnName(prifixName + ".vsn");
             resource.setType(Resource.TYPE_PIC);//图片类
-            resource.setEnable(Resource.ENABLE);//默认设置可用
-            resource.setDelFlag(Resource.UNDEL);//默认没有删除
+            resource.setStatus(Resource.STATUS_ENABLE);//默认设置可用
+            resource.setUnicode(unicode);//设置唯一标示
 
 
             //设置FTP中文件上传时间

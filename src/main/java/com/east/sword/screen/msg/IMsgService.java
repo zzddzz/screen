@@ -70,7 +70,7 @@ public interface IMsgService {
      * @param screen
      * @param resource
      */
-    void changeLight(Screen screen ,Resource resource);
+    void changeLight(Screen screen);
 
 
 

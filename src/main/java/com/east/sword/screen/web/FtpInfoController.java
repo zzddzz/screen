@@ -126,8 +126,6 @@ public class FtpInfoController extends BaseController{
     @RequestMapping("/get-screen-ftp-info")
     public List<ScreenFtp> getScreenFtpInfo(int no){
         try {
-            EntityWrapper entityWrapper = new EntityWrapper();
-            entityWrapper.eq("screen_id",no);
             List<ScreenFtp> screenFtpList = screenFtpService.selectListOfScren(no);
             return screenFtpList;
         } catch (Exception e) {

@@ -19,17 +19,15 @@ import java.util.Date;
 @Data
 public class Resource extends Model<Resource> {
 
-    public static final String ENABLE = "1";//1 资源可用, 0 资源不可用
-    public static final String UNABLE = "0";
-
-    public static final String ISDEL = "0";//1 未删除,0 已删除
-    public static final String UNDEL = "1";
+    public static final String STATUS_ENABLE = "1";//1 资源可用, 0 资源不可用,-1 已删除
+    public static final String STATUS_UNABLE = "0";
+    public static final String STATUS_ISDEL = "-1";//
 
     public static final String TYPE_PIC = "pic";
     public static final String TYPE_FONT = "font";
 
-    public static final String TYPE_SYNC = "sync";
-    public static final String TYPE_CUT = "cut";
+    public static final String SRC_SYNC = "sync";
+    public static final String SRC_CUT = "cut";
 
     private static final long serialVersionUID = 1L;
 
@@ -54,7 +52,7 @@ public class Resource extends Model<Resource> {
     @TableField(exist = false)
     private String noName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField("createDate")
     private Date createDate;
 
@@ -64,11 +62,9 @@ public class Resource extends Model<Resource> {
     @TableField("type")
     private String type;
 
-    @TableField("enable")
-    private String enable;
+    @TableField("status")
+    private String status;
 
-    @TableField("delFlag")
-    private String delFlag;
 
     @TableField("srcType")
     private String srcType;
@@ -81,6 +77,9 @@ public class Resource extends Model<Resource> {
 
     @TableField(exist = false)
     private String endDate;
+
+    @TableField("unicode")
+    private String unicode;
 
 
     @Override

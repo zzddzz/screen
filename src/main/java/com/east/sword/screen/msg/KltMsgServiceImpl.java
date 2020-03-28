@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +128,7 @@ public class KltMsgServiceImpl implements IMsgService {
 
         EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("vsnName",resource.getVsnName());
-        resource.setEnable(Resource.UNABLE);
+        resource.setStatus(Resource.STATUS_UNABLE);
         resourceService.update(resource,entityWrapper);
     }
 
@@ -147,8 +144,7 @@ public class KltMsgServiceImpl implements IMsgService {
 
         EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("vsnName",resource.getVsnName());
-        resource.setEnable(Resource.UNABLE);
-        resource.setDelFlag(Resource.ISDEL);
+        resource.setStatus(Resource.STATUS_ISDEL);
         resourceService.update(resource,entityWrapper);
     }
 
@@ -170,9 +166,9 @@ public class KltMsgServiceImpl implements IMsgService {
     @Override
     public void sleep(Screen screen) {
         String sleepUrl = kltRoute.powerManagePath(screen.getUri());
-        MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
-        valueMap.set("command","sleep");
-        httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("command","sleep");
+        httpClient.httpPostJson(sleepUrl, jsonObject.toString());
     }
 
     /**
@@ -182,9 +178,9 @@ public class KltMsgServiceImpl implements IMsgService {
     @Override
     public void wakeUp(Screen screen) {
         String sleepUrl = kltRoute.powerManagePath(screen.getUri());
-        MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
-        valueMap.set("command","wakeup");
-        httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("command","wakeup");
+        httpClient.httpPostJson(sleepUrl, jsonObject.toString());
     }
 
     /**
@@ -194,14 +190,22 @@ public class KltMsgServiceImpl implements IMsgService {
     @Override
     public void reboot(Screen screen) {
         String sleepUrl = kltRoute.powerManagePath(screen.getUri());
-        MultiValueMap valueMap = new LinkedMultiValueMap<String, String>();
-        valueMap.set("command","reboot");
-        httpClient.httpPost(sleepUrl, MediaType.APPLICATION_JSON,valueMap);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("command","reboot");
+        httpClient.httpPostJson(sleepUrl, jsonObject.toString());
     }
 
+    /**
+     * 获取亮度
+     * @param screen
+     * @param resource
+     */
     @Override
-    public void changeLight(Screen screen, Resource resource) {
-
+    public void changeLight(Screen screen) {
+        String lightUrl = kltRoute.lightPath(screen.getUri());
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("brightness",screen.getLight());
+        httpClient.httpPostJson(lightUrl, jsonObject.toString());
     }
 }
 

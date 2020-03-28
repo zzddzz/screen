@@ -19,7 +19,7 @@ public interface IResourceService extends IService<Resource> {
 
     Date getMaxDateOfResource(int no);
 
-    int getNumOfResource(String originName,String resourceDateTime);
+    int getNumOfResource(String unicode);
 
     List<Resource> selectResourcePage(Page page,Resource resource);
 }

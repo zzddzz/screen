@@ -42,7 +42,7 @@ public class MsgRouterImpl implements IMsgService {
     @Override
     public List<VsnPlay> getRemoteScreenPlayList(Screen screen) {
         if (Screen.TYPE_KLT.equals(screen.getType())) {
-            kltMsgService.getRemoteScreenPlayList(screen);
+            return kltMsgService.getRemoteScreenPlayList(screen);
         }
         if (Screen.TYPE_JX.equals(screen.getType())) {
 
@@ -111,7 +111,7 @@ public class MsgRouterImpl implements IMsgService {
     }
 
     @Override
-    public void changeLight(Screen screen, Resource resource) {
+    public void changeLight(Screen screen) {
         if (Screen.TYPE_KLT.equals(screen.getType())) {
 
         }

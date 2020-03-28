@@ -10,7 +10,8 @@
         t2.des_name AS ftpName,
         t1.begTime,
         t1.endTime
-        from screen_ftp t1 INNER JOIN ftp_info t2 on t1.ftp_id = t2.id;
+        from screen_ftp t1 INNER JOIN ftp_info t2 on t1.ftp_id = t2.id
+        WHERE t1.screen_id = #{no}
     </select>
 
     <select id="selectInfoAllList" resultType="com.east.sword.screen.entity.ScreenFtp">

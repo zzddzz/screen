@@ -37,8 +37,8 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     }
 
     @Override
-    public int getNumOfResource(String originName, String resourceDateTime) {
-        return baseMapper.getNumOfResource(originName,resourceDateTime);
+    public int getNumOfResource(String unicode) {
+        return baseMapper.getNumOfResource(unicode);
     }
 
     @Override

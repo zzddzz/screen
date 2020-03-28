@@ -232,7 +232,7 @@
                     {"data": "noName"},
                     {"data": "content"},
                     {
-                        "data": "enable",
+                        "data": "status",
                         render: function (data) {
                             return data == '0' ? "<font color='red'>停播</font>" : "<font color='green'>正常</font>";
                         }
@@ -242,13 +242,13 @@
                         "render": function (data, type, row) {
                             var tip = '';
                             var showpicUrl = basePath + "/resource/showPic?id=";
-                            if (row.enable == '0') {
+                            if (row.status == '0') {
                                 tip = '播放';
                             } else {
                                 tip = '停播';
                             }
                             var rtn =
-                                "<button type='button' onclick='onEdit(" + row.id + "," + row.enable + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
+                                "<button type='button' onclick='onEdit(" + row.id + "," + row.status + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
                                 + "<a type='button' data-fancybox='gallery' class='" + (row.type == 'font' ? 'disable' : '') + " btn btn-outline-primary btn-sm'"
                                 + " href='" + showpicUrl + row.id + "' >预览</a>";
@@ -325,13 +325,13 @@
         }
 
         //更改状态
-        function onEdit(id, enable) {
-            var tip = enable == '0' ? "确认播放图片?" : "确认停止播放?";
+        function onEdit(id, status) {
+            var tip = status == '0' ? "确认播放图片?" : "确认停止播放?";
             bootbox.confirm(tip, function (result) {
                 if (result) {
                     $.post(
                         basePath + "/resource/change",
-                        {"resourceId": id, "enable": enable == '0' ? '1' : '0'},
+                        {"resourceId": id, "status": status == '0' ? '1' : '0'},
                         function (response) {
                             if (response != 'success' && response != 'fail') {
                                 bootbox.alert('大屏最多播放' + response + "张图片！");
