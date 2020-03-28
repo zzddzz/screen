@@ -113,7 +113,7 @@ public class MsgRouterImpl implements IMsgService {
     @Override
     public void changeLight(Screen screen) {
         if (Screen.TYPE_KLT.equals(screen.getType())) {
-
+            kltMsgService.changeLight(screen);
         }
         if (Screen.TYPE_JX.equals(screen.getType())) {
 

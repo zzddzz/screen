@@ -240,13 +240,8 @@
                     {
                         "data": null,
                         "render": function (data, type, row) {
-                            var tip = '';
                             var showpicUrl = basePath + "/resource/showPic?id=";
-                            if (row.status == '0') {
-                                tip = '播放';
-                            } else {
-                                tip = '停播';
-                            }
+                            var tip = row.status == '0' ? '播放' : '停播';
                             var rtn =
                                 "<button type='button' onclick='onEdit(" + row.id + "," + row.status + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
@@ -331,7 +326,7 @@
                 if (result) {
                     $.post(
                         basePath + "/resource/change",
-                        {"resourceId": id, "status": status == '0' ? '1' : '0'},
+                        {"resourceId": id, "status":status},
                         function (response) {
                             if (response != 'success' && response != 'fail') {
                                 bootbox.alert('大屏最多播放' + response + "张图片！");

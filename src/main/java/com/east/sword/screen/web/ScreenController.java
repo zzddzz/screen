@@ -127,8 +127,8 @@ public class ScreenController extends BaseController<Screen> {
                 screenService.insert(screen);
             } else {
                 screenService.updateById(screen);
-                //msgService.changeLight(screen);
-
+                Screen dbScreen = screenService.selectById(screen.getNo());
+                msgService.changeLight(dbScreen);
             }
             return SUCCESS;
         } catch (Exception e) {

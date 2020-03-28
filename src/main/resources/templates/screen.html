@@ -185,7 +185,16 @@
                     {"data": "type"},
                     {"data": "host"},
                     {"data": "port"},
-                    {"data": "regexChar"},
+                    {
+                        "data": "regexChar",
+                        render:function (data) {
+                            if (data.length > 30) {
+                                return data.substr(0, 27) + " <a href = 'javascript:void(0);' onclick = 'javascript:searchBtn3(\""+data+"\")' >...</a> ";
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
                     {
                         "data": "enable",
                         render: function (data) {
@@ -216,6 +225,10 @@
             });
 
         });
+
+        function searchBtn3(id) {
+            bootbox.alert(id);
+        }
 
         //加载诱导屏资源
         function loadResource(no) {

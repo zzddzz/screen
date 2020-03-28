@@ -1,16 +1,12 @@
 package com.east.sword.screen.util.ftp;
 
 import com.east.sword.screen.util.FileUtil;
-import com.google.common.collect.Lists;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileFilter;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -162,20 +158,18 @@ public class FtpClientProxy {
      * @return
      */
     public List<FTPFile> getPicFiles(String dir, Integer searchSize, Integer order,String regexChar) throws Exception {
-        List<FTPFile> rtnResult;
+
         FTPFile[] files = ftpClient.listFiles(dir);
         List<FTPFile> ftpFiles = Arrays.stream(files).filter(meta-> FileUtil.isPic(meta) && FileUtil.validatePicOfScreen(meta.getName(), regexChar))
                 .collect(Collectors.toList());
         ftpFiles = ftpFiles.stream().sorted(Comparator.comparing(meta -> meta.getTimestamp().getTime())).collect(Collectors.toList());
         if (order == -1) {
-            rtnResult = Lists.reverse(ftpFiles);
-        } else {
-            rtnResult = ftpFiles;
+            Collections.reverse(ftpFiles);
         }
         if (null != searchSize) {
-            rtnResult = rtnResult.subList(0, searchSize > rtnResult.size() ? rtnResult.size() : searchSize);
+            ftpFiles = ftpFiles.subList(0, searchSize > ftpFiles.size() ? ftpFiles.size() : searchSize);
         }
-        return rtnResult;
+        return ftpFiles;
     }
 
     /**

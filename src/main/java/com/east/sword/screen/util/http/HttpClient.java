@@ -94,8 +94,16 @@ public class HttpClient {
      *
      * @param url
      */
-    public void httpPut(String url) {
-        restTemplate.put(url, null);
+    public void httpPut(String url,String jsonCommond) {
+        if (StringUtils.isNotBlank(jsonCommond)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity request = new HttpEntity<>(jsonCommond, headers);
+            restTemplate.put(url, request);
+        } else {
+            restTemplate.put(url, null);
+        }
+
     }
 
     /**

@@ -157,7 +157,7 @@ public class ScanJob {
                 if (!compTime(now, screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(), now)) continue;
 
                 //遍历Ftp文件
-                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", 2, -1,screen.getRegexChar());
+                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", screen.getPlayPicNum(), -1,screen.getRegexChar());
                 for (FTPFile file : files) {
 
                     //转换FTP资源对象
@@ -177,22 +177,22 @@ public class ScanJob {
                     FileUtil.createFile(resource.getFilePath(), resource.getVsnName(), content);
                     resourceService.insert(resource);
 
-                    //触发上传新资源
+                    //触发上传新资源(如果vsn 重名,则会覆盖上传播放盒)
                     String sendUrl = kltRoute.uploadRountPath(screen.getUri(), resource.getVsnName());
                     String response = httpClient.httpPostMedia(sendUrl, resource);
-                    log.info("FTP最新同步文件上传大屏...:{}", response);
 
-                    //删除超过播放限制的资源,接口返回的vsn列表按照时间正序排列
-                    List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
-                    if (vsnPlayList.size() > screen.getPlayPicNum()) {
-                        List<VsnPlay> needDelVsnList = vsnPlayList.subList(0, vsnPlayList.size() - screen.getPlayPicNum());
-                        needDelVsnList.forEach(vsnPlay -> {
-                            Resource resourceData = new Resource();
-                            resourceData.setVsnName(vsnPlay.getName());
-                            msgService.putDownResource(screen, resourceData);
-                            log.info("FTP同步文件更新后超过最大播放限制,删除过期资源,url:{}", screen.getUri() + vsnPlay.getName());
-                        });
-                    }
+                    //最新同步的 vsn与之前播放的重名的话,将之前的状态修改为停播
+                    EntityWrapper entityWrapper = new EntityWrapper();
+                    entityWrapper.eq("vsnName",resource.getVsnName());
+                    entityWrapper.eq("status",Resource.STATUS_ENABLE);
+                    entityWrapper.ne("id",resource.getId());
+                    List<Resource> needChangeStatus = resourceService.selectList(entityWrapper);
+                    needChangeStatus.stream().forEach(meta->{
+                        meta.setStatus(Resource.STATUS_UNABLE);
+                        resourceService.updateById(meta);
+                    });
+
+                    log.info("FTP最新同步文件上传大屏...:{}", response);
                 }
             }
         } catch (Exception e) {
@@ -202,13 +202,13 @@ public class ScanJob {
 
 
     /**
-     * 守护定时
+     * 守护定时-- 大屏和本地资源一致
      * 同步本地资源和大屏资源(仅同步卡莱特数据)
-     * 1 获取本地待播放资源
+     * 1 获取本地待播放资源(FTP同步资源,插播资源)
      * 2 获取大屏缓存资源
      * 3 对比资源,保持大屏待播放和本地待播放资源一致
      */
-    @Scheduled(cron = "*/30 * * * * ?")
+    //@Scheduled(cron = "*/10 * * * * ?")
     public void synResourceToScreen() {
         try {
             EntityWrapper<Screen> screenQuary = new EntityWrapper();
@@ -218,31 +218,32 @@ public class ScanJob {
 
             for (Screen screen : screenList) {
 
-                //查询合法的播放资源,以资源按照创建时间倒序,取出合法的数量
+                //查询合法的播放资源,资源按照创建时间倒序,取出合法的数量
                 EntityWrapper<Resource> entityWrapper = new EntityWrapper();
                 entityWrapper.eq("no", screen.getNo());
                 entityWrapper.eq("status", Resource.STATUS_ENABLE);
                 entityWrapper.orderBy("createDate", false);//倒序
                 List<Resource> resourceList = resourceService.selectList(entityWrapper);
 
-                List<Resource> picResourceList = resourceList.stream().filter(meta ->
-                        Resource.TYPE_PIC.equals(meta.getType())
-                ).collect(Collectors.toList());
+                List<Resource> picResourceList = resourceList.stream()
+                        .filter(meta ->Resource.SRC_SYNC.equals(meta.getSrcType())).collect(Collectors.toList());
 
-                //应该显示的合法资源
-                List<Resource> legalList = new ArrayList();
-                if (resourceList != null && picResourceList.size() > screen.getPlayPicNum()) {
-                    legalList.addAll(resourceList.subList(0, screen.getPlayPicNum()));
-                } else {
-                    legalList.addAll(resourceList);
-                }
+                List<Resource> cutResourceList = resourceList.stream()
+                        .filter(meta ->Resource.SRC_CUT.equals(meta.getSrcType())).collect(Collectors.toList());
+
                 List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
-                List<String> vsnNameList = vsnPlayList.stream().map(VsnPlay::getName).collect(Collectors.toList());
-                List<String> legalNameList = legalList.stream().map(Resource::getVsnName).collect(Collectors.toList());
+                List<String> vsnNamePlayList = vsnPlayList.stream().map(VsnPlay::getName).collect(Collectors.toList());
+
+                List<Resource> legalPlayResource = new ArrayList<>();
+                if (null != picResourceList && picResourceList.size() > screen.getPlayPicNum()) {
+                    legalPlayResource.addAll(picResourceList.subList(0,screen.getPlayPicNum()));
+                }
+                legalPlayResource.addAll(cutResourceList);
+                List<String> legalNameList = legalPlayResource.stream().map(Resource::getVsnName).collect(Collectors.toList());
 
                 //更新合法的资源
-                legalList.forEach(legalResource -> {
-                    if (vsnNameList.contains(legalResource.getVsnName())) {
+                legalPlayResource.forEach(legalResource -> {
+                    if (vsnNamePlayList.contains(legalResource.getVsnName())) {
                         return;
                     } else {//上传资源
                         msgService.putResource(screen, legalResource);
@@ -277,16 +278,17 @@ public class ScanJob {
      */
     public Resource convertFtpFileToResource(Screen screen, FTPFile ftpFile) {
         Resource resource = null;
-        String todayStamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
         String originFileName = ftpFile.getName();
-        String unicode = DigestUtils.md5Hex(originFileName + ftpFile.getSize() + screen.getHost());
+
+        //唯一标识  大屏IP + 原始文件名 + 文件大小
+        String unicode = DigestUtils.md5Hex(screen.getHost() + originFileName + ftpFile.getSize());
 
         //符合文件匹配规则,获取Resource
         if (FileUtil.validatePicOfScreen(originFileName, screen.getRegexChar())) {
 
             resource = new Resource();
-            //新文件名 大屏编号 + 日期 + 权重
-            String prifixName = screen.getNo() + "_" + todayStamp;
+            //新文件名 = 大屏编号 + 原始文件名
+            String prifixName = screen.getNo() + "_" + DigestUtils.md5Hex(ftpFile.getName());
             String picType = originFileName.substring(originFileName.lastIndexOf("."), originFileName.length());
             String newFileName = prifixName + picType;
             resource.setNo(screen.getNo());
@@ -296,6 +298,7 @@ public class ScanJob {
             resource.setOriginName(originFileName);
             resource.setVsnName(prifixName + ".vsn");
             resource.setType(Resource.TYPE_PIC);//图片类
+            resource.setSrcType(Resource.SRC_SYNC);
             resource.setStatus(Resource.STATUS_ENABLE);//默认设置可用
             resource.setUnicode(unicode);//设置唯一标示
 
