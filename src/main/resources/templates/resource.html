@@ -12,6 +12,7 @@
             <div class="container-fluid">
                 <!-- end row -->
                 <input type="hidden" id="no" th:value="${no}" />
+                <input type="hidden" id="src" th:value="${src}" />
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <br/>
@@ -37,7 +38,7 @@
                                     </div>&nbsp;&nbsp;
                                     <div class="" style="padding-top: 4px;">
                                         <button class="btn btn-info btn-sm"
-                                                onclick="javascript:window.location.href = '/screen/index' ">
+                                                onclick="onReturn()">
                                             <i class="fa fa-reply" aria-hidden="true"></i> 返回
                                         </button>
                                     </div>
@@ -161,6 +162,14 @@
         });
 
     });
+
+    function onReturn() {
+        if ($('#src').val() == 'play') {
+            window.location.href = '/screen/play-index';
+        } else {
+            window.location.href = '/screen/index';
+        }
+    }
 
     //表单查询
     function onSearch() {

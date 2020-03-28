@@ -38,7 +38,7 @@ public class JxMsgServiceImpl implements IMsgService {
         try {
             EntityWrapper entityWrapper = new EntityWrapper();
             entityWrapper.eq("no", screen.getNo());
-            entityWrapper.eq("enable", Resource.STATUS_ENABLE);
+            entityWrapper.eq("status", Resource.STATUS_ENABLE);
             List<Resource> resourcePlayList = resourceService.selectList(entityWrapper);
             if (null == resourcePlayList || resourcePlayList.isEmpty()) {
                 return;

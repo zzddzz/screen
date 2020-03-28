@@ -75,12 +75,13 @@ public class FileUtil {
      * @return
      */
     public static boolean validatePicOfScreen(String originFileName, String regexChar) {
+        originFileName = originFileName.substring(0,originFileName.indexOf("."));
         if (StringUtils.isBlank(regexChar)) {
             return false;
         }
         String[] regexArray = regexChar.split(",");
         for (String regex : regexArray) {
-            if (originFileName.indexOf(regex) != -1) {
+            if (originFileName.equals(regex)) {
                 return true;
             }
         }

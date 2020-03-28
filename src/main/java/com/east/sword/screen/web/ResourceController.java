@@ -68,9 +68,10 @@ public class ResourceController extends BaseController {
      * @return
      */
     @GetMapping("/index")
-    public String loadIndex(String no, String msg, Model model) {
+    public String loadIndex(String no, String msg,String src, Model model) {
         model.addAttribute("no", no);
         model.addAttribute("msg", msg);
+        model.addAttribute("src", src);
         return "resource";
     }
 
@@ -113,9 +114,10 @@ public class ResourceController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/change")
-    public String changeResourceStatus(int resourceId, String enable) {
+    public String changeResourceStatus(int resourceId, String status) {
         try {
 
+            status = Resource.STATUS_UNABLE.equals(status) ? Resource.STATUS_ENABLE : Resource.STATUS_UNABLE;
             Resource resource = resourceService.selectById(resourceId);
             Screen screen = screenService.selectById(resource.getNo());
 
@@ -141,7 +143,7 @@ public class ResourceController extends BaseController {
                 msgService.putDownResource(screen, resource);
             }
 
-            resource.setStatus(enable);
+            resource.setStatus(status);
             resourceService.updateById(resource);
             return SUCCESS;
         } catch (Exception e) {

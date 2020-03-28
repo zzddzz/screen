@@ -250,7 +250,7 @@
                             var rtn =
                                 "<button type='button' onclick='onEdit(" + row.id + "," + row.status + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
-                                + "<a type='button' data-fancybox='gallery' class='" + (row.type == 'font' ? 'disable' : '') + " btn btn-outline-primary btn-sm'"
+                                + "<a type='button' data-fancybox='gallery' class='" + (row.type == 'font' ? 'disabled' : '') + " btn btn-outline-primary btn-sm'"
                                 + " href='" + showpicUrl + row.id + "' >预览</a>";
 
                             return rtn

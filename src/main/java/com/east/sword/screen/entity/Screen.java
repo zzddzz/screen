@@ -71,7 +71,7 @@ public class Screen extends Model<Screen> {
     private String host;
 
     @TableField("port")
-    private int port;
+    private Integer port;
 
     @TableField("protocol")
     private String protocol;

@@ -60,7 +60,7 @@
                                         <th>亮度</th>
                                         <th>FTP 源</th>
                                         <th>状态</th>
-                                        <th width="250px">操作</th>
+                                        <th width="320px">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -247,7 +247,8 @@
                                 "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>调整参数</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='loadFtp(" + row.no + ")' class='btn btn-outline-primary btn-sm'>FTP源</button>&nbsp;&nbsp;"
                                 + chageInfo
-                                + "<button type='button' onclick='onChangeStatus(" + row.no + ",-1)' class='btn btn-outline-primary btn-sm'>重启</button>";
+                                + "<button type='button' onclick='onChangeStatus(" + row.no + ",-1)' class='btn btn-outline-primary btn-sm'>重启</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>轮播详细</button>";
                             return rtnStr;
                         }
 
@@ -262,6 +263,11 @@
             });
 
         });
+
+        //加载轮播详细
+        function loadResource(no) {
+            window.location.href = basePath + "/resource/index?no=" + no + "&src=play";
+        }
 
         //加载ftp 新增modal
         function loadFtp(no) {
@@ -433,7 +439,8 @@
                 function (response) {
                     if (response == 'success') {
                         $("#customModal").modal('hide');
-                        dataTable.ajax.reload();
+                        //table.ajax.reload();
+                        window.location.reload();
                     } else {
                         bootbox.alert('操作异常');
                     }

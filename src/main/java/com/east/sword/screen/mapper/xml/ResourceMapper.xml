@@ -31,6 +31,6 @@
         <if test="srcType != null and srcType != ''">
           AND t1.srcType = #{srcType}
         </if>
-        ORDER BY enable DESC
+        ORDER BY status DESC
     </select>
 </mapper>
