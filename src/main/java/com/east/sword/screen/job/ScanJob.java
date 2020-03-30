@@ -222,9 +222,6 @@ public class ScanJob {
             List<Screen> screenList = screenService.selectList(screenQuary);
 
             for (Screen screen : screenList) {
-                if (screen.getNo() != 15) {
-                    continue;
-                }
 
                 //查询合法的播放资源,资源按照创建时间倒序,取出合法的数量
                 EntityWrapper<Resource> entityWrapper = new EntityWrapper();
