@@ -10,27 +10,29 @@
         <!-- Start content -->
         <div class="content">
             <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <br/>
+                    </div>
+                </div>
                 <!-- end row -->
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                        <br/>
                         <div class="card mb-3">
-                            <div class="card-body">
+                            <div class="card-header">
+                                <div class="row">
+
+                                </div>
                             </div>
-                        </div>
-                        <div class="card mb-3">
                             <div class="card-body">
+                                <div style="margin-left: 15px;">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="loadAdd()">
+                                        <i class="fa fa-user" aria-hidden="true"></i> 新增用户
+                                    </button>
+                                </div>
                                 <table id="tb_1" class="table table-responsive-xl table-hover display">
                                     <thead>
-                                    <tr>
-                                        <td colspan="9" class="text-left">
-                                            <a href="#" onclick="loadAdd()" data-toggle="modal"
-                                               class="submitBtn btn btn-info btn-sm inline">
-                                                <i class="fa fa-check-circle-o"></i> 新增
-                                            </a>
-                                        </td>
-                                    </tr>
                                     <tr>
                                         <th>编号</th>
                                         <th>用户名</th>
@@ -60,7 +62,7 @@
                         <div class="modal-body">
                             <form id="customForm" th:action="@{/resource/compPic}" method="post"
                                   enctype="multipart/form-data">
-                                <input id="no" name="no" type="hidden" th:value="${no}">
+                                <input id="id" name="id" type="hidden" value="">
                                 <div class="form-group row">
                                     <label for="name" class="star col-sm-2 col-form-label">用户名</label>
                                     <div class="col-sm-10">
@@ -70,13 +72,19 @@
                                 <div class="form-group row">
                                     <label for="pass" class=" star col-sm-2 col-form-label">密码</label>
                                     <div class="col-sm-10">
-                                        <input class="form-control" name="size" id="pass" required/>
+                                        <input type="password" class="form-control" name="size" id="pass" required/>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="role" class=" star col-sm-2 col-form-label">所属角色</label>
+                                    <label for="passConfim" class=" star col-sm-2 col-form-label">确认密码</label>
                                     <div class="col-sm-10">
-                                        <select id="role" class="form-control select2" name="roleId">
+                                        <input type="password" class="form-control" name="size" id="passConfim" required/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="roleId" class=" star col-sm-2 col-form-label">所属角色</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select2" id="roleId" name="roleId" style="width: 630px;">
                                             <option value="">请选择</option>
                                             <option th:each="role:${roles}" th:value="${role.id}"
                                                     th:text="${role.name}"></option>
@@ -87,7 +95,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                            <button type="button" onclick="onEdit()" class="btn btn-primary">保存</button>
+                            <button type="button" onclick="onResave()" class="btn btn-primary">保存</button>
                         </div>
                     </div>
                 </div>
@@ -108,6 +116,10 @@
     var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
 
     bootbox.setDefaults("locale", "zh_CN");
+
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
 
     $(document).ready(function () {
         $('#tb_1').DataTable({
@@ -164,42 +176,59 @@
 
     //修改、保存用户
     function onEdit(id) {
-        var tip = id ? "确认保存?" : "确认修改?";
-        var id = id;
-        var name = $("#name").val();
-        var pass = $("#pass").val();
-        var roleId = $("#role").val();
-        bootbox.confirm(tip, function (result) {
-            if (result) {
-                $.post(
-                    basePath + "/user/resave",
-                    {
-                        "id": id,
-                        "name": name,
-                        "password": pass,
-                        "roleId": roleId
-                    },
-                    function (response) {
-                        if(response == 'success') {
 
-                        } else {
-
-                        }
-
-                    }
-                );
+        $.post(
+            basePath + "/user/load-edit",
+            {"id": id},
+            function (response) {
+                $("#id").val(response.id);
+                $("#name").val(response.name);
+                $("#pass").val(response.password);
+                $("#passConfim").val(response.password);
+                $("#roleId").val(response.roleId).trigger('change');
+                $("#customModal").modal('show');
             }
-        });
+        );
     }
 
     //添加用户
     function loadAdd() {
         $("#customForm")[0].reset();
-        $("#customModal").modal('show');
         $("#customForm")[0].classList.remove('was-validated');//初始不校验
+        $("#id").val('');
+        $("#roleId").val('').trigger('change');;
+        $("#customModal").modal('show');
+    }
 
-        $('#backPic').trigger("filer.reset")
+    //保存用户
+    function onResave() {
+        var form = $("#customForm")[0];
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
 
+        var pass = $("#pass").val();
+        var passConfim = $("#passConfim").val();
+        if (pass != passConfim) {
+            bootbox.alert('两次密码不一致');
+            return;
+        }
+        $.post(
+            basePath + "/user/resave",
+            {
+                "id": $("#id").val(),
+                "name": $("#name").val(),
+                "password": $("#pass").val(),
+                "roleId": $("#roleId").val()
+            },
+            function (response) {
+                if (response == 'success') {
+                    window.location.reload();
+                }
+
+            }
+        );
     }
 
     //删除用户
@@ -207,7 +236,7 @@
         bootbox.confirm('确认删除?', function (result) {
             if (result) {
                 $.post(
-                    basePath + "/resource/delete",
+                    basePath + "/user/delete",
                     {"id": id},
                     function (response) {
                         if (response == 'success') {

@@ -25,7 +25,7 @@ public class ScreenFtpServiceImpl extends ServiceImpl<ScreenFtpMapper, ScreenFtp
     }
 
     @Override
-    public List<ScreenFtp> selectInfoAllList() {
-        return baseMapper.selectInfoAllList();
+    public List<ScreenFtp> selectInfoAllList(String screenEnable) {
+        return baseMapper.selectInfoAllList(screenEnable);
     }
 }

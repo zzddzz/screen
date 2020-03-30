@@ -1,6 +1,5 @@
 package com.east.sword.screen.msg;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
 import com.east.sword.screen.service.IResourceService;
@@ -118,10 +117,8 @@ public class KltMsgServiceImpl implements IMsgService {
         String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
-        EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("vsnName", resource.getVsnName());
         resource.setStatus(Resource.STATUS_UNABLE);
-        resourceService.update(resource, entityWrapper);
+        resourceService.updateById(resource);
 
         stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
     }
@@ -137,10 +134,10 @@ public class KltMsgServiceImpl implements IMsgService {
         String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
-        EntityWrapper<Resource> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("vsnName", resource.getVsnName());
         resource.setStatus(Resource.STATUS_ISDEL);
-        resourceService.update(resource, entityWrapper);
+        resourceService.updateById(resource);
+
+        stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
     }
 
     /**
@@ -153,6 +150,10 @@ public class KltMsgServiceImpl implements IMsgService {
     public void putResource(Screen screen, Resource resource) {
         String uploadUrl = kltRoute.uploadRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpPostMedia(uploadUrl, resource);
+
+        resource.setStatus(Resource.STATUS_ENABLE);
+        resourceService.updateById(resource);
+
         stringRedisTemplate.opsForList().rightPush(screen.getNo().toString(),resource.getVsnName());
     }
 
@@ -196,7 +197,7 @@ public class KltMsgServiceImpl implements IMsgService {
     }
 
     /**
-     * 获取亮度
+     * 修改亮度
      *
      * @param screen
      * @param resource

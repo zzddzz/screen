@@ -227,7 +227,12 @@
 
                     {"data": "id"},
                     {"data": "fileName"},
-                    {"data": "type"},
+                    {
+                        "data": "type",
+                        render:function (data) {
+                            return data == 'pic' ? '图片' : '文字';
+                        }
+                    },
                     {"data": "createDate"},
                     {"data": "noName"},
                     {"data": "content"},

@@ -17,6 +17,6 @@ public interface IScreenFtpService extends IService<ScreenFtp> {
 
     List<ScreenFtp> selectListOfScren(int no);
 
-    List<ScreenFtp> selectInfoAllList();
+    List<ScreenFtp> selectInfoAllList(String screenEnable);
 
 }

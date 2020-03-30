@@ -268,6 +268,14 @@
                 return;
             }
 
+            //播放数量和匹配规则必须一致
+            var regexChar = $("#regexChar").val();
+            var playPicNum = $("#playPicNum").val();
+            if (regexChar.split(',').length < playPicNum) {
+                bootbox.alert('匹配格式的文件数量不能少于诱导屏轮播数量！');
+                return;
+            }
+
             $.post(
                 basePath + "/screen/resave",
                 {
@@ -278,8 +286,8 @@
                     "host": $("#host").val(),
                     "port": $("#port").val(),
                     "type": $("#type").val(),
-                    "regexChar": $("#regexChar").val(),
-                    "playPicNum": $("#playPicNum").val(),
+                    "regexChar": regexChar,
+                    "playPicNum": playPicNum,
                     "second": $("#second").val()
                 },
                 function (response) {

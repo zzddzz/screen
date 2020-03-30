@@ -29,7 +29,7 @@
         from screen_ftp t1
         INNER JOIN ftp_info t2 on t1.ftp_id = t2.id
         INNER JOIN screen t3 on t1.screen_id = t3.no
-        WHERE t3.enable = '1'
+        WHERE t3.enable = #{enable}
     </select>
 
 

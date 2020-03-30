@@ -117,13 +117,12 @@ public class ResourceController extends BaseController {
     public String changeResourceStatus(int resourceId, String status) {
         try {
 
-            status = Resource.STATUS_UNABLE.equals(status) ? Resource.STATUS_ENABLE : Resource.STATUS_UNABLE;
             Resource resource = resourceService.selectById(resourceId);
             Screen screen = screenService.selectById(resource.getNo());
 
 
             //上传大屏,判断大屏资源是否占满
-            if (Resource.STATUS_UNABLE.equals(resource.getStatus())) {//上传大屏资源
+            if (Resource.STATUS_UNABLE.equals(status)) {//上传大屏资源
 
                 //只有FTP同步的图片-->校验大屏设置的图片数量限制,自定义的不限制
                 if (Resource.SRC_SYNC.equals(resource.getSrcType())) {
@@ -142,9 +141,6 @@ public class ResourceController extends BaseController {
             } else {//下架资源
                 msgService.putDownResource(screen, resource);
             }
-
-            resource.setStatus(status);
-            resourceService.updateById(resource);
             return SUCCESS;
         } catch (Exception e) {
             log.error("change error : {}", e);
@@ -156,10 +152,8 @@ public class ResourceController extends BaseController {
     @RequestMapping("/delete")
     public String deleteResource(Resource resource) {
         try {
-            resource = resourceService.selectById(resource.getId());
-            resourceService.deleteById(resource.getId());
-
             //删除大屏资源
+            resource = resourceService.selectById(resource.getId());
             Screen screen = screenService.selectById(resource.getNo());
             msgService.delResource(screen, resource);
             return SUCCESS;

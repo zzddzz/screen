@@ -7,4 +7,10 @@
         INNER JOIN sys_role t2 ON t1.role_id = t2.id
     </select>
 
+    <select id="selectRoleInfoById" resultType="com.east.sword.screen.entity.SysUser">
+        select t1.*,t1.create_date AS createDate,t2.name AS roleName ,t2.id AS roleId from sys_user t1
+        INNER JOIN sys_role t2 ON t1.role_id = t2.id
+        WHERE t1.id = #{id}
+    </select>
+
 </mapper>

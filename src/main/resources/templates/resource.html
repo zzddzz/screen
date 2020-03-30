@@ -53,6 +53,7 @@
                                         <th>FTP日期</th>
                                         <th>同步日期</th>
                                         <th>同步文件名</th>
+                                        <th>来源</th>
                                         <th>类型</th>
                                         <th width="60">状态</th>
                                         <th width="160">操作</th>
@@ -112,11 +113,17 @@
                 {"data": "originName"},
                 {"data": "resourceDateTime"},
                 {"data": "createDate"},
-                {"data": "fileName"},
+                {"data": "vsnName"},
+                {
+                    "data": "srcType",
+                    render: function (data) {
+                        return data == 'sync' ? "<font " + " color='#daa520'>FTP</font>" : "<font " + " color='#daa520'>插播</font>";
+                    }
+                },
                 {
                     "data": "type",
-                    render: function (data) {
-                        return data == 'font' ? "<font " + " color='#daa520'>插播</font>" : "<font " + " color='green'>FTP图</font>";
+                    render:function (data) {
+                        return data == 'pic' ? "<font " + " color='#daa520'>图片</font>" : "<font " + " color='#daa520'>文字</font>";
                     }
                 },
                 {
@@ -142,7 +149,7 @@
                             var rtn =
                                 "<button type='button' onclick='onEdit(" + row.id + "," + row.status + ")' class='btn btn-outline-primary btn-sm'>" + tip + "</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='onDel(" + row.id + ")' class='btn btn-outline-primary btn-sm'>删除</button>&nbsp;&nbsp;"
-                                + "<a type='button' data-fancybox='gallery' class='btn btn-outline-primary btn-sm'"
+                                + "<a type='button' data-fancybox='gallery' class='" + (row.type == 'font' ? 'disabled' : '') + " btn btn-outline-primary btn-sm'"
                                 + " href='" + showpicUrl + row.id + "' >预览</a>";
 
                             return rtn
@@ -195,7 +202,7 @@
                     {"resourceId": id, "status": status},
                     function (response) {
                         if (response != 'success' && response != 'fail') {
-                            bootbox.alert('诱导屏最多播放' + response + "张图片！");
+                            bootbox.alert('诱导屏最多播放' + response + "张图片,请先停播图片后再播放！");
                         } else if (response == 'success') {
                             window.location.reload();
                         } else {

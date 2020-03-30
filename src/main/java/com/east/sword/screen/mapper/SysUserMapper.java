@@ -3,6 +3,7 @@ package com.east.sword.screen.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.east.sword.screen.entity.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,5 +23,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     List<SysUser> selectUserPage(Page page);
+
+    SysUser selectRoleInfoById(@Param("id") int id);
 
 }

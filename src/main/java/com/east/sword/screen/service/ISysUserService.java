@@ -20,4 +20,6 @@ public interface ISysUserService extends IService<SysUser> {
     SysUser getUserByName(String name);
 
     List<SysUser> selectUserPage(Page page);
+
+    SysUser selectRoleInfoById(int id);
 }

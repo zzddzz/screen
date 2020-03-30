@@ -71,4 +71,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<SysUser> selectUserPage(Page page) {
         return baseMapper.selectUserPage(page);
     }
+
+    @Override
+    public SysUser selectRoleInfoById(int id) {
+        return baseMapper.selectRoleInfoById(id);
+    }
 }

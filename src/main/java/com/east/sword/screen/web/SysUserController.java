@@ -1,7 +1,6 @@
 package com.east.sword.screen.web;
 
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.east.sword.screen.entity.SysRole;
 import com.east.sword.screen.entity.SysUser;
@@ -22,7 +21,7 @@ import java.util.TreeMap;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author ZZD
@@ -31,7 +30,7 @@ import java.util.TreeMap;
 @Slf4j
 @Controller
 @RequestMapping("/user")
-public class SysUserController extends BaseController{
+public class SysUserController extends BaseController {
 
     @Autowired
     private ISysUserService userService;
@@ -40,9 +39,9 @@ public class SysUserController extends BaseController{
     private ISysRoleService roleService;
 
     @GetMapping("index")
-    public String loadIndex(Model model){
+    public String loadIndex(Model model) {
         List<SysRole> roles = roleService.selectList(null);
-        model.addAttribute("roles",roles);
+        model.addAttribute("roles", roles);
         return "user";
     }
 
@@ -64,7 +63,7 @@ public class SysUserController extends BaseController{
     }
 
     @ResponseBody
-    @RequestMapping("resave")
+    @RequestMapping("/resave")
     public String resave(SysUser sysUser) {
         try {
             if (sysUser.getId() == null) {
@@ -79,22 +78,26 @@ public class SysUserController extends BaseController{
     }
 
     @ResponseBody
-    @RequestMapping("modify")
-    public String modifyUser(String oldPass,String newPass) {
-        try {
-            SysUser sysUser = userService.selectList(new EntityWrapper<>()).get(0);
-            if (!oldPass.equals(sysUser.getPassword())) {
-                return "oldFail";
-            }
-            sysUser.setPassword(newPass);
-            userService.updateById(sysUser);
-            return SUCCESS;
+    @RequestMapping("/load-edit")
+    public SysUser loadEdit(int id) {
+        SysUser sysUser = userService.selectRoleInfoById(id);
+        return sysUser;
+    }
 
+    @ResponseBody
+    @RequestMapping("/delete")
+    public String delete(int id) {
+        try {
+             userService.deleteById(id);
+            return SUCCESS;
         } catch (Exception e) {
-            log.error("修改密码异常!",e);
+            log.error("user delete error:",e);
             return FAIL;
         }
     }
+
+
+
 
 }
 
