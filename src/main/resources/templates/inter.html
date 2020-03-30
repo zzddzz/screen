@@ -53,10 +53,10 @@
 
                             <div class="card-body">
                                 <div style="margin-left: 15px;">
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModalPic">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="onInterPic()">
                                         <i class="fa fa-picture-o" aria-hidden="true"></i> 插播图片
                                     </button>
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#customModalFont">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" onclick="onInterFont()">
                                         <i class="fa fa-font" aria-hidden="true"></i> 插播文字
                                     </button>
                                 </div>
@@ -100,6 +100,7 @@
                                                 <option value="">请选择</option>
                                                 <option th:each="screen : ${screenList}" th:value="${screen.no}" th:text="${screen.name}"></option>
                                             </select>
+                                            <font color="red">( 卡莱特 )</font>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -149,6 +150,7 @@
                                                 <option value="">请选择</option>
                                                 <option th:each="screen : ${screenList}" th:value="${screen.no}" th:text="${screen.name}"></option>
                                             </select>
+                                            <font color="red">( 金晓 )</font>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -270,6 +272,42 @@
 
         function onRest() {
             window.location.reload();
+        }
+
+        //加载插播图片
+        function onInterPic() {
+            $("#no").html('');
+            $("#no").append("<option value=''>请选择</option>");
+            $.post(
+                basePath + "/screen/get-type-screen",
+                {'type':'klt'},
+                function (result) {
+                    for (var i =0; i < result.length;i++){
+                        var screen = result[i];
+                        $("#no").append("<option value='"+screen.no+"'>"+screen.name+"</option>");
+                    }
+                }
+
+            );
+            $("#customModalPic").modal('show');
+        }
+
+        //加载插播文字
+        function onInterFont() {
+            $("#noFont").html('');
+            $("#noFont").append("<option value=''>请选择</option>");
+            $.post(
+                basePath + "/screen/get-type-screen",
+                {'type':'jx'},
+                function (result) {
+                    for (var i =0; i < result.length;i++){
+                        var screen = result[i];
+                        $("#noFont").append("<option value='"+screen.no+"'>"+screen.name+"</option>");
+                    }
+                }
+
+            );
+            $("#customModalFont").modal('show');
         }
 
         //新增合成图

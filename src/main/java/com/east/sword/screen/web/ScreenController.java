@@ -63,10 +63,10 @@ public class ScreenController extends BaseController<Screen> {
     public String loadScreenIndex(Model model) {
         EntityWrapper entityWrapper = new EntityWrapper();
         List<Screen> screenList = screenService.selectList(entityWrapper);
-        model.addAttribute("total",screenList.size());
-        int enable = screenList.stream().filter(meta->Screen.STATUS_ENABLE.equals(meta.getEnable())).collect(Collectors.toList()).size();
-        model.addAttribute("enable",enable);
-        model.addAttribute("unable",screenList.size() - enable);
+        model.addAttribute("total", screenList.size());
+        int enable = screenList.stream().filter(meta -> Screen.STATUS_ENABLE.equals(meta.getEnable())).collect(Collectors.toList()).size();
+        model.addAttribute("enable", enable);
+        model.addAttribute("unable", screenList.size() - enable);
         return "screen";
     }
 
@@ -74,7 +74,7 @@ public class ScreenController extends BaseController<Screen> {
     public String loadPlayIndex(Model model) {
         EntityWrapper entityWrapper = new EntityWrapper();
         List<FtpInfo> ftpInfoList = ftpInfoService.selectList(entityWrapper);
-        model.addAttribute("ftpInfoList",ftpInfoList);
+        model.addAttribute("ftpInfoList", ftpInfoList);
         return "play";
     }
 
@@ -94,19 +94,19 @@ public class ScreenController extends BaseController<Screen> {
 
     @ResponseBody
     @RequestMapping("/page")
-    public Map screenPageList(PageHelper<Screen> pageHelper,Screen screen) {
+    public Map screenPageList(PageHelper<Screen> pageHelper, Screen screen) {
         try {
             Map data = new TreeMap();
             EntityWrapper entityWrapper = new EntityWrapper();
             if (StringUtils.isNotBlank(screen.getEnable())) {
-                entityWrapper.eq("enable",screen.getEnable());
+                entityWrapper.eq("enable", screen.getEnable());
             }
             if (StringUtils.isNotBlank(screen.getName())) {
-                entityWrapper.like("name",screen.getName());
+                entityWrapper.like("name", screen.getName());
             }
-            Page<Screen> page = screenService.selectPage(pageHelper.getPage(),entityWrapper);
+            Page<Screen> page = screenService.selectPage(pageHelper.getPage(), entityWrapper);
             List<Screen> records = page.getRecords();
-            records.stream().forEach(meta->meta.setType(Screen.TYPE_INFO.get(meta.getType())));
+            records.stream().forEach(meta -> meta.setType(Screen.TYPE_INFO.get(meta.getType())));
             data.put("data", records);
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
@@ -182,7 +182,7 @@ public class ScreenController extends BaseController<Screen> {
 
     @ResponseBody
     @RequestMapping("/changeStatus")
-    public String changeStatus(int no,String status) {
+    public String changeStatus(int no, String status) {
         try {
             Screen screen = screenService.selectById(no);
             if (Screen.STATUS_ENABLE.equals(status)) {
@@ -208,7 +208,14 @@ public class ScreenController extends BaseController<Screen> {
 
     }
 
-
+    @ResponseBody
+    @RequestMapping("/get-type-screen")
+    public List<Screen> getTypeScreen(String type) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("type", type);
+        List<Screen> screenList = screenService.selectList(entityWrapper);
+        return screenList;
+    }
 
 
 }
