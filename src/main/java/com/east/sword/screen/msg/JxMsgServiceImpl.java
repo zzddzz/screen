@@ -7,7 +7,6 @@ import com.east.sword.screen.service.IResourceService;
 import com.east.sword.screen.util.socket.SocketRouterService;
 import com.east.sword.screen.vo.VsnPlay;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -45,23 +44,22 @@ public class JxMsgServiceImpl implements IMsgService {
             }
 
             //设置轮播信息
-            String playResourceId = stringRedisTemplate.opsForValue().get(String.valueOf(screen.getNo()));
-            if (StringUtils.isBlank(playResourceId)) {
-                playResourceId = resourcePlayList.get(0).getId().toString();
+            long size = stringRedisTemplate.opsForList().size(screen.getNo().toString());
+            if (size == 0 || size < resourcePlayList.size()) {
+                stringRedisTemplate.opsForList().trim(screen.getNo().toString(),0,size);
+                resourcePlayList.forEach(meta->{
+                    stringRedisTemplate.opsForList().leftPush(screen.getNo().toString(),meta.getVsnName());
+                });
             }
-            Resource resource = resourceService.selectById(playResourceId);
+
+            String vsnName = stringRedisTemplate.opsForList().rightPop(screen.getNo().toString());
+            EntityWrapper entityWrapperVsn = new EntityWrapper();
+            entityWrapperVsn.eq("vsnName",vsnName);
+            Resource resource = resourceService.selectOne(entityWrapperVsn);
             socketRouterService.sendMessage(resource, screen);
 
-            //设置下一次金晓屏播放信息
-            int nextPlayResouceIndex = 0;
-            for (int i =0 ;i < resourcePlayList.size();i++){
-                Resource temp = resourcePlayList.get(i);
-                if (temp.getId().toString().equals(playResourceId)) {
-                     nextPlayResouceIndex = (i + 1) < resourcePlayList.size() ? (i + 1) : 0;
-                }
-            }
-            Resource nextPlayResource = resourcePlayList.get(nextPlayResouceIndex);
-            stringRedisTemplate.opsForValue().set(String.valueOf(screen.getNo()),nextPlayResource.getId().toString());
+            stringRedisTemplate.opsForList().leftPush(screen.getNo().toString(),resource.getVsnName());
+
         } catch (Exception e) {
             log.error("发送金晓Socket 请求异常 : {}", e.getMessage());
         }

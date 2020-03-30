@@ -30,6 +30,7 @@ import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -180,7 +181,7 @@ public class ScanJob {
 
                     //触发上传新资源(如果vsn 重名,则会覆盖上传播放盒)
                     String sendUrl = kltRoute.uploadRountPath(screen.getUri(), resource.getVsnName());
-                    String response = httpClient.httpPostMedia(sendUrl, resource);
+                    httpClient.httpPostMedia(sendUrl, resource);
 
                     //是否更新resource 信息
                     EntityWrapper entityWrapper = new EntityWrapper();
@@ -197,18 +198,6 @@ public class ScanJob {
                         resourceService.insert(resource);
                     }
 
-                    /*//最新同步的 vsn与之前播放的重名的话,将之前的状态修改为停播
-                    EntityWrapper entityWrapper = new EntityWrapper();
-                    entityWrapper.eq("vsnName",resource.getVsnName());
-                    entityWrapper.eq("status",Resource.STATUS_ENABLE);
-                    entityWrapper.ne("id",resource.getId());
-                    List<Resource> needChangeStatus = resourceService.selectList(entityWrapper);
-                    needChangeStatus.stream().forEach(meta->{
-                        meta.setStatus(Resource.STATUS_UNABLE);
-                        resourceService.updateById(meta);
-                    });*/
-
-                    log.info("FTP最新同步文件上传大屏...:{}", response);
                 }
             }
         } catch (Exception e) {
@@ -321,7 +310,7 @@ public class ScanJob {
 
             resource.setNo(screen.getNo());
             resource.setCreateDate(new Date());
-            resource.setFilePath(constantConfig.fileCache);
+            resource.setFilePath(constantConfig.fileCache + screen.getNo() + File.separator);
 
             resource.setFileName(DigestUtils.md5Hex(picName) + "." + picType);
             resource.setVsnName(DigestUtils.md5Hex(picName) + ".vsn");

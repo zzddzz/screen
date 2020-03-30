@@ -42,7 +42,7 @@ public class SocketRouterService {
             //写入模板
             //String fileName = "play" + resource.getNo() + ".lst";
             String fileName = "play.lst";
-            File sendTemplete = new File(constantConfig.fileCache  + fileName);
+            File sendTemplete = new File(constantConfig.fileCache + screen.getNo() + File.separator + fileName);
             File srcFile = ResourceUtils.getFile("classpath:play.lst");
             FileUtils.copyFile(srcFile, sendTemplete);
             BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(sendTemplete,true),"GBK"));

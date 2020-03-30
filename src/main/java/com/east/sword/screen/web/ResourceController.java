@@ -207,7 +207,8 @@ public class ResourceController extends BaseController {
             resource.setVsnName(vsnName);
             resource.setResourceDateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             resource.setOriginName(originName);
-            resource.setFilePath(constantConfig.fileCache);
+
+            resource.setFilePath(constantConfig.fileCache + no + File.separator );
             resource.setCreateDate(new Date());
             resource.setNo(no);
             resource.setSrcType(Resource.SRC_CUT);
