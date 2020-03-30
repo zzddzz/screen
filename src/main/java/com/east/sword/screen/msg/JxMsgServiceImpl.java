@@ -80,7 +80,8 @@ public class JxMsgServiceImpl implements IMsgService {
 
     @Override
     public void delResource(Screen screen, Resource resource) {
-        resourceService.deleteById(resource.getId());
+        resource.setStatus(Resource.STATUS_ISDEL);
+        resourceService.updateById(resource);
     }
 
     @Override

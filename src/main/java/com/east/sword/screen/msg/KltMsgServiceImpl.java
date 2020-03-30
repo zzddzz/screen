@@ -134,7 +134,8 @@ public class KltMsgServiceImpl implements IMsgService {
         String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
-        resourceService.deleteById(resource.getId());
+        resource.setStatus(Resource.STATUS_ISDEL);
+        resourceService.updateById(resource);
 
         stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
     }
