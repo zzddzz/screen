@@ -364,7 +364,7 @@
 
         //更改状态
         function onEdit(id, status) {
-            var tip = status == '0' ? "确认播放图片?" : "确认停止播放?";
+            var tip = status == '0' ? "确认播放?" : "确认停止播放?";
             bootbox.confirm(tip, function (result) {
                 if (result) {
                     $.post(

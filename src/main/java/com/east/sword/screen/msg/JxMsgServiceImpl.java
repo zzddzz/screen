@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 金晓通信协议实现
@@ -39,8 +40,13 @@ public class JxMsgServiceImpl implements IMsgService {
             entityWrapper.eq("no", screen.getNo());
             entityWrapper.eq("status", Resource.STATUS_ENABLE);
             List<Resource> resourcePlayList = resourceService.selectList(entityWrapper);
+            List<String> playResourceName = resourcePlayList.stream().map(Resource::getVsnName).collect(Collectors.toList());
             if (null == resourcePlayList || resourcePlayList.isEmpty()) {
-                return;
+
+                //播放空内容
+                Resource resource = new Resource();
+                resource.setType(Resource.TYPE_FONT);
+                resourcePlayList.add(resource);
             }
 
             //设置轮播信息
@@ -58,7 +64,11 @@ public class JxMsgServiceImpl implements IMsgService {
             Resource resource = resourceService.selectOne(entityWrapperVsn);
             socketRouterService.sendMessage(resource, screen);
 
-            stringRedisTemplate.opsForList().leftPush(screen.getNo().toString(),resource.getVsnName());
+            //db 中不存在的不在播放
+            if (playResourceName.indexOf(vsnName) != -1) {
+                stringRedisTemplate.opsForList().leftPush(screen.getNo().toString(),resource.getVsnName());
+            }
+
 
         } catch (Exception e) {
             log.error("发送金晓Socket 请求异常 : {}", e.getMessage());

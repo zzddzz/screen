@@ -17,14 +17,17 @@ public class SocketTest {
     public static void main(String[] args) throws Exception {
         String host = "37.168.190.172";
         int port = 60001;
-        File file = new File("d:/play.lst");
+        //File file = new File("d:/play.lst");
+        File file = new File("d:/003.BMP");
         List<String> frameBody = Jxo.getFrameFileBody(file);
 
+        int index = 0;
         for (String metaBody : frameBody) {
             String msgHex = Jxo.getNeedMsgFormat(Jxo.FRAME_UPLOAD_FILE,metaBody);
             byte[] msgByte = HexHelp.hexStrToBinary(msgHex);
             String msg = SocketSender.getInstance().sendMessage(host,port,msgByte);
-            System.out.println(msg);
+            System.out.println("total:" + frameBody.size() + " now:" + index + " response :" + msg);
+            index++;
         }
 
     }

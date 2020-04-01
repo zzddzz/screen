@@ -33,6 +33,7 @@ public class Jxo {
     public static final String FRAME_LIGHT_INFO = "30 36";//亮度信息
 
     public static HashMap<String, byte[]> frameInfo = new HashMap();
+
     static {
         frameInfo.put(FRAME_HEADER, new byte[]{0x02});
         frameInfo.put(FRAME_ADDRESS, new byte[]{0x00, 0x00});
@@ -85,7 +86,7 @@ public class Jxo {
             countLength += b.length;
         }
         int crc = HexHelp.calCRC(allByte);
-        String crcHighLow = HexHelp.getHighLow(crc,2);
+        String crcHighLow = HexHelp.getHighLow(crc, 2);
 
         //转义特殊字符
         crcHighLow = getTranInfo(crcHighLow);
@@ -125,15 +126,15 @@ public class Jxo {
          * 上载文件超过2048,需要把文件分割2048字节若干段,
          * 正好是2048整数倍,最后也需要发送文件内容为0的字节
          */
+        int totalHexSize = hexList.size();
         List<List<String>> metaBody = new ArrayList<>();
-        for (int i = 0; i < hexList.size(); i += 2048) {
-            if (i != 0 && i % 2048 == 0) {
-                List<String> meta = hexList.subList(i, 2048 + i);
-                metaBody.add(meta);
-            }
+        for (int i = 0; i < totalHexSize; i += 2048) {
+            List<String> meta = (i + 2048) < totalHexSize ? hexList.subList(i, 2048 + i)
+                    : hexList.subList(i, totalHexSize);
+            metaBody.add(meta);
         }
-        if (metaBody.size() * 2048 <= hexList.size()) {
-            List<String> finalMeta = hexList.subList(metaBody.size() * 2048, hexList.size());
+        if (metaBody.size() * 2048 == hexList.size()) {
+            List<String> finalMeta = new ArrayList<>();
             metaBody.add(finalMeta);
         }
 
@@ -143,8 +144,8 @@ public class Jxo {
          */
         for (int i = 0; i < metaBody.size(); i++) {
             int pointer = i * 2048;
-            String pointerHighLow = HexHelp.getHighLow(pointer,4);
-            String bodyHex = StringUtils.join(metaBody.get(i),StringUtils.SPACE);
+            String pointerHighLow = HexHelp.getHighLow(pointer, 4);
+            String bodyHex = StringUtils.join(metaBody.get(i), StringUtils.SPACE);
 
             String fileFrameMeta = StringUtils.join(
                     fileNameHex, StringUtils.SPACE,
@@ -191,7 +192,7 @@ public class Jxo {
         );
 
         sendMessage = sendMessage.replaceAll("  ", " ");
-        System.out.println("发送文字："+ sendMessage);
+        System.out.println("发送文字：" + sendMessage);
         return sendMessage;
     }
 

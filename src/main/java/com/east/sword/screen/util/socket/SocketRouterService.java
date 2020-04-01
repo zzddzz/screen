@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.List;
@@ -46,7 +47,7 @@ public class SocketRouterService {
             File srcFile = ResourceUtils.getFile("classpath:play.lst");
             FileUtils.copyFile(srcFile, sendTemplete);
             BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(sendTemplete,true),"GBK"));
-            writer.write(resource.getContent());
+            writer.write(StringUtils.isEmpty(resource.getContent()) ? " " : resource.getContent());
             writer.close();
 
             //发送操作

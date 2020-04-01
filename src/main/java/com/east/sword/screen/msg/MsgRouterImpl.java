@@ -56,7 +56,7 @@ public class MsgRouterImpl implements IMsgService {
             kltMsgService.putDownResource(screen, resource);
         }
         if (Screen.TYPE_JX.equals(screen.getType())) {
-
+            jxMsgService.putDownResource(screen, resource);
         }
     }
 
@@ -66,7 +66,7 @@ public class MsgRouterImpl implements IMsgService {
             kltMsgService.delResource(screen, resource);
         }
         if (Screen.TYPE_JX.equals(screen.getType())) {
-
+            jxMsgService.delResource(screen, resource);
         }
     }
 
@@ -76,7 +76,7 @@ public class MsgRouterImpl implements IMsgService {
             kltMsgService.putResource(screen, resource);
         }
         if (Screen.TYPE_JX.equals(screen.getType())) {
-
+            jxMsgService.putResource(screen, resource);
         }
     }
 
