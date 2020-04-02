@@ -167,7 +167,7 @@ public class ResourceController extends BaseController {
     public void showPicture(String id, HttpServletResponse response) {
         try {
             Resource resource = resourceService.selectById(id);
-            String filePath = constantConfig.fileCache + resource.getFileName();
+            String filePath = resource.getFilePath() + resource.getFileName();
             InputStream in = new FileInputStream(new File(filePath));
 
             FileCopyUtils.copy(in, response.getOutputStream());

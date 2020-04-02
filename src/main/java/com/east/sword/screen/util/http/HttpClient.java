@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,7 +27,22 @@ public class HttpClient {
     public static MediaType TYPE_FORM = MediaType.APPLICATION_FORM_URLENCODED;
     public static MediaType TYPE_JSON = MediaType.APPLICATION_JSON;
 
-    RestTemplate restTemplate = new RestTemplate();
+
+    private  RestTemplate restTemplate ;
+
+    public synchronized RestTemplate getRestTemplate() {
+
+        if (null == restTemplate) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            requestFactory.setConnectTimeout(8000);
+            requestFactory.setReadTimeout(20000);
+            restTemplate = new RestTemplate();
+            restTemplate.setRequestFactory(requestFactory);
+            return restTemplate;
+        } else {
+            return restTemplate;
+        }
+    }
 
     /**
      * Post 请求
@@ -40,7 +56,7 @@ public class HttpClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity request = new HttpEntity<>(jsonCommond, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+        ResponseEntity<String> response = getRestTemplate().postForEntity(url, request, String.class);
         return response.getBody();
     }
 
@@ -73,7 +89,7 @@ public class HttpClient {
         //用HttpEntity封装整个请求报文
         HttpEntity<MultiValueMap<String, Object>> files = new HttpEntity<>(form, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(url, files, String.class);
+        ResponseEntity<String> response = getRestTemplate().postForEntity(url, files, String.class);
         return response.getBody();
     }
 
@@ -84,7 +100,7 @@ public class HttpClient {
      * @return
      */
     public String httpGet(String url) {
-        ResponseEntity responseEntity = restTemplate.getForEntity(url, String.class);
+        ResponseEntity responseEntity = getRestTemplate().getForEntity(url, String.class);
         String info = responseEntity.getBody() == null ? StringUtils.EMPTY : responseEntity.getBody().toString();
         return info;
     }
@@ -99,9 +115,9 @@ public class HttpClient {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity request = new HttpEntity<>(jsonCommond, headers);
-            restTemplate.put(url, request);
+            getRestTemplate().put(url, request);
         } else {
-            restTemplate.put(url, null);
+            getRestTemplate().put(url, null);
         }
 
     }
@@ -112,7 +128,7 @@ public class HttpClient {
      * @param url
      */
     public void httpDelete(String url) {
-        restTemplate.delete(url);
+        getRestTemplate().delete(url);
     }
 
 

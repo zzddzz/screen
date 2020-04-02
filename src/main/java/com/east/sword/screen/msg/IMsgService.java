@@ -72,6 +72,13 @@ public interface IMsgService {
      */
     void changeLight(Screen screen);
 
+    /**
+     * 获取电源状态
+     * @param screen
+     * @return
+     */
+    String getPowerStatus(Screen screen);
+
 
 
 

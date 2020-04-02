@@ -126,9 +126,9 @@ public class ScreenController extends BaseController<Screen> {
                 screen.setRemoteFtpPath("./");
                 screenService.insert(screen);
             } else {
-                screenService.updateById(screen);
                 Screen dbScreen = screenService.selectById(screen.getNo());
                 msgService.changeLight(dbScreen);
+                screenService.updateById(screen);
             }
             return SUCCESS;
         } catch (Exception e) {

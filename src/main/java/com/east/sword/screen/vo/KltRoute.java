@@ -29,6 +29,9 @@ public class KltRoute {
     @Value("${klt.light}")
     private String lightRount;
 
+    @Value("${klt.powerstatus}")
+    private String powerStatus;
+
     public String delRountPath(String uri,String vsnName) {
         String path = uri + delRoute.replace("{vsnName}",vsnName) ;
         return path;
@@ -56,6 +59,11 @@ public class KltRoute {
 
     public String lightPath(String uri) {
         String path = uri + lightRount;
+        return path;
+    }
+
+    public String powerStatusPath(String uri) {
+        String path = uri + powerStatus;
         return path;
     }
 

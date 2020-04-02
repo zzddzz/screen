@@ -119,4 +119,15 @@ public class MsgRouterImpl implements IMsgService {
 
         }
     }
+
+    @Override
+    public String getPowerStatus(Screen screen) {
+        if (Screen.TYPE_KLT.equals(screen.getType())) {
+            return kltMsgService.getPowerStatus(screen);
+        }
+        if (Screen.TYPE_JX.equals(screen.getType())) {
+            return null;
+        }
+        return null;
+    }
 }

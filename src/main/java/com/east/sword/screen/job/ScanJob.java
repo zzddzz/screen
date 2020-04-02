@@ -25,6 +25,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
@@ -76,6 +77,9 @@ public class ScanJob {
     @Qualifier("routerMsgService")
     @Autowired()
     private IMsgService msgService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 轮询数据库中的大屏配置的cron ,保持线程内信息一致
@@ -146,19 +150,19 @@ public class ScanJob {
      */
     @Scheduled(cron = "*/10 * * * * ?")
     public void syncFtpFile() {
-        try {
-            log.info("Begin SyncFtpFile JOB...");
-            List<ScreenFtp> screenFtpList = screenFtpService.selectInfoAllList(Screen.STATUS_ENABLE);
-            for (ScreenFtp screenFtp : screenFtpList) {
 
-                Screen screen = screenService.selectById(screenFtp.getScreenId());
+        log.info("Begin SyncFtpFile JOB...");
+        List<ScreenFtp> screenFtpList = screenFtpService.selectInfoAllList(Screen.STATUS_ENABLE);
+        for (ScreenFtp screenFtp : screenFtpList) {
+            Screen screen = screenService.selectById(screenFtp.getScreenId());
+            try {
 
                 //判断设置的FTP 同步时间是否符合触发标准.
                 String now = DateFormatUtils.format(new Date(), "HH:mm:ss");
                 if (!compTime(now, screenFtp.getBegTime()) && compTime(screenFtp.getEndTime(), now)) continue;
 
                 //遍历Ftp文件
-                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", screen.getPlayPicNum(), -1,screen.getRegexChar());
+                List<FTPFile> files = ftpRouter.getFTPClient(screenFtp.getUnicode()).getPicFiles("./", screen.getPlayPicNum(), -1, screen.getRegexChar());
                 for (FTPFile file : files) {
 
                     //转换FTP资源对象
@@ -167,7 +171,7 @@ public class ScanJob {
 
                     //判断资源是否存在更新图片信息
                     int resourceExistNum = resourceService.getNumOfResource(resource.getUnicode());
-                    if (resourceExistNum > 0) return;
+                    if (resourceExistNum > 0) continue;
 
 
                     //生成pic,vsn文件,触发重新上传资源
@@ -185,9 +189,9 @@ public class ScanJob {
 
                     //是否更新resource 信息
                     EntityWrapper entityWrapper = new EntityWrapper();
-                    entityWrapper.eq("no",screen.getNo());
-                    entityWrapper.eq("originName",resource.getOriginName());
-                    entityWrapper.ne("status",Resource.STATUS_ISDEL);
+                    entityWrapper.eq("no", screen.getNo());
+                    entityWrapper.eq("originName", resource.getOriginName());
+                    entityWrapper.ne("status", Resource.STATUS_ISDEL);
                     Resource resourceDb = resourceService.selectOne(entityWrapper);
                     if (null != resourceDb) {
                         resourceDb.setUnicode(resource.getUnicode());
@@ -199,19 +203,20 @@ public class ScanJob {
                     }
 
                 }
+            } catch (Exception e) {
+                log.error("同步FTP文件异常:{}", e);
             }
-        } catch (Exception e) {
-            log.error("同步FTP文件异常:{}", e);
         }
+
     }
 
 
     /**
      * 守护定时-- 大屏和本地资源一致
      * 【本地资源】【大屏资源】【Redis 序列】一致(仅同步卡莱特数据)
-     *  以本地资源作为标准
-     *  需要删除大屏资源
-     *  需要新增大屏资源(超出大屏播放限制/未超出播放限制)
+     * 以本地资源作为标准
+     * 需要删除大屏资源
+     * 需要新增大屏资源(超出大屏播放限制/未超出播放限制)
      */
     @Scheduled(cron = "*/10 * * * * ?")
     public void synResourceToScreen() {
@@ -231,10 +236,10 @@ public class ScanJob {
                 List<Resource> resourceList = resourceService.selectList(entityWrapper);
 
                 List<Resource> picResourceList = resourceList.stream()
-                        .filter(meta ->Resource.SRC_SYNC.equals(meta.getSrcType())).collect(Collectors.toList());
+                        .filter(meta -> Resource.SRC_SYNC.equals(meta.getSrcType())).collect(Collectors.toList());
 
                 List<Resource> cutResourceList = resourceList.stream()
-                        .filter(meta ->Resource.SRC_CUT.equals(meta.getSrcType())).collect(Collectors.toList());
+                        .filter(meta -> Resource.SRC_CUT.equals(meta.getSrcType())).collect(Collectors.toList());
 
                 List<VsnPlay> vsnPlayList = msgService.getRemoteScreenPlayList(screen);
                 List<String> vsnNamePlayList = vsnPlayList.stream().map(VsnPlay::getName).collect(Collectors.toList());
@@ -242,8 +247,8 @@ public class ScanJob {
                 List<Resource> illPlayResource = new ArrayList<>();
                 List<Resource> legalPlayResource = new ArrayList<>();
                 if (null != picResourceList && picResourceList.size() > screen.getPlayPicNum()) {
-                    legalPlayResource.addAll(picResourceList.subList(0,screen.getPlayPicNum()));
-                    illPlayResource.addAll(picResourceList.subList(screen.getPlayPicNum(),picResourceList.size()));
+                    legalPlayResource.addAll(picResourceList.subList(0, screen.getPlayPicNum()));
+                    illPlayResource.addAll(picResourceList.subList(screen.getPlayPicNum(), picResourceList.size()));
                 } else {
                     legalPlayResource.addAll(picResourceList);
                 }
@@ -272,14 +277,45 @@ public class ScanJob {
 
                 // 停播超过最大播放数量限制的图片
                 illPlayResource.forEach(resource -> {
-                    msgService.putDownResource(screen,resource);
+                    msgService.putDownResource(screen, resource);
                 });
 
             }
         } catch (Exception e) {
             log.error("KLT守护进程异常:{}", e);
         }
+    }
 
+
+    /**
+     * 检测卡莱特诱导屏状态
+     */
+    @Scheduled(cron = "*/20 * * * * ?")
+    public void syncKltPowerStatus() {
+        EntityWrapper<Screen> screenQuary = new EntityWrapper();
+        screenQuary.eq("enable", Screen.STATUS_ENABLE);
+        screenQuary.eq("type", Screen.TYPE_KLT);
+        List<Screen> screenList = screenService.selectList(screenQuary);
+        screenList.forEach(meta->{
+            int status = 0;
+            try {
+                msgService.getPowerStatus(meta);
+            } catch (Exception e) {
+                log.error("获取KLT powerStatus 异常:{}",e.getMessage());
+                status = -1;
+
+            } finally {
+                if (status == -1 && !Screen.STATUS_ERROR.equals(meta.getEnable())) {
+                    meta.setEnable(Screen.STATUS_ERROR);
+                    screenService.updateById(meta);
+                }
+                if (status == 0 && Screen.STATUS_ERROR.equals(meta.getEnable())) {
+                    meta.setEnable(Screen.STATUS_ENABLE);
+                    screenService.updateById(meta);
+                }
+            }
+
+        });
 
     }
 
@@ -302,7 +338,7 @@ public class ScanJob {
 
             resource = new Resource();
             //新文件名 = 大屏编号 + 原始文件名
-            String picName = originFileName.substring(0,originFileName.lastIndexOf("."));
+            String picName = originFileName.substring(0, originFileName.lastIndexOf("."));
             String picType = originFileName.substring(originFileName.lastIndexOf(".") + 1, originFileName.length());
 
             resource.setNo(screen.getNo());

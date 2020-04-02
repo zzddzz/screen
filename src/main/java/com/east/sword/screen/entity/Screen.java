@@ -21,9 +21,10 @@ import java.util.Map;
 @Data
 public class Screen extends Model<Screen> {
 
-    public static final String STATUS_ENABLE = "1";//1 正常, 0 休眠 ,-1 重启
+    public static final String STATUS_ENABLE = "1";//1 正常, 0 休眠 ,99 重启,-1 异常
     public static final String STATUS_UNABLE = "0";
-    public static final String STATUS_REBOOT = "-1";
+    public static final String STATUS_REBOOT = "99";
+    public static final String STATUS_ERROR = "-1";
 
 
     public static Map<String,String> TYPE_INFO = new HashMap(){

@@ -198,7 +198,15 @@
                     {
                         "data": "enable",
                         render: function (data) {
-                            return data == '0' ? "<font color='red'>休眠</font>" : "<font color='green'>正常</font>";
+                            if (data == '0') {
+                                return "<font color='#daa520'>休眠</font>";
+                            }
+                            if (data == '1') {
+                                return "<font color='green'>正常</font>";
+                            }
+                            if (data == '-1') {
+                                return "<font color='red'>离线</font>";
+                            }
                         }
                     },
                     {"data": "second"},

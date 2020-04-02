@@ -257,7 +257,7 @@
                                 "<button type='button' onclick='loadEdit(" + row.no + ")' class='btn btn-outline-primary btn-sm'>调整参数</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='loadFtp(" + row.no + ")' class='btn btn-outline-primary btn-sm'>FTP源</button>&nbsp;&nbsp;"
                                 + chageInfo
-                                + "<button type='button' onclick='onChangeStatus(" + row.no + ",-1)' class='btn btn-outline-primary btn-sm'>重启</button>&nbsp;&nbsp;"
+                                + "<button type='button' onclick='onChangeStatus(" + row.no + ",99)' class='btn btn-outline-primary btn-sm'>重启</button>&nbsp;&nbsp;"
                                 + "<button type='button' onclick='loadResource(" + row.no + ")' class='btn btn-outline-primary btn-sm'>轮播详细</button>";
                             return rtnStr;
                         }
@@ -391,7 +391,7 @@
             if (status == 1) {
                 tips = '确认让诱导屏唤醒？'
             }
-            if (status == -1) {
+            if (status == 99) {
                 tips = '确认重启诱导屏？'
             }
             bootbox.confirm(tips, function (result) {

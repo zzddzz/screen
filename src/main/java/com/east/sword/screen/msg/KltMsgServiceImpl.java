@@ -56,17 +56,22 @@ public class KltMsgServiceImpl implements IMsgService {
             String screenNo = screen.getNo().toString();
             long size = stringRedisTemplate.opsForList().size(screenNo);
             List<VsnPlay> vsnPlayList = this.getRemoteScreenPlayList(screen);
-            if (size == 0) {
-                vsnPlayList.stream().forEach(meta -> {
-                    stringRedisTemplate.opsForList().leftPush(screenNo, meta.getName());
-                });
+
+            //redis 和 诱导屏播放数量匹配不一致重置播放内容
+            if (size == 0 || size < vsnPlayList.size()) {
+                stringRedisTemplate.opsForList().trim(screenNo,0,size);
+                vsnPlayList.stream().forEach(meta -> stringRedisTemplate.opsForList().leftPush(screenNo, meta.getName()));
             }
             String playVsn = stringRedisTemplate.opsForList().rightPop(screenNo);
             if (StringUtils.isNotBlank(playVsn)) {
+
+                //拿出后马上存入Redis
+                stringRedisTemplate.opsForList().leftPush(screenNo, playVsn);
+
                 String putUrl = kltRoute.swithRountPath(screen.getUri(), playVsn);
                 httpClient.httpPut(putUrl,null);
                 log.info("调用大屏轮播资源 no:{},putUrl:{}", screen.getNo(), putUrl);
-                stringRedisTemplate.opsForList().leftPush(screenNo, playVsn);
+
             }
         } catch (Exception e) {
             log.error("sendMsg 更新资源异常 : {}", e);
@@ -117,10 +122,10 @@ public class KltMsgServiceImpl implements IMsgService {
         String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
+        stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
+
         resource.setStatus(Resource.STATUS_UNABLE);
         resourceService.updateById(resource);
-
-        stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
     }
 
     /**
@@ -134,10 +139,10 @@ public class KltMsgServiceImpl implements IMsgService {
         String delUrl = kltRoute.delRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpDelete(delUrl);
 
+        stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
+
         resource.setStatus(Resource.STATUS_ISDEL);
         resourceService.updateById(resource);
-
-        stringRedisTemplate.opsForList().remove(screen.getNo().toString(),1,resource.getVsnName());
     }
 
     /**
@@ -151,10 +156,10 @@ public class KltMsgServiceImpl implements IMsgService {
         String uploadUrl = kltRoute.uploadRountPath(screen.getUri(), resource.getVsnName());
         httpClient.httpPostMedia(uploadUrl, resource);
 
+        stringRedisTemplate.opsForList().rightPush(screen.getNo().toString(),resource.getVsnName());
+
         resource.setStatus(Resource.STATUS_ENABLE);
         resourceService.updateById(resource);
-
-        stringRedisTemplate.opsForList().rightPush(screen.getNo().toString(),resource.getVsnName());
     }
 
     /**
@@ -207,9 +212,16 @@ public class KltMsgServiceImpl implements IMsgService {
         String lightUrl = kltRoute.lightPath(screen.getUri());
         JsonObject jsonObject = new JsonObject();
 
-        //金晓的亮度值是0-255
+        //卡莱特的亮度值是0-255
         jsonObject.addProperty("brightness", screen.getLight());
         httpClient.httpPut(lightUrl,jsonObject.toString());
+    }
+
+    @Override
+    public String getPowerStatus(Screen screen) {
+        String powerStatusUrl = kltRoute.powerStatusPath(screen.getUri());
+        String response = httpClient.httpGet(powerStatusUrl);
+        return response;
     }
 }
 

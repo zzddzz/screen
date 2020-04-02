@@ -117,4 +117,9 @@ public class JxMsgServiceImpl implements IMsgService {
     public void changeLight(Screen screen) {
 
     }
+
+    @Override
+    public String getPowerStatus(Screen screen) {
+        return null;
+    }
 }
