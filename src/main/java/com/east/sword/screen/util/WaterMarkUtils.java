@@ -54,18 +54,17 @@ public class WaterMarkUtils {
             g.setFont(font);              //设置字体
 
             int fontHeight = getFontHeight(g,font);
+            FontDesignMetrics metrics = FontDesignMetrics.getMetrics(font);
 
             //文本按照段落切分
             String[] sectionArr = waterMarkContent.split(windowsRtnLine);
             for (int i=0;i<sectionArr.length;i++) {
                 String line = sectionArr[i];
 
-                FontDesignMetrics metrics = FontDesignMetrics.getMetrics(font);
-
-
                 //设置水印的坐标 居中对齐
+                //(fontHeight * 2/3 + 10) 修正高度
                 int x = (srcImgWidth - getWatermarkLength(line, g))/2;
-                int y = (srcImgHeight - (fontHeight * sectionArr.length) )/2 + fontHeight * (i+1);
+                int y = (srcImgHeight - (fontHeight * sectionArr.length) )/2  + (fontHeight * 2/3 + 15) + fontHeight *i;
 
                 //画出水印
                 g.drawString(line, x, y);
