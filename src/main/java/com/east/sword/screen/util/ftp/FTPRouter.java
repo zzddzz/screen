@@ -56,10 +56,12 @@ public class FTPRouter {
      * @return
      * @throws Exception
      */
-    public FtpClientProxy getFTPClient(String unicode) throws Exception{
+    public FtpClientProxy getFTPClient(String unicode) {
         FTPClient ftpClient = concurrentHashMap.get(unicode);
-        if (null == ftpClient || !ftpClient.sendNoOp()) {
-
+        try {
+            ftpClient.sendNoOp();
+        } catch (Exception e) {
+            log.error("获取FTP 连接异常:{}",e.getMessage());
             //FTP 假死 重新加载一遍
             init();
         }
