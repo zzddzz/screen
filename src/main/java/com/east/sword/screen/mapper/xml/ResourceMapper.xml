@@ -11,7 +11,7 @@
     </select>
 
     <select id="selectResourcePage" resultType="com.east.sword.screen.entity.Resource">
-        SELECT t1.*,t2.name AS noName FROM resource t1 INNER  JOIN screen t2 ON t1.no = t2.no
+        SELECT t1.*,t2.name AS noName,t2.type AS screenType FROM resource t1 INNER  JOIN screen t2 ON t1.no = t2.no
         WHERE status != '-1'
         <if test="no != null and no != ''">
             AND t1.no = #{no}

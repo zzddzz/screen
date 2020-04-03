@@ -81,6 +81,12 @@ public class Resource extends Model<Resource> {
     @TableField("unicode")
     private String unicode;
 
+    @TableField(exist = false)
+    private String screenType;
+
+    @TableField("size")
+    private Integer size;
+
 
     @Override
     protected Serializable pkVal() {

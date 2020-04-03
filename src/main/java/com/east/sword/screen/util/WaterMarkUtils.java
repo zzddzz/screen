@@ -75,6 +75,12 @@ public class WaterMarkUtils {
             // 输出图片
             String srcImgName = srcImgFile.getName();
             String type = srcImgName.substring(srcImgName.lastIndexOf(".") + 1,srcImgName.length());
+
+            //存在文件先删除
+            File file = new File(tarImgPath);
+            if (file.exists()) {
+                file.delete();
+            }
             FileOutputStream outImgStream = new FileOutputStream(tarImgPath);
             ImageIO.write(bufImg, type, outImgStream);
             System.out.println("添加水印完成");

@@ -217,7 +217,9 @@ public class ScreenController extends BaseController<Screen> {
     @RequestMapping("/get-type-screen")
     public List<Screen> getTypeScreen(String type) {
         EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("type", type);
+        if (StringUtils.isNotBlank(type)) {
+            entityWrapper.eq("type", type);
+        }
         List<Screen> screenList = screenService.selectList(entityWrapper);
         return screenList;
     }

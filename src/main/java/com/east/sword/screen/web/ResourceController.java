@@ -17,24 +17,26 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Resource controller
@@ -68,7 +70,7 @@ public class ResourceController extends BaseController {
      * @return
      */
     @GetMapping("/index")
-    public String loadIndex(String no, String msg,String src, Model model) {
+    public String loadIndex(String no, String msg, String src, Model model) {
         model.addAttribute("no", no);
         model.addAttribute("msg", msg);
         model.addAttribute("src", src);
@@ -77,25 +79,26 @@ public class ResourceController extends BaseController {
 
     /**
      * 插播管理
+     *
      * @param model
      * @return
      */
     @GetMapping("/inter-index")
     public String loadInterIndex(Model model) {
         EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("enable",Screen.STATUS_ENABLE);
+        entityWrapper.eq("enable", Screen.STATUS_ENABLE);
         List<Screen> screenList = screenService.selectList(entityWrapper);
-        model.addAttribute("screenList",screenList);
+        model.addAttribute("screenList", screenList);
         return "inter";
     }
 
     @ResponseBody
     @RequestMapping("/page")
-    public Map screenPageList(PageHelper<Resource> pageHelper,Resource resource ) {
+    public Map screenPageList(PageHelper<Resource> pageHelper, Resource resource) {
         try {
             Map data = new TreeMap();
             Page page = pageHelper.getPage();
-            List<Resource>  records = resourceService.selectResourcePage(page,resource);
+            List<Resource> records = resourceService.selectResourcePage(page, resource);
             data.put("data", records);
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
@@ -105,6 +108,15 @@ public class ResourceController extends BaseController {
             return null;
         }
     }
+
+    @ResponseBody
+    @RequestMapping("/query-id")
+    public Resource queryById(Integer id) {
+        Resource resource = resourceService.selectById(id);
+        return resource;
+    }
+
+
 
     /**
      * 更改资源状态,是否同步到大屏上的资源
@@ -130,7 +142,7 @@ public class ResourceController extends BaseController {
                     EntityWrapper entityWrapper = new EntityWrapper();
                     entityWrapper.eq("status", Resource.STATUS_ENABLE);
                     entityWrapper.eq("no", resource.getNo());
-                    entityWrapper.eq("type",Resource.TYPE_PIC);
+                    entityWrapper.eq("type", Resource.TYPE_PIC);
                     int enableSize = resourceService.selectList(entityWrapper).size();
 
                     if (enableSize >= screen.getPlayPicNum()) {
@@ -181,12 +193,9 @@ public class ResourceController extends BaseController {
      *
      * @return
      */
-    @RequestMapping("/compPic")
+    @RequestMapping("/savePic")
     public RedirectView saveResourcePic(@RequestParam("backGround") MultipartFile backGround,
-                                        @RequestParam("content") String content,
-                                        @RequestParam("no") Integer no,
-                                        @RequestParam("size") Integer size,
-                                        RedirectAttributes redirectAttributes) {
+                                        @RequestParam("no") Integer no) {
         RedirectView redirectTarget = new RedirectView();
         redirectTarget.setContextRelative(true);
         redirectTarget.setUrl("inter-index");
@@ -208,7 +217,7 @@ public class ResourceController extends BaseController {
             resource.setResourceDateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             resource.setOriginName(originName);
 
-            resource.setFilePath(constantConfig.fileCache + no + File.separator );
+            resource.setFilePath(constantConfig.fileCache + no + File.separator);
             resource.setCreateDate(new Date());
             resource.setNo(no);
             resource.setSrcType(Resource.SRC_CUT);
@@ -217,7 +226,8 @@ public class ResourceController extends BaseController {
 
             File srcBackFile = FileUtil.multipartFileToFile(backGround);
             String targetFilePicName = resource.getFilePath() + resource.getFileName();
-            WaterMarkUtils.createWaterMark(srcBackFile, targetFilePicName, content,size);
+
+            FileUtils.copyFile(srcBackFile, new File(targetFilePicName));
 
             JsonObject vsnJson = VsnJson.getVsn(VsnJson.VSN_PIC, resource.getVsnName(), resource.getFileName(), targetFilePicName);
             String vsnContent = gson.toJson(vsnJson);
@@ -226,7 +236,7 @@ public class ResourceController extends BaseController {
             redirectTarget.addStaticAttribute("no", no);
             redirectTarget.addStaticAttribute("msg", SUCCESS);
         } catch (Exception e) {
-            log.error("合成图片异常:{}", e);
+            log.error("KLT 上传图片异常:{}", e);
             redirectTarget.addStaticAttribute("no", no);
             redirectTarget.addStaticAttribute("msg", FAIL);
         }
@@ -242,56 +252,70 @@ public class ResourceController extends BaseController {
     @ResponseBody
     @RequestMapping("/saveFont")
     public String saveResourcePic(@RequestParam("content") String content,
-                                        @RequestParam("no") Integer no,
-                                        @RequestParam("size") Integer size) {
+                                  @RequestParam("no") Integer no,
+                                  @RequestParam("size") Integer size,
+                                  Integer id) {
         try {
             Screen screen = screenService.selectById(no);
             Resource resource = new Resource();
             resource.setStatus(Resource.STATUS_UNABLE);//默认不可用
             resource.setType(Resource.TYPE_FONT);
             resource.setResourceDateTime(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            resource.setFilePath(constantConfig.fileCache);
+            resource.setFilePath(constantConfig.fileCache + screen.getNo() + File.separator);
             resource.setCreateDate(new Date());
             resource.setNo(no);
             resource.setSrcType(Resource.SRC_CUT);
             resource.setContent(content);
 
 
-            //卡莱特生成VSN
-            if (Screen.TYPE_KLT.equals(screen.getType())) {
-                String fileName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS")+".vsn";
+            //卡莱特生成文字--底图叠加文字 ,vsn
+            if (Screen.TYPE_KLT.equals(screen.getType()) && null == id) {
+
+                File file = new File(constantConfig.backGroundPic);
+                String prefixName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
+                String fileName = prefixName + ".jpg";
+                String vsnName = prefixName + ".vsn";
+                String targetFilePicName = constantConfig.fileCache + screen.getNo() + File.separator + fileName;
+
+                //叠加文字
+                WaterMarkUtils.createWaterMark(file, targetFilePicName, content,size);
                 resource.setOriginName(fileName);
-                resource.setVsnName(fileName);
                 resource.setFileName(fileName);
+                resource.setVsnName(vsnName);
 
-                File vsnFontFile = new File(constantConfig.fileCache + File.separator + fileName);
-                if (!vsnFontFile.exists()) {
-                    vsnFontFile.createNewFile();
-                }
-                File srcFile = ResourceUtils.getFile("classpath:klt_font.json");
+                JsonObject vsnJson = VsnJson.getVsn(VsnJson.VSN_PIC, resource.getVsnName(), resource.getFileName(), targetFilePicName);
+                String vsnContent = gson.toJson(vsnJson);
+                FileUtil.createFile(resource.getFilePath(), resource.getVsnName(), vsnContent);
 
-                String setContent = getFileInfo(srcFile);
-                setContent = setContent.replace("@font@",content);
-                FileWriter fw = new FileWriter(vsnFontFile);
-                fw.write(setContent);
-                fw.close();
+
             }
             if (Screen.TYPE_JX.equals(screen.getType())) {
-                String fileName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS")+".lst";
+                String fileName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS") + ".lst";
                 resource.setOriginName(fileName);
                 resource.setVsnName(fileName);
                 resource.setFileName(fileName);
             }
-            resourceService.insert(resource);
+
+            if (Screen.TYPE_KLT.equals(screen.getType()) && null != id) {//卡莱特更新图片信息
+                Resource resourceDb = resourceService.selectById(id);
+                File file = new File(constantConfig.backGroundPic);
+                WaterMarkUtils.createWaterMark(file, resourceDb.getFilePath() + resourceDb.getFileName(), content,size);
+
+                EntityWrapper entityWrapper = new EntityWrapper();
+                entityWrapper.eq("id",id);
+                resourceService.updateForSet("content = '" + content + "' , size = " + size,entityWrapper);
+            } else {
+                resourceService.insert(resource);
+            }
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("saveFont error :{}",e);
+            log.error("saveFont error :{}", e);
             return FAIL;
         }
     }
 
-    public String getFileInfo (File file) throws Exception {
+    public String getFileInfo(File file) throws Exception {
         BufferedReader reader = null;
         StringBuffer sbf = new StringBuffer();
         reader = new BufferedReader(new FileReader(file));
@@ -302,7 +326,6 @@ public class ResourceController extends BaseController {
         reader.close();
         return sbf.toString();
     }
-
 
 
 }
