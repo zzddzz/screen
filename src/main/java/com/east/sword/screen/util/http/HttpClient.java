@@ -28,14 +28,14 @@ public class HttpClient {
     public static MediaType TYPE_JSON = MediaType.APPLICATION_JSON;
 
 
-    private  RestTemplate restTemplate ;
+    private static RestTemplate restTemplate ;
 
-    public synchronized RestTemplate getRestTemplate() {
+    public RestTemplate getRestTemplate() {
 
         if (null == restTemplate) {
             SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             requestFactory.setConnectTimeout(8000);
-            requestFactory.setReadTimeout(20000);
+            requestFactory.setReadTimeout(10000);
             restTemplate = new RestTemplate();
             restTemplate.setRequestFactory(requestFactory);
             return restTemplate;

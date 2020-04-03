@@ -288,34 +288,55 @@ public class ScanJob {
 
 
     /**
-     * 检测卡莱特诱导屏状态
+     * 检测卡莱特诱导屏状态, 设置亮度定时
      */
     @Scheduled(cron = "*/20 * * * * ?")
-    public void syncKltPowerStatus() {
-        EntityWrapper<Screen> screenQuary = new EntityWrapper();
-        screenQuary.eq("enable", Screen.STATUS_ENABLE);
-        screenQuary.eq("type", Screen.TYPE_KLT);
-        List<Screen> screenList = screenService.selectList(screenQuary);
-        screenList.forEach(meta->{
-            int status = 0;
-            try {
-                msgService.getPowerStatus(meta);
-            } catch (Exception e) {
-                log.error("获取KLT powerStatus 异常:{}",e.getMessage());
-                status = -1;
+    public void syncKltPowerStatusAndLight() {
+        try {
+            EntityWrapper<Screen> screenQuary = new EntityWrapper();
+            screenQuary.eq("enable", Screen.STATUS_ENABLE);
+            screenQuary.eq("type", Screen.TYPE_KLT);
+            List<Screen> screenList = screenService.selectList(screenQuary);
+            screenList.forEach(meta -> {
+                try {
+                    msgService.getPowerStatus(meta);
 
-            } finally {
-                if (status == -1 && !Screen.STATUS_ERROR.equals(meta.getEnable())) {
-                    meta.setEnable(Screen.STATUS_ERROR);
-                    screenService.updateById(meta);
-                }
-                if (status == 0 && Screen.STATUS_ERROR.equals(meta.getEnable())) {
-                    meta.setEnable(Screen.STATUS_ENABLE);
-                    screenService.updateById(meta);
-                }
-            }
+                    if (Screen.STATUS_ERROR.equals(meta.getEnable())) {//设置正常
+                        meta.setEnable(Screen.STATUS_ENABLE);
+                        screenService.updateById(meta);
+                    }
+                } catch (Exception e) {
+                    log.error("获取KLT powerStatus 异常:{}", e.getMessage());
+                    if (!Screen.STATUS_ERROR.equals(meta.getEnable())) {//设置离线
+                        meta.setEnable(Screen.STATUS_ERROR);
+                        screenService.updateById(meta);
+                    }
+                } finally {
 
-        });
+                    //设置定时亮度
+                    if (Screen.LIGHT_ENABLE.equals(meta.getLightStact())) {
+                        String now = DateFormatUtils.format(new Date(), "HH:mm:ss");
+
+                        //日间亮度时间
+                        if (compTime(now, meta.getDayBegTime()) && compTime(meta.getDayEndTime(), now)
+                                && meta.getLight() != meta.getDaylight()) {
+                            meta.setLight(meta.getDaylight());
+                            msgService.changeLight(meta);
+                        }
+
+                        //夜间亮度时间
+                        if (compTime(now, meta.getNightBegTime()) && compTime(meta.getNightEndTime(), now)
+                                && meta.getLight() != meta.getNightLight()) {
+                            meta.setLight(meta.getNightLight());
+                            msgService.changeLight(meta);
+                        }
+                    }
+                }
+
+            });
+        } catch (Exception e) {
+            log.error("syncKltPowerStatusAndLight error:  {}",e);
+        }
 
     }
 
@@ -370,7 +391,7 @@ public class ScanJob {
      *
      * @param s1
      * @param s2
-     * @return
+     * @return s1 > s2 true  ;s1 < s2 false
      */
     public static boolean compTime(String s1, String s2) {
         try {

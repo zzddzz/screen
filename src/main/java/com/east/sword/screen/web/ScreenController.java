@@ -104,10 +104,10 @@ public class ScreenController extends BaseController<Screen> {
             if (StringUtils.isNotBlank(screen.getName())) {
                 entityWrapper.like("name", screen.getName());
             }
-            Page<Screen> page = screenService.selectPage(pageHelper.getPage(), entityWrapper);
-            List<Screen> records = page.getRecords();
-            records.stream().forEach(meta -> meta.setType(Screen.TYPE_INFO.get(meta.getType())));
-            data.put("data", records);
+            Page<Screen> page = pageHelper.getPage();
+            List<Screen> screenList = screenService.selectPageInfo(page, screen);
+            screenList.stream().forEach(meta -> meta.setType(Screen.TYPE_INFO.get(meta.getType())));
+            data.put("data", screenList);
             data.put("recordsTotal", page.getTotal());
             data.put("recordsFiltered", page.getTotal());
             return data;
@@ -124,10 +124,15 @@ public class ScreenController extends BaseController<Screen> {
         try {
             if (screen.getNo() == null) {
                 screen.setRemoteFtpPath("./");
+
+                //初始化设置策略
+                screen.setLightStact(Screen.LIGHT_UNABLE);
                 screenService.insert(screen);
             } else {
                 Screen dbScreen = screenService.selectById(screen.getNo());
-                msgService.changeLight(dbScreen);
+                if (dbScreen.getLight() != screen.getLight()) {
+                    msgService.changeLight(screen);
+                }
                 screenService.updateById(screen);
             }
             return SUCCESS;

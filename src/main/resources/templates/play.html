@@ -80,7 +80,7 @@
                                 <h5 class="modal-title" id="exampleModalLabel2">播放管理</h5>
                             </div>
                             <div class="modal-body">
-                                <form id="customForm">
+                                <form id="customForm" class="layui-form">
                                     <input type="hidden" class="form-control" id="no" value="" required>
                                     <div class="form-group row">
                                         <label for="name" class="star col-sm-2 col-form-label">诱导屏名称</label>
@@ -104,6 +104,46 @@
                                         <label for="light" class="col-sm-2 col-form-label">亮度</label>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control" id="light">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="lightStact" class="col-sm-2 col-form-label">亮度策略</label>
+                                        <div class="col-sm-2">
+                                            <div style="margin-top: 7px;">
+                                                <input type="checkbox" class="checkbox" checked="checked" id="lightStact"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">日间设置</label>
+                                        <label for="dayBegTime" class="star col-form-label">&nbsp;&nbsp;开始时间</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control layDate" id="dayBegTime" placeholder="HH:mm:ss">
+                                        </div>
+                                        <label for="dayEndTime" class="star col-form-label">&nbsp;&nbsp;结束时间</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control layDate" id="dayEndTime" placeholder="HH:mm:ss">
+                                        </div>
+                                        <label for="daylight" class="star col-form-label">&nbsp;&nbsp;亮度值</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" id="daylight" placeholder="0-255">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">夜间设置</label>
+                                        <label for="nightBegTime" class="star col-form-label">&nbsp;&nbsp;开始时间</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control layDate" id="nightBegTime"
+                                                   placeholder="HH:mm:ss">
+                                        </div>
+                                        <label for="nightEndTime" class="star col-form-label">&nbsp;&nbsp;结束时间</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control layDate" id="nightEndTime"
+                                                   placeholder="HH:mm:ss">
+                                        </div>
+                                        <label for="nightLight" class="star col-form-label">&nbsp;&nbsp;亮度值</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" id="nightLight" placeholder="0-255">
                                         </div>
                                     </div>
                                 </form>
@@ -140,12 +180,12 @@
                                         </div>
                                         <label for="begTime" class="star  col-form-label">&nbsp;&nbsp;开始时间</label>
                                         <div class="col-sm-2">
-                                            <input type="text" class="form-control" id="begTime" placeholder="HH:mm:ss"
+                                            <input type="text" class="form-control layDate" id="begTime" placeholder="HH:mm:ss"
                                                    required>
                                         </div>
                                         <label for="endTime" class="star col-form-label">&nbsp;&nbsp;结束时间</label>
                                         <div class="col-sm-2">
-                                            <input type="text" class="form-control" id="endTime" placeholder="HH:mm:ss"
+                                            <input type="text" class="form-control layDate" id="endTime" placeholder="HH:mm:ss"
                                                    required>
                                         </div>
                                         <div class="col-sm-1">
@@ -185,6 +225,7 @@
     <div th:replace="common/commjs :: comm"></div>
     <script th:inline="javascript">
 
+
         bootbox.setDefaults("locale", "zh_CN");
 
         $("#light").ionRangeSlider({
@@ -193,18 +234,32 @@
             from: 45
         });
 
-        //时间选择器
-        laydate.render({
-            elem: '#begTime'
-            , type: 'time'
-        });
-        laydate.render({
-            elem: '#endTime'
-            , type: 'time'
+        $('.layDate').each(function(){
+            laydate.render({
+                elem: this
+                ,type: 'time'
+            });
         });
 
         $(document).ready(function () {
             $('.select2').select2();
+
+            $(".checkbox").bootstrapSwitch({
+                onText: "启用",      // 设置ON文本  
+                offText: "禁用",    // 设置OFF文本  
+                onColor: "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
+                offColor: "danger",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
+                size: "mini",    // 设置控件大小,从小到大  (mini/small/normal/large)  
+                handleWidth: "24",//设置控件宽度
+                // 当开关状态改变时触发  
+                onSwitchChange: function (event, state) {
+                    if (state == true) {//上线
+                        $("#lightStact").val('1');
+                    } else { //下线
+                        $("#lightStact").val('0');
+                    }
+                }
+            });
         });
 
         /*<![CDATA[*/
@@ -233,15 +288,23 @@
                     {"data": "playPicNum"},
                     {"data": "light"},
                     {
-                        "data": null,
-                        render: function () {
-                            return '';
+                        "data": 'ftpNum',
+                        render: function (data) {
+                            return data + '个';
                         }
                     },
                     {
                         "data": "enable",
                         render: function (data) {
-                            return data == '0' ? "<font color='red'>休眠</font>" : "<font color='green'>正常</font>";
+                            if (data == '0') {
+                                return "<font color='#daa520'>休眠</font>";
+                            }
+                            if (data == '1') {
+                                return "<font color='green'>正常</font>";
+                            }
+                            if (data == '-1') {
+                                return "<font color='red'>离线</font>";
+                            }
                         }
                     },
                     {
@@ -425,29 +488,49 @@
                     my_range.update({
                         from: response.light
                     });
+
+                    if (response.lightStact == '1') {
+                        $('#lightStact').bootstrapSwitch('state', true);
+                    } else {
+                        $('#lightStact').bootstrapSwitch('state', false);
+                    }
+                    $("#dayBegTime").val(response.dayBegTime);
+                    $("#dayEndTime").val(response.dayEndTime);
+                    $("#daylight").val(response.daylight);
+                    $("#nightBegTime").val(response.nightBegTime);
+                    $("#nightEndTime").val(response.nightEndTime);
+                    $("#nightLight").val(response.nightLight);
                     $("#customModal").modal('show');
                 }
             );
         }
 
+        //修改参数
         function onEdit() {
             var form = $("#customForm")[0];
             if (!form.checkValidity()) {
                 form.classList.add('was-validated');
                 return;
             }
+
             $.post(
                 basePath + "/screen/resave",
                 {
                     "no": $("#no").val(),
                     "second": $("#second").val(),
                     "playPicNum": $("#playPicNum").val(),
-                    "light": $("#light").val()
+                    "light": $("#light").val(),
+                    "lightStact": $("#lightStact").val(),
+                    "dayBegTime": $("#dayBegTime").val(),
+                    "dayEndTime": $("#dayEndTime").val(),
+                    "daylight": $("#daylight").val(),
+                    "nightBegTime": $("#nightBegTime").val(),
+                    "nightEndTime": $("#nightEndTime").val(),
+                    "nightLight": $("#nightLight").val()
                 },
                 function (response) {
                     if (response == 'success') {
                         $("#customModal").modal('hide');
-                        //table.ajax.reload();
                         window.location.reload();
                     } else {
                         bootbox.alert('操作异常');

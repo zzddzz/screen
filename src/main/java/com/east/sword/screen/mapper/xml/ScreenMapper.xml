@@ -2,4 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.east.sword.screen.mapper.ScreenMapper">
 
+    <select id="selectPageInfo" resultType="com.east.sword.screen.entity.Screen">
+        SELECT
+          t1.*,
+          (SELECT COUNT(1) FROM screen_ftp WHERE screen_id = t1.no) AS ftpNum
+        FROM screen t1
+        <where>
+            <if test="enable != null and enable != '' ">
+                AND enable = #{enable}
+            </if>
+            <if test="name != null and name != '' ">
+                AND name like concat('%', #{name} ,'%')
+            </if>
+        </where>
+    </select>
+
 </mapper>

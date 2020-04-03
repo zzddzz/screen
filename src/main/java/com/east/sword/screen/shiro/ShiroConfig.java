@@ -60,6 +60,7 @@ public class ShiroConfig {
         map.put("/assets/**","anon");
         map.put("/bootstrap/**","anon");
         map.put("/login/**","anon");
+        map.put("/layui/**","anon");
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/");

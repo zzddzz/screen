@@ -1,8 +1,10 @@
 package com.east.sword.screen.msg;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
 import com.east.sword.screen.service.IResourceService;
+import com.east.sword.screen.service.IScreenService;
 import com.east.sword.screen.util.http.HttpClient;
 import com.east.sword.screen.vo.KltRoute;
 import com.east.sword.screen.vo.VsnPlay;
@@ -41,6 +43,9 @@ public class KltMsgServiceImpl implements IMsgService {
     @Autowired
     private IResourceService resourceService;
 
+    @Autowired
+    private IScreenService screenService;
+
     /**
      * 大屏资源轮播服务
      * 1 获取大屏资源 , 并给大屏资源排序
@@ -58,7 +63,7 @@ public class KltMsgServiceImpl implements IMsgService {
             List<VsnPlay> vsnPlayList = this.getRemoteScreenPlayList(screen);
 
             //redis 和 诱导屏播放数量匹配不一致重置播放内容
-            if (size == 0 || size < vsnPlayList.size()) {
+            if (size != vsnPlayList.size()) {
                 stringRedisTemplate.opsForList().trim(screenNo,0,size);
                 vsnPlayList.stream().forEach(meta -> stringRedisTemplate.opsForList().leftPush(screenNo, meta.getName()));
             }
@@ -209,12 +214,17 @@ public class KltMsgServiceImpl implements IMsgService {
      */
     @Override
     public void changeLight(Screen screen) {
+
         String lightUrl = kltRoute.lightPath(screen.getUri());
         JsonObject jsonObject = new JsonObject();
 
         //卡莱特的亮度值是0-255
         jsonObject.addProperty("brightness", screen.getLight());
         httpClient.httpPut(lightUrl,jsonObject.toString());
+
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("no",screen.getNo());
+        screenService.updateForSet("light = " + screen.getLight(),entityWrapper);
     }
 
     @Override

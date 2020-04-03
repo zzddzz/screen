@@ -26,11 +26,15 @@ public class Screen extends Model<Screen> {
     public static final String STATUS_REBOOT = "99";
     public static final String STATUS_ERROR = "-1";
 
+    public static final String LIGHT_ENABLE = "1";
 
-    public static Map<String,String> TYPE_INFO = new HashMap(){
+    public static final String LIGHT_UNABLE = "0";
+
+
+    public static Map<String, String> TYPE_INFO = new HashMap() {
         {
-            put(TYPE_KLT,"卡莱特");
-            put(TYPE_JX,"金晓");
+            put(TYPE_KLT, "卡莱特");
+            put(TYPE_JX, "金晓");
         }
     };
 
@@ -80,19 +84,43 @@ public class Screen extends Model<Screen> {
     @TableField("type")
     private String type;
 
+    @TableField("lightStact")
+    private String lightStact;
+
+    @TableField("dayBegTime")
+    private String dayBegTime;
+
+    @TableField("dayEndTime")
+    private String dayEndTime;
+
+    @TableField("daylight")
+    private Integer daylight;
+
+    @TableField("nightBegTime")
+    private String nightBegTime;
+
+    @TableField("nightEndTime")
+    private String nightEndTime;
+
+    @TableField("nightLight")
+    private Integer nightLight;
+
     @TableField(exist = false)
     private List<Integer> resourceIdList;
 
+    @TableField(exist = false)
+    private String ftpNum;
+
     public String getScheduleCron() {
-        if (null != second ) {
+        if (null != second) {
             if (second < 60) {
-                String cron = StringUtils.join("*/",second," * * * * ?");
+                String cron = StringUtils.join("*/", second, " * * * * ?");
                 return cron;
             } else {
-                int minute = second/60;
-                int secode = second%60;
+                int minute = second / 60;
+                int secode = second % 60;
 
-                return StringUtils.join(secode," */",minute," * * * ?");
+                return StringUtils.join(secode, " */", minute, " * * * ?");
             }
         } else {//默认20秒播放一次
             return "20/* * * * * ?";
@@ -101,10 +129,11 @@ public class Screen extends Model<Screen> {
 
     /**
      * 获取HTTP -URI
+     *
      * @return
      */
     public String getUri() {
-        String uri = StringUtils.join("http://",this.getHost(),":",this.getPort());
+        String uri = StringUtils.join("http://", this.getHost(), ":", this.getPort());
         return uri;
     }
 
