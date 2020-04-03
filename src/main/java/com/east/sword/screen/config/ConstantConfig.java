@@ -24,8 +24,11 @@ public class ConstantConfig implements ApplicationRunner {
     @Value("${ftp.file.cache}")
     public String fileCache;
 
-    @Value("${file.background.path}")
-    public String backGroundPic;
+    @Value("${file.background.path.bhl}")
+    public String backGroundPicBhl;
+
+    @Value("${file.background.path.big}")
+    public String backGroundPicBig;
 
     @Autowired
     private IScreenService screenService;

@@ -271,7 +271,7 @@ public class ResourceController extends BaseController {
             //卡莱特生成文字--底图叠加文字 ,vsn
             if (Screen.TYPE_KLT.equals(screen.getType()) && null == id) {
 
-                File file = new File(constantConfig.backGroundPic);
+                File file = new File(screen.getBackGround());
                 String prefixName = no + DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
                 String fileName = prefixName + ".jpg";
                 String vsnName = prefixName + ".vsn";
@@ -298,7 +298,7 @@ public class ResourceController extends BaseController {
 
             if (Screen.TYPE_KLT.equals(screen.getType()) && null != id) {//卡莱特更新图片信息
                 Resource resourceDb = resourceService.selectById(id);
-                File file = new File(constantConfig.backGroundPic);
+                File file = new File(screen.getBackGround());
                 WaterMarkUtils.createWaterMark(file, resourceDb.getFilePath() + resourceDb.getFileName(), content,size);
 
                 EntityWrapper entityWrapper = new EntityWrapper();

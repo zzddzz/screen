@@ -64,7 +64,7 @@ public class KltMsgServiceImpl implements IMsgService {
 
             //redis 和 诱导屏播放数量匹配不一致重置播放内容
             if (size != vsnPlayList.size()) {
-                stringRedisTemplate.opsForList().trim(screenNo,0,size);
+                stringRedisTemplate.delete(screenNo);
                 vsnPlayList.stream().forEach(meta -> stringRedisTemplate.opsForList().leftPush(screenNo, meta.getName()));
             }
             String playVsn = stringRedisTemplate.opsForList().rightPop(screenNo);

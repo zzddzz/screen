@@ -52,7 +52,7 @@ public class JxMsgServiceImpl implements IMsgService {
             //设置轮播信息
             long size = stringRedisTemplate.opsForList().size(screen.getNo().toString());
             if (size == 0 || size < resourcePlayList.size()) {
-                stringRedisTemplate.opsForList().trim(screen.getNo().toString(),0,size);
+                stringRedisTemplate.delete(screen.getNo().toString());
                 resourcePlayList.forEach(meta->{
                     stringRedisTemplate.opsForList().leftPush(screen.getNo().toString(),meta.getVsnName());
                 });

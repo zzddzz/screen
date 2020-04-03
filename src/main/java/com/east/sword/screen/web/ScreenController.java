@@ -3,6 +3,7 @@ package com.east.sword.screen.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.east.sword.screen.config.ConstantConfig;
 import com.east.sword.screen.entity.FtpInfo;
 import com.east.sword.screen.entity.Resource;
 import com.east.sword.screen.entity.Screen;
@@ -58,6 +59,9 @@ public class ScreenController extends BaseController<Screen> {
 
     @Autowired
     private HttpClient httpClient;
+
+    @Autowired
+    private ConstantConfig constantConfig;
 
     @GetMapping("/index")
     public String loadScreenIndex(Model model) {
@@ -127,6 +131,9 @@ public class ScreenController extends BaseController<Screen> {
 
                 //初始化设置策略
                 screen.setLightStact(Screen.LIGHT_UNABLE);
+
+                //默认背景图用大的
+                screen.setBackGround(constantConfig.backGroundPicBig);
                 screenService.insert(screen);
             } else {
                 Screen dbScreen = screenService.selectById(screen.getNo());

@@ -111,6 +111,9 @@ public class Screen extends Model<Screen> {
     @TableField(exist = false)
     private String ftpNum;
 
+    @TableField("backGround")
+    private String backGround;
+
     public String getScheduleCron() {
         if (null != second) {
             if (second < 60) {
